@@ -62,10 +62,7 @@ h1 { margin: 1px 0 0; font-size: 26px; line-height: 1.08; letter-spacing: .02em;
 .parking-marker b { display: block; transform: rotate(45deg); }.parking-marker { text-indent: 0; }.marker-count, .marker-available { background: #069b8d; }.marker-full { background: #d55b45; }.marker-closed { background: #677c87; }.marker-unknown { background: #9a6f39; }
 .parking-marker { line-height: 1; }
 .selected-center-marker-shell { background: transparent !important; border: 0 !important; }
-.selected-center-marker { display: block; width: 24px; height: 36px; overflow: visible; filter: drop-shadow(0 3px 4px #0000007a); }
-.selected-center-marker path:first-child { fill: #14b8a6; stroke: #f5fffe; stroke-width: 1.8; stroke-linejoin: round; }
-.selected-center-marker circle { fill: #f5fffe; }
-.selected-center-marker path:last-child { fill: none; stroke: #f5fffe; stroke-width: 2; stroke-linecap: round; }
+.selected-center-marker { display: block; width: 32px; height: 36px; padding-top: 2px; color: initial; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; font-size: 28px; font-style: normal; line-height: 1; text-align: center; filter: drop-shadow(0 3px 4px #0000007a); }
 
 .results-panel { padding: 20px 14px 14px; background: #0b263d; min-width: 0; display: flex; flex-direction: column; }
 .results-heading { display: flex; align-items: end; justify-content: space-between; gap: 12px; padding: 0 6px 12px; }.results-heading h2 { margin: 4px 0 0; font-size: 24px; }.results-heading > p { color: #64d9cb; font-size: 12px; font-weight: 800; margin: 0 0 2px; white-space: nowrap; }
