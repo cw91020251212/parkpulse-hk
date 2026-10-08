@@ -77,7 +77,6 @@ export default function App() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [mapExpanded, setMapExpanded] = useState(false);
   const [recenterRequest, setRecenterRequest] = useState(0);
-  const [showSelectedCenter, setShowSelectedCenter] = useState(false);
 
   useEffect(() => {
     try {
@@ -108,7 +107,6 @@ export default function App() {
         setPosition({ lat: coords.latitude, lng: coords.longitude });
         setAreaName('我的位置');
         setLocationState('ready');
-        setShowSelectedCenter(false);
         setRecenterRequest((current) => current + 1);
       },
       () => setLocationState('denied'),
@@ -156,11 +154,10 @@ export default function App() {
     setSelectedId(null);
     setMapExpanded((current) => !current);
   };
-  const selectArea = (coordinates: Coordinates, label: string, behavior: { recenter: boolean; showMarker: boolean }) => {
+  const selectArea = (coordinates: Coordinates, label: string, behavior: { recenter: boolean }) => {
     setPosition(coordinates);
     setAreaName(label);
     setLocationState('ready');
-    setShowSelectedCenter(behavior.showMarker);
     if (behavior.recenter) setRecenterRequest((current) => current + 1);
     setSelectedId(null);
     setMapExpanded(false);
@@ -191,7 +188,7 @@ export default function App() {
       {visibleError && <div className="error-banner" role="alert"><span>資料連線提示：{visibleError}</span><button type="button" onClick={retry}>重試</button></div>}
 
       <section className="workspace">
-        <MapView position={position} parks={displayedParks} selectedId={selectedId} onSelect={setSelectedId} onLocationSelect={selectArea} recenterRequest={recenterRequest} showSelectedCenter={showSelectedCenter} expanded={mapExpanded} onToggleExpanded={toggleMap} onShowResults={showResults} />
+        <MapView position={position} parks={displayedParks} selectedId={selectedId} onSelect={setSelectedId} onLocationSelect={selectArea} recenterRequest={recenterRequest} expanded={mapExpanded} onToggleExpanded={toggleMap} onShowResults={showResults} />
         <section className="results-panel" id="parking-results" aria-label="附近停車場清單">
           <div className="results-heading">
             <div><p className="eyebrow">{areaName} · {NEARBY_RADIUS_KM} 公里</p><h2>{loading ? '正在整理停車場…' : `${displayedParks.length} 個結果`}</h2></div>

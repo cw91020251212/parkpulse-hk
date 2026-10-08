@@ -8,9 +8,8 @@ type Props = {
   parks: ParkViewModel[];
   selectedId: string | null;
   onSelect: (id: string) => void;
-  onLocationSelect: (coordinates: Coordinates, label: string, behavior: { recenter: boolean; showMarker: boolean }) => void;
+  onLocationSelect: (coordinates: Coordinates, label: string, behavior: { recenter: boolean }) => void;
   recenterRequest: number;
-  showSelectedCenter: boolean;
   expanded: boolean;
   onToggleExpanded: () => void;
   onShowResults: () => void;
@@ -180,7 +179,15 @@ const selectedCenterIcon = L.divIcon({
   iconAnchor: [16, 36],
 });
 
-export function MapView({ position, parks, selectedId, onSelect, onLocationSelect, recenterRequest, showSelectedCenter, expanded, onToggleExpanded, onShowResults }: Props) {
+function MapFocusIcon({ expanded }: { expanded: boolean }) {
+  return expanded ? (
+    <svg className="map-focus-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 3 3 3 3-3M9 21l3-3 3 3M3 9l3 3-3 3M21 9l-3 3 3 3" /></svg>
+  ) : (
+    <svg className="map-focus-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3H3v6m0-6 7 7M15 3h6v6m0-6-7 7M9 21H3v-6m0 6 7-7m5 7h6v-6m0 6-7-7" /></svg>
+  );
+}
+
+export function MapView({ position, parks, selectedId, onSelect, onLocationSelect, recenterRequest, expanded, onToggleExpanded, onShowResults }: Props) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [searchMessage, setSearchMessage] = useState('');
@@ -198,11 +205,11 @@ export function MapView({ position, parks, selectedId, onSelect, onLocationSelec
     setSearchMessage('');
     setLongPressMessage('長按地圖約 1 秒：選取 2 公里範圍');
     setSearchOpen(false);
-    onLocationSelect(district.coordinates, district.label, { recenter: true, showMarker: false });
+    onLocationSelect(district.coordinates, district.label, { recenter: true });
   };
   const selectMapPoint = (coordinates: Coordinates) => {
     setLongPressMessage('已選取位置 · 顯示 2 公里範圍');
-    onLocationSelect(coordinates, '地圖選取位置', { recenter: false, showMarker: true });
+    onLocationSelect(coordinates, '地圖選取位置', { recenter: false });
   };
 
   return (
@@ -218,7 +225,7 @@ export function MapView({ position, parks, selectedId, onSelect, onLocationSelec
         <ResizeMap expanded={expanded} />
         <LongPressPicker onPick={selectMapPoint} />
         <Circle center={[position.lat, position.lng]} radius={2_000} pathOptions={{ color: '#14B8A6', fillColor: '#14B8A6', fillOpacity: 0.1, weight: 2, dashArray: '6 6' }} />
-        {showSelectedCenter && <Marker position={[position.lat, position.lng]} icon={selectedCenterIcon} zIndexOffset={1_000} keyboard={false} />}
+        <Marker position={[position.lat, position.lng]} icon={selectedCenterIcon} zIndexOffset={1_000} keyboard={false} />
         {parks.map((park) => (
           <Marker
             key={park.info.park_Id}
@@ -249,7 +256,7 @@ export function MapView({ position, parks, selectedId, onSelect, onLocationSelec
         </form>
       )}
 
-      <button className="map-focus-toggle" type="button" onClick={onToggleExpanded} aria-pressed={expanded}>{expanded ? '縮細地圖' : '放大地圖'}</button>
+      <button className="map-focus-toggle" type="button" onClick={onToggleExpanded} aria-pressed={expanded} aria-label={expanded ? '縮細地圖' : '放大地圖'} title={expanded ? '縮細地圖' : '放大地圖'}><MapFocusIcon expanded={expanded} /></button>
       {!expanded && <button className="map-results-link" type="button" onClick={onShowResults}>查看 {parks.length} 個停車場 ↓</button>}
       <a className="landsd-credit" href="https://api.portal.hkmapservice.gov.hk/disclaimer" target="_blank" rel="noreferrer">
         <span>地圖資料：地政總署</span><img src={LANDSD_LOGO_URL} alt="地政總署標誌" />
