@@ -46,8 +46,8 @@ function markerIcon(park: ParkViewModel) {
   return L.divIcon({
     className: 'parking-marker-shell',
     html: `<span class="parking-marker marker-${park.status.kind}"><b>${label}</b></span>`,
-    iconSize: [44, 36],
-    iconAnchor: [22, 18],
+    iconSize: [38, 38],
+    iconAnchor: [19, 38],
   });
 }
 
@@ -74,7 +74,7 @@ export function MapView({ position, parks, selectedId, onSelect, expanded, onTog
             icon={markerIcon(park)}
             eventHandlers={{ click: () => onSelect(park.info.park_Id) }}
           >
-            <Tooltip direction="top" offset={[0, -18]} opacity={0.95}>{park.info.name} · {park.status.label}</Tooltip>
+            <Tooltip direction="top" offset={[0, -38]} opacity={0.95}>{park.info.name} · {park.status.label}</Tooltip>
           </Marker>
         ))}
       </MapContainer>
