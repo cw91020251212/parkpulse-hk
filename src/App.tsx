@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent } from 'react';
 import { Filters } from './components/Filters';
 import { MapView } from './components/MapView';
+import { NearbyFacilityCard } from './components/NearbyFacilityCard';
 import { ParkCard } from './components/ParkCard';
 import { ParkDetail } from './components/ParkDetail';
 import { ToiletCard } from './components/ToiletCard';
@@ -10,8 +11,9 @@ import { distanceInKm } from './domain/distance';
 import { useCarparks } from './hooks/useCarparks';
 import { useEvChargers } from './hooks/useEvChargers';
 import { useLcsdVenues } from './hooks/useLcsdVenues';
+import { useNearbyFacilities } from './hooks/useNearbyFacilities';
 import { usePublicToilets } from './hooks/usePublicToilets';
-import type { Coordinates, ParkFilters, ParkViewModel, PublicToiletViewModel, VehicleType } from './types';
+import type { Coordinates, NearbyFacilityViewModel, NearbyMode, ParkFilters, ParkViewModel, PublicToiletViewModel, VehicleType } from './types';
 
 const HONG_KONG_CENTER: Coordinates = { lat: 22.3193, lng: 114.1694 };
 const NEARBY_RADIUS_KM = 2;
@@ -48,14 +50,13 @@ const INITIAL_FILTERS: ParkFilters = {
   hasEv: false,
   hasAccessible: false,
   minHeight: 0,
-  showToilets: false,
 };
 
 const PREFERENCES_KEY = 'parkspot:preferences:v1';
 
 function readPreferences() {
   try {
-    const saved = JSON.parse(window.localStorage.getItem(PREFERENCES_KEY) ?? '{}') as Partial<{ vehicleType: VehicleType; filters: ParkFilters; textScale: TextScale }>;
+    const saved = JSON.parse(window.localStorage.getItem(PREFERENCES_KEY) ?? '{}') as Partial<{ vehicleType: VehicleType; filters: ParkFilters & { showToilets?: boolean }; textScale: TextScale; facilityMode: NearbyMode }>;
     const vehicleType = saved.vehicleType && ['privateCar', 'motorCycle', 'LGV', 'HGV', 'coach'].includes(saved.vehicleType)
       ? saved.vehicleType
       : 'privateCar';
@@ -66,12 +67,12 @@ function readPreferences() {
       hasEv: typeof savedFilters?.hasEv === 'boolean' ? savedFilters.hasEv : INITIAL_FILTERS.hasEv,
       hasAccessible: typeof savedFilters?.hasAccessible === 'boolean' ? savedFilters.hasAccessible : INITIAL_FILTERS.hasAccessible,
       minHeight: [0, 1.8, 2, 2.2].includes(savedFilters?.minHeight ?? -1) ? savedFilters?.minHeight ?? 0 : INITIAL_FILTERS.minHeight,
-      showToilets: typeof savedFilters?.showToilets === 'boolean' ? savedFilters.showToilets : INITIAL_FILTERS.showToilets,
     };
     const textScale = TEXT_SCALES.includes(saved.textScale ?? 0 as TextScale) ? saved.textScale as TextScale : 100;
-    return { vehicleType, filters, textScale };
+    const facilityMode = ['toilets', 'fuel', 'atm'].includes(saved.facilityMode ?? '') ? saved.facilityMode : savedFilters?.showToilets ? 'toilets' : null;
+    return { vehicleType, filters, textScale, facilityMode };
   } catch {
-    return { vehicleType: 'privateCar' as VehicleType, filters: INITIAL_FILTERS, textScale: 100 as TextScale };
+    return { vehicleType: 'privateCar' as VehicleType, filters: INITIAL_FILTERS, textScale: 100 as TextScale, facilityMode: null };
   }
 }
 
@@ -103,6 +104,7 @@ export default function App() {
   const [vehicleType, setVehicleType] = useState<VehicleType>(() => readPreferences().vehicleType);
   const [filters, setFilters] = useState<ParkFilters>(() => readPreferences().filters);
   const [textScale, setTextScale] = useState<TextScale>(() => readPreferences().textScale);
+  const [facilityMode, setFacilityMode] = useState<NearbyMode | null>(() => readPreferences().facilityMode ?? null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [mapExpanded, setMapExpanded] = useState(false);
   const [recenterRequest, setRecenterRequest] = useState(0);
@@ -110,16 +112,17 @@ export default function App() {
   const [districtQuery, setDistrictQuery] = useState('');
   const [districtMessage, setDistrictMessage] = useState('');
   const detailHistoryActive = useRef(false);
-  const { toilets, loading: toiletLoading, error: toiletError, retry: retryToilets } = usePublicToilets(filters.showToilets);
-  const { venues: lcsdVenues, loading: lcsdLoading, error: lcsdError, retry: retryLcsdVenues } = useLcsdVenues(filters.showToilets);
+  const { toilets, loading: toiletLoading, error: toiletError, retry: retryToilets } = usePublicToilets(facilityMode === 'toilets');
+  const { venues: lcsdVenues, loading: lcsdLoading, error: lcsdError, retry: retryLcsdVenues } = useLcsdVenues(facilityMode === 'toilets');
+  const { facilities: nearbyFacilityData, source: nearbyFacilitySource, loading: nearbyFacilityLoading, error: nearbyFacilityError, retry: retryNearbyFacilities } = useNearbyFacilities(facilityMode);
 
   useEffect(() => {
     try {
-      window.localStorage.setItem(PREFERENCES_KEY, JSON.stringify({ vehicleType, filters, textScale }));
+      window.localStorage.setItem(PREFERENCES_KEY, JSON.stringify({ vehicleType, filters, textScale, facilityMode }));
     } catch {
       // 私隱模式或儲存空間不足時仍可正常使用。
     }
-  }, [vehicleType, filters, textScale]);
+  }, [vehicleType, filters, textScale, facilityMode]);
 
   useEffect(() => {
     if (!mapExpanded) return;
@@ -179,6 +182,15 @@ export default function App() {
     .map((toilet) => ({ toilet, distanceKm: distanceInKm(position, { lat: toilet.latitude, lng: toilet.longitude }) }))
     .filter((toilet) => toilet.distanceKm <= NEARBY_RADIUS_KM)
     .sort((left, right) => left.distanceKm - right.distanceKm), [lcsdVenues, position, toilets]);
+  const nearbyFacilities = useMemo<NearbyFacilityViewModel[]>(() => {
+    if (facilityMode !== 'fuel' && facilityMode !== 'atm') return [];
+    return nearbyFacilityData
+      .filter((facility) => facility.kind === facilityMode)
+      .map((facility) => ({ facility, distanceKm: distanceInKm(position, { lat: facility.latitude, lng: facility.longitude }) }))
+      .filter((facility) => facility.distanceKm <= NEARBY_RADIUS_KM)
+      .sort((left, right) => left.distanceKm - right.distanceKm)
+      .slice(0, facilityMode === 'atm' ? 50 : undefined);
+  }, [facilityMode, nearbyFacilityData, position]);
 
   const resultsVerified = !loading
     && (!vacancyLoading || vacancyById.size > 0)
@@ -203,15 +215,19 @@ export default function App() {
     });
   }, [filters, nearbyParks, resultsVerified]);
 
-  const showingToilets = filters.showToilets;
+  const showingToilets = facilityMode === 'toilets';
   const washroomLoading = toiletLoading || lcsdLoading;
   const retryWashrooms = () => { retryToilets(); retryLcsdVenues(); };
-  const selectedPark = !showingToilets ? displayedParks.find((park) => park.info.park_Id === selectedId) : undefined;
+  const facilityLoading = showingToilets ? washroomLoading : nearbyFacilityLoading;
+  const facilityError = showingToilets ? toiletError : nearbyFacilityError;
+  const facilityLabel = facilityMode === 'toilets' ? '洗手間' : facilityMode === 'fuel' ? '油站' : facilityMode === 'atm' ? 'ATM' : null;
+  const activeNearbyResults = showingToilets ? nearbyToilets : nearbyFacilities;
+  const selectedPark = !facilityMode ? displayedParks.find((park) => park.info.park_Id === selectedId) : undefined;
   const availableCount = displayedParks.filter((park) => isAvailable(park.status)).length;
   const visibleError = error || (filters.hasEv && evError ? `充電器資料提示：${evError}` : null);
-  const mapParks = showingToilets ? [] : displayedParks;
-  const mapToilets = showingToilets ? nearbyToilets : [];
-  const mapResultLabel = showingToilets ? `${nearbyToilets.length} 間洗手間` : `${displayedParks.length} 個停車場`;
+  const mapParks = facilityMode ? [] : displayedParks;
+  const mapNearbyItems = facilityMode ? activeNearbyResults : [];
+  const mapResultLabel = facilityMode ? `${activeNearbyResults.length} 個${facilityLabel}` : `${displayedParks.length} 個停車場`;
   const scaleDown = () => setTextScale((current) => TEXT_SCALES[Math.max(0, TEXT_SCALES.indexOf(current) - 1)]);
   const scaleUp = () => setTextScale((current) => TEXT_SCALES[Math.min(TEXT_SCALES.length - 1, TEXT_SCALES.indexOf(current) + 1)]);
   const toggleMap = () => {
@@ -253,9 +269,9 @@ export default function App() {
     selectArea(district.coordinates, district.label, { recenter: true });
   };
   const updateFilters = (nextFilters: ParkFilters) => {
-    if (nextFilters.showToilets !== filters.showToilets) setSelectedId(null);
     setFilters(nextFilters);
   };
+  const updateFacilityMode = (mode: NearbyMode | null) => { setSelectedId(null); setFacilityMode(mode); };
   const showResults = () => document.getElementById('parking-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   return (
@@ -277,19 +293,19 @@ export default function App() {
         </div>
       </header>
 
-      <Filters vehicleType={vehicleType} filters={filters} evLoading={evLoading} toiletLoading={washroomLoading} onVehicleChange={(type) => { setVehicleType(type); setSelectedId(null); }} onFiltersChange={updateFilters} />
+      <Filters vehicleType={vehicleType} filters={filters} evLoading={evLoading} facilityMode={facilityMode} facilityLoading={facilityLoading} onVehicleChange={(type) => { setVehicleType(type); setSelectedId(null); }} onFiltersChange={updateFilters} onFacilityModeChange={updateFacilityMode} />
 
       {visibleError && <div className="error-banner" role="alert"><span>資料連線提示：{visibleError}</span><button type="button" onClick={retry}>重試</button></div>}
 
       <section className="workspace">
         <div className="map-column">
-          <MapView position={position} parks={mapParks} toilets={mapToilets} selectedId={selectedId} onSelect={openDetail} onLocationSelect={selectArea} recenterRequest={recenterRequest} expanded={mapExpanded} onToggleExpanded={toggleMap} onShowResults={showResults} resultsLabel={mapResultLabel} />
+          <MapView position={position} parks={mapParks} nearbyItems={mapNearbyItems} selectedId={selectedId} onSelect={openDetail} onLocationSelect={selectArea} recenterRequest={recenterRequest} expanded={mapExpanded} onToggleExpanded={toggleMap} onShowResults={showResults} resultsLabel={mapResultLabel} />
           <section className="area-tools map-bottom-tools" aria-label="地圖搜尋與操作提示">
             <div className="area-tools-row">
               <button className="area-search-toggle" type="button" onClick={() => { setDistrictSearchOpen((current) => !current); setDistrictMessage(''); }} aria-expanded={districtSearchOpen}>搜尋地區</button>
               <p className="map-gesture-note">長按地圖約 1 秒：選取 2 公里範圍</p>
             </div>
-            <div className="map-marker-legend" aria-label="地圖標記顏色說明"><span><i className="legend-swatch legend-available" />有位</span><span><i className="legend-swatch legend-full" />已滿</span><span><i className="legend-swatch legend-closed" />關閉</span><span><i className="legend-swatch legend-unknown" />無資料</span><span><i className="legend-swatch legend-toilet" />公廁</span><span><i className="legend-swatch legend-venue" />場館</span><span className="legend-center">📍 中心</span></div>
+            <div className="map-marker-legend" aria-label="地圖標記顏色說明"><span><i className="legend-swatch legend-available" />有位</span><span><i className="legend-swatch legend-full" />已滿</span><span><i className="legend-swatch legend-closed" />關閉</span><span><i className="legend-swatch legend-unknown" />無資料</span><span><i className="legend-swatch legend-toilet" />公廁</span><span><i className="legend-swatch legend-venue" />場館</span><span><i className="legend-swatch legend-fuel" />油站</span><span><i className="legend-swatch legend-atm" />ATM</span><span className="legend-center">📍 中心</span></div>
             {districtSearchOpen && (
               <form className="area-search" onSubmit={submitDistrict}>
                 <label htmlFor="district-search">搜尋中心</label>
@@ -300,10 +316,10 @@ export default function App() {
             )}
           </section>
         </div>
-        <section className="results-panel" id="parking-results" aria-label={showingToilets ? '附近洗手間清單' : '附近停車場清單'}>
+        <section className="results-panel" id="parking-results" aria-label={facilityMode ? `附近${facilityLabel}清單` : '附近停車場清單'}>
           <div className="results-heading">
-            <div><p className="eyebrow">{areaName} · {NEARBY_RADIUS_KM} 公里</p><h2>{showingToilets ? (washroomLoading && nearbyToilets.length === 0 ? '正在讀取洗手間…' : toiletError && nearbyToilets.length === 0 ? '洗手間資料未能讀取' : `${nearbyToilets.length} 個洗手間`) : (resultsVerified ? `${displayedParks.length} 個結果` : '正在核實停車場…')}</h2></div>
-            <p>{showingToilets ? '食環署 · 康文署' : (resultsVerified ? `${availableCount} 個有位選項` : verificationLabel)}</p>
+            <div><p className="eyebrow">{areaName} · {NEARBY_RADIUS_KM} 公里</p><h2>{facilityMode ? (facilityLoading && activeNearbyResults.length === 0 ? `正在讀取${facilityLabel}…` : facilityError && activeNearbyResults.length === 0 ? `${facilityLabel}資料未能讀取` : `${activeNearbyResults.length} 個${facilityLabel}`) : (resultsVerified ? `${displayedParks.length} 個結果` : '正在核實停車場…')}</h2></div>
+            <p>{showingToilets ? '食環署 · 康文署' : facilityMode === 'fuel' ? '消委會油價資訊通' : facilityMode === 'atm' ? (nearbyFacilitySource ?? '香港金融管理局') : (resultsVerified ? `${availableCount} 個有位選項` : verificationLabel)}</p>
           </div>
           <div className="results-list">
             {showingToilets && washroomLoading && nearbyToilets.length === 0 && <div className="loading-state"><span className="loader" />正在讀取官方洗手間資料…<small>只顯示目前中心 2 公里內的食環署公廁及康文署場館。</small></div>}
@@ -311,11 +327,16 @@ export default function App() {
             {showingToilets && nearbyToilets.map((toilet) => <ToiletCard key={toilet.toilet.id} toilet={toilet} />)}
             {showingToilets && lcsdError && <p className="loading-note">康文署場館資料提示：{lcsdError}</p>}
             {showingToilets && !washroomLoading && !toiletError && nearbyToilets.length === 0 && <div className="empty-state"><strong>呢個範圍暫時冇官方洗手間資料</strong><p>試下選擇其他地區或在地圖長按新中心。</p></div>}
-            {!showingToilets && !resultsVerified && <div className="loading-state"><span className="loader" />{verificationLabel}<small>只會顯示已核實的停車場結果。</small></div>}
-            {!showingToilets && resultsVerified && displayedParks.map((park) => (
+            {facilityMode && !showingToilets && facilityLoading && nearbyFacilities.length === 0 && <div className="loading-state"><span className="loader" />正在讀取{facilityLabel}資料…<small>只顯示目前中心 2 公里內的附近設施。</small></div>}
+            {facilityMode && !showingToilets && facilityError && nearbyFacilities.length === 0 && !facilityLoading && <div className="empty-state" role="alert"><strong>暫時未能讀取{facilityLabel}資料</strong><p>{facilityError}</p><button className="toilet-retry" type="button" onClick={retryNearbyFacilities}>重試</button></div>}
+            {facilityMode && !showingToilets && nearbyFacilities.map((item) => <NearbyFacilityCard key={item.facility.id} item={item} />)}
+            {facilityMode === 'atm' && nearbyFacilities.length === 50 && <p className="loading-note">ATM 選項較多，現只顯示最近 50 個。</p>}
+            {facilityMode && !showingToilets && !facilityLoading && !facilityError && nearbyFacilities.length === 0 && <div className="empty-state"><strong>呢個範圍暫時冇{facilityLabel}資料</strong><p>試下選擇其他地區或在地圖長按新中心。</p></div>}
+            {!facilityMode && !resultsVerified && <div className="loading-state"><span className="loader" />{verificationLabel}<small>只會顯示已核實的停車場結果。</small></div>}
+            {!facilityMode && resultsVerified && displayedParks.map((park) => (
               <ParkCard key={park.info.park_Id} park={park} vehicleType={vehicleType} selected={park.info.park_Id === selectedId} onSelect={() => openDetail(park.info.park_Id)} />
             ))}
-            {!showingToilets && resultsVerified && displayedParks.length === 0 && (
+            {!facilityMode && resultsVerified && displayedParks.length === 0 && (
               <div className="empty-state"><strong>呢個範圍暫時冇符合條件嘅結果</strong><p>試下取消部分篩選，或者使用定位後再刷新。</p></div>
             )}
           </div>
@@ -325,8 +346,8 @@ export default function App() {
       {selectedPark && <ParkDetail park={selectedPark} vehicleType={vehicleType} onClose={closeDetail} />}
 
       <footer>
-        <span>資料來源：香港政府 <a href="https://data.gov.hk/tc-data/dataset/hk-dpo-datagovhk1-carpark-info-vacancy" target="_blank" rel="noreferrer">data.gov.hk</a>、環境保護署{showingToilets && '、食物環境衞生署、康樂及文化事務署'}</span>
-        <span>{showingToilets ? '公廁資料只供參考，請以現場情況為準。' : '空位及充電器資料只供參考，請以現場情況為準。'}</span>
+        <span>資料來源：香港政府 <a href="https://data.gov.hk/tc-data/dataset/hk-dpo-datagovhk1-carpark-info-vacancy" target="_blank" rel="noreferrer">data.gov.hk</a>、環境保護署{showingToilets ? '、食物環境衞生署、康樂及文化事務署' : facilityMode === 'fuel' ? '、消費者委員會油價資訊通' : facilityMode === 'atm' ? '、香港金融管理局' : ''}</span>
+        <span>{facilityMode ? `${facilityLabel}資料只供參考，請以現場情況為準。` : '空位及充電器資料只供參考，請以現場情況為準。'}</span>
       </footer>
     </main>
   );

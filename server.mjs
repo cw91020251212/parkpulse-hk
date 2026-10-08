@@ -2,6 +2,7 @@ import express from 'express';
 import { createServer as createViteServer } from 'vite';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { parseArcGisAtms, parseFuelStations, parseHkmaAtms } from './lib/nearby-facilities.mjs';
 import { parsePublicToilets } from './lib/public-toilets.mjs';
 
 const app = express();
@@ -15,6 +16,12 @@ let evCache = { value: null, loadedAt: 0, pending: null };
 const FEHD_TOILETS_URL = 'https://www.fehd.gov.hk/tc_chi/map/fehd_map_c.xml';
 const TOILET_CACHE_MS = 60 * 60_000;
 let toiletCache = { value: null, loadedAt: 0, pending: null };
+const FUEL_STATIONS_URL = 'https://oil-price.consumer.org.hk/tc/station';
+const HKMA_ATMS_URL = 'https://api.hkma.gov.hk/public/bank-svf-info/banks-atm-locator?lang=tc';
+const HKMA_ATMS_FALLBACK_URL = 'https://services3.arcgis.com/6j1KwZfY2fZrfNMR/arcgis/rest/services/Automated_Teller_Machines_%28ATM%29_of_Retail_Banks_in_Hong_Kong/FeatureServer/0/query?where=1%3D1&outFields=*&returnGeometry=true&f=geojson&resultRecordCount=3000';
+const FACILITY_CACHE_MS = 30 * 60_000;
+let fuelCache = { value: null, loadedAt: 0, pending: null };
+let atmCache = { value: null, loadedAt: 0, pending: null };
 
 function distanceInMeters(from, to) {
   const radians = (value) => (value * Math.PI) / 180;
@@ -170,6 +177,69 @@ async function loadPublicToilets() {
   return refreshPublicToilets();
 }
 
+async function refreshFuelStations() {
+  if (fuelCache.pending) return fuelCache.pending;
+  fuelCache.pending = (async () => {
+    try {
+      const response = await fetch(FUEL_STATIONS_URL, { headers: { Accept: 'text/html' }, signal: AbortSignal.timeout(25_000) });
+      if (!response.ok) throw new Error(`Consumer Council fuel service returned ${response.status}`);
+      const records = parseFuelStations(await response.text());
+      if (!records.length) throw new Error('Consumer Council fuel service returned no usable records');
+      fuelCache.value = { records };
+      fuelCache.loadedAt = Date.now();
+      return fuelCache.value;
+    } catch (error) {
+      if (fuelCache.value) return fuelCache.value;
+      throw error;
+    } finally { fuelCache.pending = null; }
+  })();
+  return fuelCache.pending;
+}
+
+async function loadFuelStations() {
+  if (fuelCache.value) {
+    if (Date.now() - fuelCache.loadedAt >= FACILITY_CACHE_MS) void refreshFuelStations().catch(() => undefined);
+    return fuelCache.value;
+  }
+  return refreshFuelStations();
+}
+
+async function refreshAtms() {
+  if (atmCache.pending) return atmCache.pending;
+  atmCache.pending = (async () => {
+    try {
+      let records = [];
+      let source = '香港金融管理局 ATM Open API';
+      try {
+        const primary = await fetch(HKMA_ATMS_URL, { headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(5_000) });
+        if (!primary.ok) throw new Error(`HKMA ATM service returned ${primary.status}`);
+        records = parseHkmaAtms(await primary.json());
+      } catch {
+        const fallback = await fetch(HKMA_ATMS_FALLBACK_URL, { headers: { Accept: 'application/geo+json,application/json' }, signal: AbortSignal.timeout(20_000) });
+        if (!fallback.ok) throw new Error(`HKMA ATM fallback returned ${fallback.status}`);
+        records = parseArcGisAtms(await fallback.json());
+        source = '香港金融管理局 ATM 資料（ArcGIS 空間資料後備）';
+      }
+      if (!records.length) throw new Error('HKMA ATM service returned no usable records');
+      atmCache.value = { records, source };
+      atmCache.loadedAt = Date.now();
+      return atmCache.value;
+    } catch (error) {
+      if (atmCache.value) return atmCache.value;
+      throw error;
+    } finally { atmCache.pending = null; }
+  })();
+  return atmCache.pending;
+}
+
+async function loadAtms() {
+  if (atmCache.value) {
+    if (Date.now() - atmCache.loadedAt >= FACILITY_CACHE_MS) void refreshAtms().catch(() => undefined);
+    return atmCache.value;
+  }
+  return refreshAtms();
+}
+
 app.get('/health', (_request, response) => response.status(200).json({ ok: true }));
 
 app.get('/api/ev-chargers', async (_request, response) => {
@@ -191,6 +261,28 @@ app.get('/api/public-toilets', async (_request, response) => {
   } catch (error) {
     console.error('Unable to load FEHD public toilet data', error instanceof Error ? error.message : error);
     return response.status(502).json({ error: '未能讀取食環署公廁資料' });
+  }
+});
+
+app.get('/api/fuel-stations', async (_request, response) => {
+  try {
+    const payload = await loadFuelStations();
+    response.set('Cache-Control', 'private, max-age=1800');
+    return response.json({ source: '消費者委員會油價資訊通', ...payload });
+  } catch (error) {
+    console.error('Unable to load fuel station data', error instanceof Error ? error.message : error);
+    return response.status(502).json({ error: '未能讀取消委會油站資料' });
+  }
+});
+
+app.get('/api/atms', async (_request, response) => {
+  try {
+    const payload = await loadAtms();
+    response.set('Cache-Control', 'private, max-age=1800');
+    return response.json(payload);
+  } catch (error) {
+    console.error('Unable to load HKMA ATM data', error instanceof Error ? error.message : error);
+    return response.status(502).json({ error: '未能讀取金管局 ATM 資料' });
   }
 });
 

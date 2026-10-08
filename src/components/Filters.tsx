@@ -1,15 +1,17 @@
-import { VEHICLE_LABELS, VEHICLE_TYPES, type ParkFilters, type VehicleType } from '../types';
+import { VEHICLE_LABELS, VEHICLE_TYPES, type NearbyMode, type ParkFilters, type VehicleType } from '../types';
 
 type Props = {
   vehicleType: VehicleType;
   filters: ParkFilters;
   evLoading: boolean;
-  toiletLoading: boolean;
+  facilityMode: NearbyMode | null;
+  facilityLoading: boolean;
+  onFacilityModeChange: (mode: NearbyMode | null) => void;
   onVehicleChange: (vehicle: VehicleType) => void;
   onFiltersChange: (filters: ParkFilters) => void;
 };
 
-export function Filters({ vehicleType, filters, evLoading, toiletLoading, onVehicleChange, onFiltersChange }: Props) {
+export function Filters({ vehicleType, filters, evLoading, facilityMode, facilityLoading, onVehicleChange, onFiltersChange, onFacilityModeChange }: Props) {
   const update = (patch: Partial<ParkFilters>) => onFiltersChange({ ...filters, ...patch });
 
   return (
@@ -42,7 +44,7 @@ export function Filters({ vehicleType, filters, evLoading, toiletLoading, onVehi
             <option value={2.2}>≥ 2.2m</option>
           </select>
         </label>
-        <button className={filters.showToilets ? 'chip is-on' : 'chip'} type="button" aria-pressed={filters.showToilets} onClick={() => update({ showToilets: !filters.showToilets })}>{toiletLoading ? '洗手間資料更新中' : '洗手間'}</button>
+        {(['toilets', 'fuel', 'atm'] as const).map((mode) => <button key={mode} className={facilityMode === mode ? 'chip is-on' : 'chip'} type="button" aria-pressed={facilityMode === mode} onClick={() => onFacilityModeChange(facilityMode === mode ? null : mode)}>{facilityLoading && facilityMode === mode ? '資料更新中' : mode === 'toilets' ? '洗手間' : mode === 'fuel' ? '油站' : 'ATM'}</button>)}
       </div>
     </section>
   );

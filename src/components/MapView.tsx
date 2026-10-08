@@ -2,12 +2,12 @@ import { useEffect } from 'react';
 import L from 'leaflet';
 import { Circle, MapContainer, Marker, Popup, TileLayer, Tooltip, useMap } from 'react-leaflet';
 import { formatDistance } from '../domain/distance';
-import type { Coordinates, ParkViewModel, PublicToiletViewModel } from '../types';
+import type { Coordinates, NearbyFacility, NearbyFacilityViewModel, ParkViewModel, PublicToilet, PublicToiletViewModel } from '../types';
 
 type Props = {
   position: Coordinates;
   parks: ParkViewModel[];
-  toilets: PublicToiletViewModel[];
+  nearbyItems: Array<PublicToiletViewModel | NearbyFacilityViewModel>;
   selectedId: string | null;
   onSelect: (id: string) => void;
   onLocationSelect: (coordinates: Coordinates, label: string, behavior: { recenter: boolean }) => void;
@@ -153,11 +153,13 @@ const selectedCenterIcon = L.divIcon({
   iconAnchor: [16, 36],
 });
 
-function washroomIcon(kind?: 'publicToilet' | 'lcsdVenue') {
+function nearbyIcon(kind?: PublicToilet['kind'] | NearbyFacility['kind']) {
   const venue = kind === 'lcsdVenue';
+  const fuel = kind === 'fuel';
+  const atm = kind === 'atm';
   return L.divIcon({
     className: 'toilet-marker-shell',
-    html: `<span class="toilet-marker${venue ? ' is-venue' : ''}"><span aria-hidden="true">${venue ? '🏟️' : '🚻'}</span></span>`,
+    html: `<span class="toilet-marker${venue ? ' is-venue' : fuel ? ' is-fuel' : atm ? ' is-atm' : ''}"><span aria-hidden="true">${venue ? '🏟️' : fuel ? '⛽' : atm ? '🏧' : '🚻'}</span></span>`,
     iconSize: [34, 34],
     iconAnchor: [17, 34],
   });
@@ -171,9 +173,9 @@ function MapFocusIcon({ expanded }: { expanded: boolean }) {
   );
 }
 
-export function MapView({ position, parks, toilets, selectedId, onSelect, onLocationSelect, recenterRequest, expanded, onToggleExpanded, onShowResults, resultsLabel }: Props) {
+export function MapView({ position, parks, nearbyItems, selectedId, onSelect, onLocationSelect, recenterRequest, expanded, onToggleExpanded, onShowResults, resultsLabel }: Props) {
   const selected = parks.find((park) => park.info.park_Id === selectedId);
-  const visibleResultCount = parks.length + toilets.length;
+  const visibleResultCount = parks.length + nearbyItems.length;
   const selectMapPoint = (coordinates: Coordinates) => {
     onLocationSelect(coordinates, '地圖選取位置', { recenter: false });
   };
@@ -202,11 +204,14 @@ export function MapView({ position, parks, toilets, selectedId, onSelect, onLoca
             <Tooltip direction="top" offset={[0, -38]} opacity={0.95}>{park.info.name} · {park.status.label}</Tooltip>
           </Marker>
         ))}
-        {toilets.map(({ toilet, distanceKm }) => (
-          <Marker key={toilet.id} position={[toilet.latitude, toilet.longitude]} icon={washroomIcon(toilet.kind)} zIndexOffset={300}>
-            <Popup><div className="toilet-popup"><strong>{toilet.name}</strong><small>{toilet.kind === 'lcsdVenue' ? '康文署場館洗手間（開放時段）' : '食環署公廁'}</small><small>{formatDistance(distanceKm)} · {toilet.openingHours ?? '開放時間未提供'}</small>{toilet.address && <small>{toilet.address}</small>}<a href={`https://www.google.com/maps/dir/?api=1&destination=${toilet.latitude},${toilet.longitude}`} target="_blank" rel="noreferrer">導航</a></div></Popup>
+        {nearbyItems.map((item) => {
+          const place = 'toilet' in item ? item.toilet : item.facility;
+          const label = place.kind === 'lcsdVenue' ? '康文署場館洗手間（開放時段）' : place.kind === 'fuel' ? '消委會油站' : place.kind === 'atm' ? '金管局 ATM' : '食環署公廁';
+          const travel = place.kind === 'fuel' ? '&travelmode=driving' : place.kind === 'atm' ? '&travelmode=walking' : '';
+          return <Marker key={place.id} position={[place.latitude, place.longitude]} icon={nearbyIcon(place.kind)} zIndexOffset={300}>
+            <Popup><div className="toilet-popup"><strong>{place.name}</strong><small>{label}</small><small>{formatDistance(item.distanceKm)} · {place.openingHours ?? '開放時間未提供'}</small>{place.address && <small>{place.address}</small>}<a href={`https://www.google.com/maps/dir/?api=1&destination=${place.latitude},${place.longitude}${travel}`} target="_blank" rel="noreferrer">{place.kind === 'fuel' ? '駕駛導航' : place.kind === 'atm' ? '步行導航' : '導航'}</a></div></Popup>
           </Marker>
-        ))}
+        })}
       </MapContainer>
 
       <button className="map-focus-toggle" type="button" onClick={onToggleExpanded} aria-pressed={expanded} aria-label={expanded ? '縮細地圖' : '放大地圖'} title={expanded ? '縮細地圖' : '放大地圖'}><MapFocusIcon expanded={expanded} /></button>

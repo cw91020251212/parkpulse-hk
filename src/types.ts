@@ -124,6 +124,26 @@ export interface PublicToiletViewModel {
   distanceKm: number;
 }
 
+export type NearbyMode = 'toilets' | 'fuel' | 'atm';
+
+export interface NearbyFacility {
+  id: string;
+  name: string;
+  address: string;
+  brand?: string;
+  openingHours?: string;
+  remarks?: string;
+  latitude: number;
+  longitude: number;
+  kind: 'fuel' | 'atm';
+  source: string;
+}
+
+export interface NearbyFacilityViewModel {
+  facility: NearbyFacility;
+  distanceKm: number;
+}
+
 export interface ParkViewModel {
   info: CarparkInfo;
   status: VacancyStatus;
@@ -138,5 +158,4 @@ export interface ParkFilters {
   hasEv: boolean;
   hasAccessible: boolean;
   minHeight: number;
-  showToilets: boolean;
 }

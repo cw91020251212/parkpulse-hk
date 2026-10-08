@@ -35,6 +35,7 @@
 - 停車場 marker 採用使用者提供參考圖的標準水滴定位針外形，尖端精確指向停車場座標；針面沿用本網站的空位狀態色，中央只顯示「空位數／有／滿／關／–」。移除佔用版面的定位／讀取時間狀態列；頂部只保留小型刷新圖示按鈕，按下更新時圖示會旋轉，並以無障礙標籤交代狀態。刷新箭咀以 viewBox 幾何置中；位置控制直接採用使用者上傳並明確授權可用的 `439902.png`，複製為 `public/location-control.png`，只顯示圖示、不顯示文字。
 - 停車場詳情浮層必須高於 Leaflet marker、地政總署標誌／版權及地圖展開控制，避免官方署名或控制掩蓋內容。開啟詳情時以同 URL 加入一筆本頁歷史狀態；使用者按瀏覽器／手機返回時先只關閉詳情，仍留在停車位地圖。按 X 關閉時回退這筆狀態，避免下一次返回意外離開網站。
 - 在條件篩選列最後加入獨立的「洗手間」切換。啟用後才懶載入食物環境衞生署繁體 XML `https://www.fehd.gov.hk/tc_chi/map/fehd_map_c.xml`，只取 `map_type=toilet` 的有效香港座標記錄；既有 Express 端點以記憶體快取和背景更新同源轉送，因原始 XML 不提供瀏覽器 CORS。洗手間模式沿用目前 `📍` 搜尋中心及 2 公里半徑、以距離排序，改顯示食環署公廁標記與清單，不混入停車場結果或在未啟用時增加地圖雜訊。每項顯示名稱、距離、地址、開放時間／備註及 Google Maps 座標導航，並清楚標示食環署來源；端點失敗只顯示洗手間資料提示，不影響停車場結果。食環署資料本身保留其已有的政府合署公廁；另以康文署官方場地 JSON（名稱、地址、開放時間）配對官方地址查詢服務的座標，建立體育館及室內體育設施靜態快照。這些項目必須另標示為「康文署場館洗手間（開放時段）」及紫色場館標記，而不能誤稱為獨立／24 小時公廁。公廁卡另提供按需「相片」操作，復用已核實的 Google Maps 相片代理；只有搜尋地點與官方座標相距 250 米內才會展示相片與歸屬，查無相片時清楚說明而不以不相關圖片代替，避免一次載入整個結果清單的相片搜尋。
+- 把「洗手間」擴充為三個互斥的周邊設施模式：`洗手間`、`油站`、`ATM`。三者置於條件列的最後端；每次只顯示其中一類，避免在停車場地圖堆疊大量不同 marker。油站模式從消費者委員會「油價資訊通」的全港油站頁面讀取名稱、品牌、地址及其已列的 WGS84 導航座標，經同源 Express 端點快取／背景更新後才在目前 `📍` 中心 2 公里內以橙色 `⛽` marker、距離、品牌、地址及駕駛導航顯示，並清楚標示消委會來源。ATM 模式優先取得香港金融管理局公開 API 的繁中 ATM 名稱、銀行、地址、服務時間和座標；若其端點暫時不回應，才使用標明由金管局資料轉換的公開 ArcGIS 空間圖層作即時後備。ATM 使用綠色 `🏧` marker，並以步行導航連結顯示。兩類資料只在模式啟用時載入、伺服器快取不會阻塞停車位啟動；範圍內 ATM 過多時清單和 marker 只顯示最近 50 個，保持地圖和結果可用。現有洗手間模式、`📍`、長按、地區搜尋、詳情歷史與地政總署署名均不可回歸。
 
 ## 介面與品牌設計
 
@@ -80,6 +81,7 @@ src/
   api/evChargers.ts        # EPD 充電器 API 回應型別與同源讀取
   api/publicToilets.ts     # 食環署公廁同源資料讀取
   api/lcsdVenues.ts        # 康文署體育館／室內體育設施快照讀取
+  api/nearbyFacilities.ts  # 油站／ATM 同源資料讀取
   domain/carpark.ts        # API 資料轉換、A/B/C/-1 狀態判讀、收費／設施格式化
   domain/evChargers.ts     # 官方充電器與停車場的保守名稱／地址／座標匹配
   domain/distance.ts       # Haversine 距離與附近排序
@@ -87,15 +89,17 @@ src/
   hooks/useEvChargers.ts   # EPD 充電器資料載入與五分鐘刷新
   hooks/usePublicToilets.ts # 啟用「洗手間」後才載入的食環署資料狀態
   hooks/useLcsdVenues.ts   # 啟用「洗手間」後才載入的康文署場館資料狀態
+  hooks/useNearbyFacilities.ts # 啟用油站或 ATM 後才載入的資料狀態
   hooks/usePlacePhoto.ts   # 已核實 Google Maps 相片的按需查詢狀態
   components/MapView.tsx   # Leaflet 地圖、使用者位置、marker
   components/ParkCard.tsx  # 清單條目
   components/ParkDetail.tsx # 選中停車場的詳情面板
   components/ToiletCard.tsx # 公廁結果與座標導航
+  components/NearbyFacilityCard.tsx # 油站及 ATM 結果與導航
   components/Filters.tsx   # 車種和篩選控制
   App.tsx                  # 頁面狀態和組合
   styles.css               # 響應式視覺系統
-server.mjs                 # Express + Vite 中介層、Google Maps 相片搜尋／影像轉送、EPD／食環署快取、健康檢查
+server.mjs                 # Express + Vite 中介層、Google Maps 相片搜尋／影像轉送、EPD／食環署／油站／ATM 快取、健康檢查
 scripts/check-photo-proxy.mjs # 實景相片位置核實與影像路由檢查
 scripts/check-fast-start.mjs # 靜態停車場基本資料完整性檢查
 public/
