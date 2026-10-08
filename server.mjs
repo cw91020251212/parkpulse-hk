@@ -8,6 +8,9 @@ const isProduction = process.env.NODE_ENV === 'production';
 const port = Number(process.env.PORT || 3000);
 const appDir = path.dirname(fileURLToPath(import.meta.url));
 const hongKongBounds = { minLat: 22.13, maxLat: 22.57, minLng: 113.8, maxLng: 114.5 };
+const EPD_EV_URL = 'https://ev-charger.epd.gov.hk/resource/ev_charger_avail/ev_charger_avail.json';
+const EV_CACHE_MS = 5 * 60_000;
+let evCache = { value: null, loadedAt: 0, pending: null };
 
 function distanceInMeters(from, to) {
   const radians = (value) => (value * Math.PI) / 180;
@@ -60,7 +63,77 @@ function plainAttribution(values) {
   return text || 'Google Maps';
 }
 
+function numberOrNull(value) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+}
+
+function simplifyEpdRecord(record) {
+  const latitude = Number(record?.location?.lat);
+  const longitude = Number(record?.location?.lng);
+  const name = typeof record?.car_park_name_cn === 'string' ? record.car_park_name_cn.trim() : '';
+  if (!name || !Number.isFinite(latitude) || !Number.isFinite(longitude)) return null;
+
+  const types = Array.isArray(record.by_charger_type)
+    ? record.by_charger_type
+      .map((item) => typeof item?.type_name_cn === 'string' ? item.type_name_cn.trim() : '')
+      .filter(Boolean)
+    : [];
+  return {
+    id: String(record.id ?? record.car_park_id ?? `${latitude},${longitude}`),
+    name,
+    address: typeof record.address_cn === 'string' ? record.address_cn.trim() : undefined,
+    latitude,
+    longitude,
+    total: numberOrNull(record.number_of_chargers) ?? 0,
+    available: numberOrNull(record.number_of_available_chargers),
+    types,
+    updatedAt: typeof record.last_update_date === 'string' ? record.last_update_date : undefined,
+  };
+}
+
+async function loadEpdEvChargers() {
+  if (evCache.value && Date.now() - evCache.loadedAt < EV_CACHE_MS) return evCache.value;
+  if (evCache.pending) return evCache.pending;
+
+  evCache.pending = (async () => {
+    try {
+      const response = await fetch(EPD_EV_URL, {
+        headers: { Accept: 'application/json' },
+        signal: AbortSignal.timeout(120_000),
+      });
+      if (!response.ok) throw new Error(`EPD EV service returned ${response.status}`);
+      const payload = await response.json();
+      const records = Array.isArray(payload?.data)
+        ? payload.data.map(simplifyEpdRecord).filter(Boolean)
+        : [];
+      if (!records.length) throw new Error('EPD EV service returned no usable records');
+      evCache.value = { records, lastUpdatedAt: payload.last_update_date };
+      evCache.loadedAt = Date.now();
+      return evCache.value;
+    } catch (error) {
+      if (evCache.value) return evCache.value;
+      throw error;
+    } finally {
+      evCache.pending = null;
+    }
+  })();
+
+  return evCache.pending;
+}
+
 app.get('/health', (_request, response) => response.status(200).json({ ok: true }));
+
+app.get('/api/ev-chargers', async (_request, response) => {
+  try {
+    const payload = await loadEpdEvChargers();
+    response.set('Cache-Control', 'private, max-age=300');
+    return response.json({ source: '環境保護署 Electric Vehicle Chargers for Public Access', ...payload });
+  } catch (error) {
+    console.error('Unable to load EPD EV charger data', error instanceof Error ? error.message : error);
+    return response.status(502).json({ error: '未能讀取環保署充電器資料' });
+  }
+});
 
 app.get('/api/place-photo', async (request, response) => {
   const name = readText(request.query.name, 180);

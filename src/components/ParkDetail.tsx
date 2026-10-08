@@ -61,10 +61,18 @@ function usePlacePhoto(info: CarparkInfo) {
   return [state, setState] as const;
 }
 
+function formatEpdUpdate(value?: string) {
+  if (!value) return '未提供更新時間';
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? value : parsed.toLocaleString('zh-HK', { hour: '2-digit', minute: '2-digit', month: 'numeric', day: 'numeric' });
+}
+
 export function ParkDetail({ park, vehicleType, onClose }: Props) {
-  const { info, status, distanceKm, heightLimit } = park;
+  const { info, status, distanceKm, heightLimit, evCharger } = park;
   const navigationUrl = `https://www.google.com/maps/dir/?api=1&destination=${info.latitude},${info.longitude}`;
-  const facilities = (info.facilities ?? []).map((item) => FACILITY_LABELS[item] ?? item);
+  const facilities = (info.facilities ?? [])
+    .filter((item) => item !== 'evCharger' || !evCharger)
+    .map((item) => FACILITY_LABELS[item] ?? item);
   const payments = (info.paymentMethods ?? []).map((item) => PAYMENT_LABELS[item] ?? item);
   const [photoState, setPhotoState] = usePlacePhoto(info);
 
@@ -76,6 +84,14 @@ export function ParkDetail({ park, vehicleType, onClose }: Props) {
       <p className="detail-address">{info.displayAddress || '未提供地址'}</p>
       <div className={`detail-status status-${status.kind}`}><strong>{status.label}</strong><span>{formatAge(status.updatedAt)}</span></div>
       {status.stale && <p className="warning">資料已超過 5 分鐘，實際情況可能有變。</p>}
+
+      {evCharger && (
+        <section className="charging-detail">
+          <div className="detail-section-heading"><h3>電動車充電</h3><span>位置核實</span></div>
+          <p><strong>{evCharger.available === null ? `共 ${evCharger.total} 支充電器` : `${evCharger.available}/${evCharger.total} 支可用`}</strong>{evCharger.types.length ? ` · ${evCharger.types.join('、')}` : ''}</p>
+          <small>環境保護署資料 · {formatEpdUpdate(evCharger.updatedAt)} · 與停車場相距約 {evCharger.distanceMeters} 米</small>
+        </section>
+      )}
 
       <section className="detail-photo-section" aria-live="polite">
         <div className="detail-section-heading"><h3>附近實景</h3><span>位置核實</span></div>
@@ -110,7 +126,7 @@ export function ParkDetail({ park, vehicleType, onClose }: Props) {
         <a className="primary-action" href={navigationUrl} target="_blank" rel="noreferrer">開啟導航</a>
         {info.website && <a className="secondary-action" href={info.website} target="_blank" rel="noreferrer">停車場網站</a>}
       </div>
-      <p className="data-note">空位資料：香港政府 data.gov.hk；相片：Google Maps。相片只供辨認位置，請以現場情況為準。</p>
+      <p className="data-note">空位資料：香港政府 data.gov.hk；充電器：環境保護署；相片：Google Maps。資料只供參考，請以現場情況為準。</p>
     </aside>
   );
 }

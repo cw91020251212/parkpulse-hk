@@ -87,11 +87,29 @@ export interface VacancyStatus {
   sourceCategory?: string;
 }
 
+export interface EpdEvCharger {
+  id: string;
+  name: string;
+  address?: string;
+  latitude: number;
+  longitude: number;
+  total: number;
+  available: number | null;
+  types: string[];
+  updatedAt?: string;
+}
+
+export interface EvChargerMatch extends EpdEvCharger {
+  distanceMeters: number;
+  matchedBy: 'name-address' | 'coordinates';
+}
+
 export interface ParkViewModel {
   info: CarparkInfo;
   status: VacancyStatus;
   distanceKm: number;
   heightLimit?: number;
+  evCharger?: EvChargerMatch;
 }
 
 export interface ParkFilters {

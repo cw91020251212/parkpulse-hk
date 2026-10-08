@@ -3,11 +3,12 @@ import { VEHICLE_LABELS, VEHICLE_TYPES, type ParkFilters, type VehicleType } fro
 type Props = {
   vehicleType: VehicleType;
   filters: ParkFilters;
+  evLoading: boolean;
   onVehicleChange: (vehicle: VehicleType) => void;
   onFiltersChange: (filters: ParkFilters) => void;
 };
 
-export function Filters({ vehicleType, filters, onVehicleChange, onFiltersChange }: Props) {
+export function Filters({ vehicleType, filters, evLoading, onVehicleChange, onFiltersChange }: Props) {
   const update = (patch: Partial<ParkFilters>) => onFiltersChange({ ...filters, ...patch });
 
   return (
@@ -29,7 +30,7 @@ export function Filters({ vehicleType, filters, onVehicleChange, onFiltersChange
       <div className="filter-row" aria-label="條件篩選">
         <button className={filters.availableOnly ? 'chip is-on' : 'chip'} type="button" aria-pressed={filters.availableOnly} onClick={() => update({ availableOnly: !filters.availableOnly })}>只看有位</button>
         <button className={filters.openOnly ? 'chip is-on' : 'chip'} type="button" aria-pressed={filters.openOnly} onClick={() => update({ openOnly: !filters.openOnly })}>開放中</button>
-        <button className={filters.hasEv ? 'chip is-on' : 'chip'} type="button" aria-pressed={filters.hasEv} onClick={() => update({ hasEv: !filters.hasEv })}>充電設施</button>
+        <button className={filters.hasEv ? 'chip is-on' : 'chip'} type="button" aria-pressed={filters.hasEv} onClick={() => update({ hasEv: !filters.hasEv })}>{evLoading ? '充電資料更新中' : '充電設施'}</button>
         <button className={filters.hasAccessible ? 'chip is-on' : 'chip'} type="button" aria-pressed={filters.hasAccessible} onClick={() => update({ hasAccessible: !filters.hasAccessible })}>無障礙</button>
         <label className="height-select">
           <span>車高</span>

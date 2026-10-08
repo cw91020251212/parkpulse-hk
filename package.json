@@ -9,6 +9,7 @@
     "build": "tsc --noEmit && vite build",
     "check": "tsc --noEmit",
     "test:domain": "node --experimental-strip-types scripts/check-vacancy.mjs",
+    "test:charging": "node --experimental-strip-types scripts/check-ev-charging.mjs",
     "test:photos": "node scripts/check-photo-proxy.mjs",
     "preview": "vite preview --host 0.0.0.0",
     "start": "NODE_ENV=production node server.mjs"

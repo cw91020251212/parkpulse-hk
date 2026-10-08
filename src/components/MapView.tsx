@@ -8,6 +8,8 @@ type Props = {
   parks: ParkViewModel[];
   selectedId: string | null;
   onSelect: (id: string) => void;
+  expanded: boolean;
+  onToggleExpanded: () => void;
 };
 
 const LANDSD_BASEMAP_URL = 'https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/basemap/WGS84/{z}/{x}/{y}.png';
@@ -30,6 +32,15 @@ function FocusSelected({ park }: { park?: ParkViewModel }) {
   return null;
 }
 
+function ResizeMap({ expanded }: { expanded: boolean }) {
+  const map = useMap();
+  useEffect(() => {
+    const timer = window.setTimeout(() => map.invalidateSize({ animate: true }), 220);
+    return () => window.clearTimeout(timer);
+  }, [expanded, map]);
+  return null;
+}
+
 function markerIcon(park: ParkViewModel) {
   const label = park.status.kind === 'count' ? String(park.status.count) : park.status.kind === 'available' ? '有' : park.status.kind === 'full' ? '滿' : park.status.kind === 'closed' ? '關' : '–';
   return L.divIcon({
@@ -40,11 +51,11 @@ function markerIcon(park: ParkViewModel) {
   });
 }
 
-export function MapView({ position, parks, selectedId, onSelect }: Props) {
+export function MapView({ position, parks, selectedId, onSelect, expanded, onToggleExpanded }: Props) {
   const selected = parks.find((park) => park.info.park_Id === selectedId);
 
   return (
-    <div className="map-wrap" aria-label="附近停車場地圖">
+    <div className={expanded ? 'map-wrap is-expanded' : 'map-wrap'} aria-label="附近停車場地圖">
       <MapContainer center={[position.lat, position.lng]} zoom={14} minZoom={8} maxZoom={20} scrollWheelZoom className="landsd-map">
         <TileLayer
           attribution='&copy; <a href="https://api.portal.hkmapservice.gov.hk/disclaimer" target="_blank" rel="noreferrer">Map information from Lands Department</a>'
@@ -53,6 +64,7 @@ export function MapView({ position, parks, selectedId, onSelect }: Props) {
         <TileLayer url={LANDSD_LABEL_URL} opacity={1} zIndex={10} />
         <Recenter position={position} />
         <FocusSelected park={selected} />
+        <ResizeMap expanded={expanded} />
         <Circle center={[position.lat, position.lng]} radius={2_000} pathOptions={{ color: '#14B8A6', fillColor: '#14B8A6', fillOpacity: 0.08, weight: 1 }} />
         <Circle center={[position.lat, position.lng]} radius={22} pathOptions={{ color: '#ffffff', fillColor: '#14B8A6', fillOpacity: 1, weight: 2 }} />
         {parks.map((park) => (
@@ -66,6 +78,7 @@ export function MapView({ position, parks, selectedId, onSelect }: Props) {
           </Marker>
         ))}
       </MapContainer>
+      <button className="map-focus-toggle" type="button" onClick={onToggleExpanded} aria-pressed={expanded}>{expanded ? '縮細地圖' : '放大地圖'}</button>
       <div className="map-key" aria-label="地圖狀態圖例"><span><i className="key-dot available" />有位</span><span><i className="key-dot full" />已滿</span><span><i className="key-dot unknown" />未知</span></div>
       <a className="landsd-credit" href="https://api.portal.hkmapservice.gov.hk/disclaimer" target="_blank" rel="noreferrer">
         <span>地圖資料：地政總署</span><img src={LANDSD_LOGO_URL} alt="地政總署標誌" />

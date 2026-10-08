@@ -9,9 +9,19 @@ type Props = {
   onSelect: () => void;
 };
 
+function chargingSummary(park: ParkViewModel) {
+  if (park.evCharger) {
+    return park.evCharger.available === null
+      ? `充電 ${park.evCharger.total} 支`
+      : `充電 ${park.evCharger.available}/${park.evCharger.total} 可用`;
+  }
+  return (park.info.facilities ?? []).includes('evCharger') ? '充電設施' : null;
+}
+
 export function ParkCard({ park, vehicleType, selected, onSelect }: Props) {
   const { info, status, distanceKm, heightLimit } = park;
   const facilities = info.facilities ?? [];
+  const charging = chargingSummary(park);
   const paymentSummary = (info.paymentMethods ?? [])
     .map((method) => PAYMENT_LABELS[method] ?? method)
     .slice(0, 2)
@@ -38,7 +48,7 @@ export function ParkCard({ park, vehicleType, selected, onSelect }: Props) {
           <span>車高 {formatHeight(heightLimit)}</span>
           <span>時租 {formatPrice(info, vehicleType)}</span>
           {paymentSummary && <span>{paymentSummary}</span>}
-          {facilities.includes('evCharger') && <span>充電</span>}
+          {charging && <span className="charging-fact">{charging}</span>}
           {facilities.includes('disabilities') && <span>無障礙</span>}
         </div>
         <p className="updated">{formatAge(status.updatedAt)}</p>

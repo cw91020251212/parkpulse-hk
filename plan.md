@@ -25,6 +25,10 @@
 - 使用 Leaflet 疊加地政總署官方 WGS84 raster 底圖 `https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/basemap/WGS84/{z}/{x}/{y}.png` 及繁中地名標籤圖磚 `https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/label/hk/tc/WGS84/{z}/{x}/{y}.png`；於地圖面板保留官方版權連結及地政總署標誌。此做法參照開源 `hkbus/hk-independent-bus-eta` 的公開地圖設定，並符合地政總署 Map API 要求在地圖面顯示標誌與版權。導航採取座標式外部 Google Maps URL，無需私密金鑰。
 - 政府停車場 API 不提供相片欄位；詳情面板透過已啟用的 Manus server capability 呼叫受管 Google Maps Places 服務。後端以伺服器私密憑證搜尋和轉送相片，並將搜尋結果與官方停車場座標比對；只有 250 米內的地點才顯示相片，避免以同名但不相干的相片誤導使用者。相片顯示 Google Maps／供應者歸屬及直接開啟相片／地點的連結；查無結果時清楚顯示未有可核實的公開相片，不以 AI 或泛用停車場圖片充數。
 - 車種與篩選條件保存於使用者自身瀏覽器的 `localStorage`，下次開啟會恢復；不儲存或傳送使用者精確位置。
+- 停車場空位 API 的 `facilities` 只有 18 筆 `evCharger`，而「荃灣停車場」（`tdcp3`）等已知有充電器的停車場資料為 `null`；因此充電篩選改為同時整合環境保護署官方 JSON `https://ev-charger.epd.gov.hk/resource/ev_charger_avail/ev_charger_avail.json`。該來源提供公眾可用充電器的名稱、地址、WGS84 座標、總數、可用數、種類及更新時間；伺服器以 5 分鐘記憶體快取取得資料，避免瀏覽器跨域請求和重複下載。
+- 充電器只在名稱／地址相符且座標相距 250 米內，或座標相距 40 米內時視作同一停車場；否則不把「附近」充電器誤標為該停車場設施。卡片與詳情顯示 EPD 充電器總數、可用數、種類及來源，充電篩選會採用這個補強結果。
+- 加入三段文字／介面大小控制（100%、115%、130%）並保存於瀏覽器；放大同時增大按鈕與文字，以保留觸控可用性。
+- 加入地圖專注模式：按「放大地圖」後只保留兩行車種／篩選控制及大地圖，隱藏品牌列、狀態、結果清單、詳情及頁尾；地圖內的「縮細地圖」按鈕會回復雙欄／清單版面。
 
 ## 介面與品牌設計
 
@@ -67,9 +71,12 @@
 ```text
 src/
   api/carparks.ts          # 官方 API、快取、回應型別與 AbortController
+  api/evChargers.ts        # EPD 充電器 API 回應型別與同源讀取
   domain/carpark.ts        # API 資料轉換、A/B/C/-1 狀態判讀、收費／設施格式化
+  domain/evChargers.ts     # 官方充電器與停車場的保守名稱／地址／座標匹配
   domain/distance.ts       # Haversine 距離與附近排序
   hooks/useCarparks.ts     # 載入、刷新、篩選及資料狀態
+  hooks/useEvChargers.ts   # EPD 充電器資料載入與五分鐘刷新
   components/MapView.tsx   # Leaflet 地圖、使用者位置、marker
   components/ParkCard.tsx  # 清單條目
   components/ParkDetail.tsx # 選中停車場的詳情面板
@@ -86,7 +93,7 @@ public/
 
 - `react`、`react-dom`、`typescript`、`vite`：單頁前端與開發中介層。
 - `leaflet`、`react-leaflet`：地圖與 marker。
-- `express`：只供相片代理、健康檢查及生產環境靜態資產服務。
+- `express`：相片代理、EPD 官方充電器資料快取／轉送、健康檢查及生產環境靜態資產服務。
 - Manus 受管 Google Maps Places 代理：伺服器端相片搜尋及轉送，無需使用者 API key。
 - 無資料庫、無使用者帳戶；啟動於 `0.0.0.0:3000`，以 `Dockerfile` 部署並服務 `dist/`。
 
