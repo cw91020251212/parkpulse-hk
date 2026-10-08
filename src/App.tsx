@@ -80,7 +80,7 @@ function readPreferences() {
 type LocationState = 'default' | 'locating' | 'ready' | 'denied' | 'unavailable';
 
 function Logo() {
-  return <span className="brand-mark" aria-hidden="true"><span>P</span></span>;
+  return <img className="brand-mark" src="/parkpulse-hk-icon.png" alt="" aria-hidden="true" />;
 }
 
 function RefreshIcon() {
@@ -281,7 +281,7 @@ export default function App() {
   return (
     <main className={`app-shell${mapExpanded ? ' map-focus' : ''}`} style={{ '--ui-zoom': String(textScale / 100) } as CSSProperties}>
       <header className="topbar">
-        <div className="brand"><Logo /><div><p className="brand-kicker">HONG KONG PARKING</p><h1>泊邊有位</h1></div></div>
+        <div className="brand"><Logo /><div><p className="brand-kicker">PARKPULSE HK · HONG KONG PARKING</p><h1>泊邊有位</h1></div></div>
         <div className="top-actions">
           <div className="text-size-control" role="group" aria-label="文字大小">
             <button type="button" onClick={scaleDown} disabled={textScale === 100} aria-label="縮小文字">A−</button>
@@ -323,7 +323,7 @@ export default function App() {
           </section>
         </div>
         <section className="results-panel" id="parking-results" aria-label={facilityMode ? `附近${facilityResultLabel}清單` : '附近停車場清單'}>
-          <div className="results-heading">
+          <div className={`results-heading${facilityMode === 'atm' && atmBank ? ' is-bank-filtered' : ''}`}>
             <div><p className="eyebrow">{areaName} · {NEARBY_RADIUS_KM} 公里</p><h2>{facilityMode ? (facilityLoading && activeNearbyResults.length === 0 ? `正在讀取${facilityLabel}…` : facilityError && activeNearbyResults.length === 0 ? `${facilityLabel}資料未能讀取` : `${activeNearbyResults.length} 個${facilityResultLabel}`) : (resultsVerified ? `${displayedParks.length} 個結果` : '正在核實停車場…')}</h2></div>
             <p>{showingToilets ? '食環署 · 康文署' : facilityMode === 'fuel' ? '消委會油價資訊通' : facilityMode === 'atm' ? (nearbyFacilitySource ?? '香港金融管理局') : (resultsVerified ? `${availableCount} 個有位選項` : verificationLabel)}</p>
           </div>
