@@ -191,7 +191,7 @@ export function MapView({ position, parks, selectedId, onSelect, onLocationSelec
       </MapContainer>
 
       <button className="map-focus-toggle" type="button" onClick={onToggleExpanded} aria-pressed={expanded} aria-label={expanded ? '縮細地圖' : '放大地圖'} title={expanded ? '縮細地圖' : '放大地圖'}><MapFocusIcon expanded={expanded} /></button>
-      {!expanded && <button className="map-results-link" type="button" onClick={onShowResults}>查看 {parks.length} 個停車場 ↓</button>}
+      {!expanded && parks.length > 0 && <button className="map-results-link" type="button" onClick={onShowResults}>查看 {parks.length} 個停車場 ↓</button>}
       <a className="landsd-credit" href="https://api.portal.hkmapservice.gov.hk/disclaimer" target="_blank" rel="noreferrer">
         <span>地圖資料：地政總署</span><img src={LANDSD_LOGO_URL} alt="地政總署標誌" />
       </a>

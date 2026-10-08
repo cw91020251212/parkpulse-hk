@@ -157,20 +157,28 @@ export default function App() {
       });
   }, [chargers, infos, position, vacancyById, vehicleType]);
 
+  const resultsVerified = !loading
+    && (!vacancyLoading || vacancyById.size > 0)
+    && (!filters.hasEv || (!evLoading && !evError));
+  const verificationLabel = loading || (vacancyLoading && vacancyById.size === 0)
+    ? '正在核實官方即時空位…'
+    : '正在核實官方充電器資料…';
+
   const displayedParks = useMemo(() => {
+    if (!resultsVerified) return [];
     return nearbyParks.filter((park) => {
       const facilities = park.info.facilities ?? [];
       const isOpen = park.info.opening_status === 'OPEN' && park.status.kind !== 'closed';
       const hasEv = Boolean(park.evCharger) || facilities.includes('evCharger');
       return (
-        (!filters.availableOnly || vacancyLoading || isAvailable(park.status)) &&
+        (!filters.availableOnly || isAvailable(park.status)) &&
         (!filters.openOnly || isOpen) &&
-        (!filters.hasEv || evLoading || hasEv) &&
+        (!filters.hasEv || hasEv) &&
         (!filters.hasAccessible || facilities.includes('disabilities')) &&
         (!filters.minHeight || (park.heightLimit !== undefined && park.heightLimit >= filters.minHeight))
       );
     });
-  }, [filters, nearbyParks]);
+  }, [filters, nearbyParks, resultsVerified]);
 
   const selectedPark = displayedParks.find((park) => park.info.park_Id === selectedId);
   const availableCount = displayedParks.filter((park) => isAvailable(park.status)).length;
@@ -246,16 +254,15 @@ export default function App() {
         </div>
         <section className="results-panel" id="parking-results" aria-label="附近停車場清單">
           <div className="results-heading">
-            <div><p className="eyebrow">{areaName} · {NEARBY_RADIUS_KM} 公里</p><h2>{loading ? '正在整理停車場…' : `${displayedParks.length} 個結果`}</h2></div>
-            <p>{loading ? '資料載入中' : vacancyLoading ? '更新空位資料' : filters.hasEv && evLoading ? '更新充電器資料' : `${availableCount} 個有位選項`}</p>
+            <div><p className="eyebrow">{areaName} · {NEARBY_RADIUS_KM} 公里</p><h2>{resultsVerified ? `${displayedParks.length} 個結果` : '正在核實停車場…'}</h2></div>
+            <p>{resultsVerified ? `${availableCount} 個有位選項` : verificationLabel}</p>
           </div>
           <div className="results-list">
-            {loading && <div className="loading-state"><span className="loader" />讀取停車場及即時空位…</div>}
-            {!loading && filters.hasEv && evLoading && <div className="loading-note"><span className="loader" />正在補充官方充電器資料，暫時顯示附近停車場…</div>}
-            {!loading && displayedParks.map((park) => (
+            {!resultsVerified && <div className="loading-state"><span className="loader" />{verificationLabel}<small>只會顯示已核實的停車場結果。</small></div>}
+            {resultsVerified && displayedParks.map((park) => (
               <ParkCard key={park.info.park_Id} park={park} vehicleType={vehicleType} selected={park.info.park_Id === selectedId} onSelect={() => setSelectedId(park.info.park_Id)} />
             ))}
-            {!loading && !vacancyLoading && (!filters.hasEv || !evLoading) && displayedParks.length === 0 && (
+            {resultsVerified && displayedParks.length === 0 && (
               <div className="empty-state"><strong>呢個範圍暫時冇符合條件嘅結果</strong><p>試下取消部分篩選，或者使用定位後再刷新。</p></div>
             )}
           </div>
