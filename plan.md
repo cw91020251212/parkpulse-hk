@@ -22,7 +22,7 @@
 - `vacancy_type=A`：數字 >0 為實際空位、0 為已滿、-1 為無資料；`B`：1 為有位、0 為已滿、-1 為無資料；`C` 為已關閉。`opening_status=CLOSED` 同樣覆蓋為已關閉。
 - 同一車種有多筆空位資料時，優先選擇 `HOURLY`（或未標示類別）的最新資料；月租／日租資料不會覆蓋即時時租判斷。
 - 前端用 Haversine 計算距離，依「可用性、資料新鮮度、距離」排序；定位失敗時以香港中心作起點並顯示替代操作。
-- 使用 Leaflet 與 Esri World Street Map 圖磚繪製地圖，並保留服務歸屬。導航採取座標式外部 Google Maps URL，無需私密金鑰。
+- 使用 Leaflet 疊加地政總署官方 WGS84 raster 底圖 `https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/basemap/WGS84/{z}/{x}/{y}.png` 及繁中地名標籤圖磚 `https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/label/hk/tc/WGS84/{z}/{x}/{y}.png`；於地圖面板保留官方版權連結及地政總署標誌。此做法參照開源 `hkbus/hk-independent-bus-eta` 的公開地圖設定，並符合地政總署 Map API 要求在地圖面顯示標誌與版權。導航採取座標式外部 Google Maps URL，無需私密金鑰。
 - 篩選狀態只存在目前瀏覽器工作階段；不儲存或傳送使用者精確位置。
 
 ## 介面與品牌設計

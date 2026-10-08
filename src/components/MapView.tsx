@@ -10,6 +10,10 @@ type Props = {
   onSelect: (id: string) => void;
 };
 
+const LANDSD_BASEMAP_URL = 'https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/basemap/WGS84/{z}/{x}/{y}.png';
+const LANDSD_LABEL_URL = 'https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/label/hk/tc/WGS84/{z}/{x}/{y}.png';
+const LANDSD_LOGO_URL = 'https://api.hkmapservice.gov.hk/mapapi/landsdlogo.jpg';
+
 function Recenter({ position }: { position: Coordinates }) {
   const map = useMap();
   useEffect(() => {
@@ -41,11 +45,12 @@ export function MapView({ position, parks, selectedId, onSelect }: Props) {
 
   return (
     <div className="map-wrap" aria-label="附近停車場地圖">
-      <MapContainer center={[position.lat, position.lng]} zoom={14} scrollWheelZoom className="map">
+      <MapContainer center={[position.lat, position.lng]} zoom={14} minZoom={8} maxZoom={20} scrollWheelZoom className="landsd-map">
         <TileLayer
-          attribution='Tiles &copy; <a href="https://www.esri.com/en-us/legal/terms/full-master-agreement">Esri</a>'
-          url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
+          attribution='&copy; <a href="https://api.portal.hkmapservice.gov.hk/disclaimer" target="_blank" rel="noreferrer">Map information from Lands Department</a>'
+          url={LANDSD_BASEMAP_URL}
         />
+        <TileLayer url={LANDSD_LABEL_URL} opacity={1} zIndex={10} />
         <Recenter position={position} />
         <FocusSelected park={selected} />
         <Circle center={[position.lat, position.lng]} radius={2_000} pathOptions={{ color: '#14B8A6', fillColor: '#14B8A6', fillOpacity: 0.08, weight: 1 }} />
@@ -62,6 +67,9 @@ export function MapView({ position, parks, selectedId, onSelect }: Props) {
         ))}
       </MapContainer>
       <div className="map-key" aria-label="地圖狀態圖例"><span><i className="key-dot available" />有位</span><span><i className="key-dot full" />已滿</span><span><i className="key-dot unknown" />未知</span></div>
+      <a className="landsd-credit" href="https://api.portal.hkmapservice.gov.hk/disclaimer" target="_blank" rel="noreferrer">
+        <span>地圖資料：地政總署</span><img src={LANDSD_LOGO_URL} alt="地政總署標誌" />
+      </a>
     </div>
   );
 }

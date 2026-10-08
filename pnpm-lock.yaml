@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@types/leaflet':
-        specifier: ^1.9.21
-        version: 1.9.22
       leaflet:
         specifier: ^1.9.4
         version: 1.9.4
@@ -24,6 +21,9 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0(leaflet@1.9.4)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
     devDependencies:
+      '@types/leaflet':
+        specifier: ^1.9.22
+        version: 1.9.22
       '@types/react':
         specifier: ^19.1.12
         version: 19.3.0
