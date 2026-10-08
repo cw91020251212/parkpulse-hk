@@ -81,16 +81,35 @@ function LongPressPicker({ onPick }: { onPick: (coordinates: Coordinates) => voi
     const container = map.getContainer();
     let timer: number | undefined;
     let start: { x: number; y: number } | undefined;
+    let startView: { center: L.LatLng; zoom: number } | undefined;
+    let dragLocked = false;
+    let draggingWasEnabled = false;
     const isBlocked = (target: EventTarget | null) => target instanceof Element && Boolean(target.closest('.leaflet-marker-icon, .leaflet-control'));
     const cancel = () => {
       if (timer !== undefined) window.clearTimeout(timer);
       timer = undefined;
       start = undefined;
+      startView = undefined;
+    };
+    const finish = () => {
+      cancel();
+      if (dragLocked && draggingWasEnabled) map.dragging.enable();
+      dragLocked = false;
+      draggingWasEnabled = false;
     };
     const begin = (x: number, y: number, target: EventTarget | null) => {
       if (isBlocked(target)) return;
       start = { x, y };
+      startView = { center: map.getCenter(), zoom: map.getZoom() };
+      draggingWasEnabled = map.dragging.enabled();
       timer = window.setTimeout(() => {
+        if (!start || !startView) return;
+        map.stop();
+        map.setView(startView.center, startView.zoom, { animate: false });
+        if (draggingWasEnabled) {
+          map.dragging.disable();
+          dragLocked = true;
+        }
         const bounds = container.getBoundingClientRect();
         const size = map.getSize();
         const latLng = map.containerPointToLatLng([
@@ -121,23 +140,23 @@ function LongPressPicker({ onPick }: { onPick: (coordinates: Coordinates) => voi
 
     container.addEventListener('touchstart', touchStart, { passive: true });
     container.addEventListener('touchmove', touchMove, { passive: true });
-    container.addEventListener('touchend', cancel);
-    container.addEventListener('touchcancel', cancel);
+    container.addEventListener('touchend', finish);
+    container.addEventListener('touchcancel', finish);
     container.addEventListener('mousedown', mouseDown);
     container.addEventListener('mousemove', mouseMove);
-    container.addEventListener('mouseup', cancel);
-    container.addEventListener('mouseleave', cancel);
+    container.addEventListener('mouseup', finish);
+    container.addEventListener('mouseleave', finish);
     container.addEventListener('contextmenu', preventContextMenu);
     return () => {
-      cancel();
+      finish();
       container.removeEventListener('touchstart', touchStart);
       container.removeEventListener('touchmove', touchMove);
-      container.removeEventListener('touchend', cancel);
-      container.removeEventListener('touchcancel', cancel);
+      container.removeEventListener('touchend', finish);
+      container.removeEventListener('touchcancel', finish);
       container.removeEventListener('mousedown', mouseDown);
       container.removeEventListener('mousemove', mouseMove);
-      container.removeEventListener('mouseup', cancel);
-      container.removeEventListener('mouseleave', cancel);
+      container.removeEventListener('mouseup', finish);
+      container.removeEventListener('mouseleave', finish);
       container.removeEventListener('contextmenu', preventContextMenu);
     };
   }, [map, onPick]);
@@ -156,9 +175,9 @@ function markerIcon(park: ParkViewModel) {
 
 const selectedCenterIcon = L.divIcon({
   className: 'selected-center-marker-shell',
-  html: '<span class="selected-center-marker" aria-hidden="true"></span>',
-  iconSize: [28, 28],
-  iconAnchor: [14, 28],
+  html: '<svg class="selected-center-marker" viewBox="0 0 24 36" aria-hidden="true"><path d="M5 4h14l-2 8 4.5 4.5v2H2.5v-2L7 12z"/><circle cx="12" cy="9" r="3"/><path d="M12 18.5V34"/></svg>',
+  iconSize: [24, 36],
+  iconAnchor: [12, 36],
 });
 
 export function MapView({ position, parks, selectedId, onSelect, onLocationSelect, recenterRequest, showSelectedCenter, expanded, onToggleExpanded, onShowResults }: Props) {
@@ -188,7 +207,7 @@ export function MapView({ position, parks, selectedId, onSelect, onLocationSelec
 
   return (
     <div className={expanded ? 'map-wrap is-expanded' : 'map-wrap'} aria-label="附近停車場地圖">
-      <MapContainer center={[position.lat, position.lng]} zoom={14} minZoom={8} maxZoom={20} scrollWheelZoom className="landsd-map">
+      <MapContainer center={[position.lat, position.lng]} zoom={14} minZoom={8} maxZoom={20} scrollWheelZoom inertia={false} className="landsd-map">
         <TileLayer
           attribution='&copy; <a href="https://api.portal.hkmapservice.gov.hk/disclaimer" target="_blank" rel="noreferrer">Map information from Lands Department</a>'
           url={LANDSD_BASEMAP_URL}
