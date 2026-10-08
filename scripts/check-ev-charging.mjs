@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { findEvCharger } from '../src/domain/evChargers.ts';
+import { findEvCharger, hasEvFacility } from '../src/domain/evChargers.ts';
 
 const baseUrl = process.env.PARKSPOT_BASE_URL ?? 'http://127.0.0.1:3000';
 const response = await fetch(`${baseUrl}/api/ev-chargers`);
@@ -17,6 +17,8 @@ const match = findEvCharger(tsuenWanCarpark, records);
 assert.equal(match?.name, '荃灣停車場');
 assert.equal(match?.distanceMeters, 0);
 assert.ok((match?.total ?? 0) >= 1);
+assert.equal(hasEvFacility(tsuenWanCarpark, match), true);
+assert.equal(hasEvFacility({ ...tsuenWanCarpark, facilities: [] }), false);
 
 const unrelatedNearby = findEvCharger(
   { ...tsuenWanCarpark, name: '不相干停車場', displayAddress: '香港測試地址', latitude: 22.37365, longitude: 114.11860 },

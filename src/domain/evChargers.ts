@@ -43,3 +43,7 @@ export function findEvCharger(info: CarparkInfo, chargers: EpdEvCharger[]): EvCh
   const best = candidates[0];
   return best && { ...best.charger, distanceMeters: best.distanceMeters, matchedBy: best.matchedBy };
 }
+
+export function hasEvFacility(info: CarparkInfo, charger?: EvChargerMatch) {
+  return Boolean(charger) || (info.facilities ?? []).includes('evCharger');
+}

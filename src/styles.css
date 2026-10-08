@@ -620,3 +620,49 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
   .results-heading h2 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .results-heading > p { margin: 5px 0 0; white-space: normal; line-height: 1.35; }
 }
+
+
+/* 最近查看：沿用既有一像素邊框，讓回到清單或地圖時可找回剛才項目。 */
+.park-card.is-last-viewed,
+.on-street-card.is-last-viewed {
+  border-color: #ffe17a;
+  background: #12384d;
+}
+
+.parking-marker.is-last-viewed,
+.toilet-marker.is-last-viewed {
+  border-color: #ffe17a;
+  box-shadow: 0 4px 12px #00000050, inset 0 0 0 1px #fff0a9;
+}
+
+/* 評分固定留在距離左側；名稱只在自己的欄位省略。 */
+.park-card-rating {
+  top: 16px;
+  right: 86px;
+}
+
+.park-card:has(.park-card-rating) .card-heading > div {
+  padding-right: 84px;
+}
+
+@media (max-width: 560px) {
+  .park-card-rating { top: 16px; right: 78px; }
+  .park-card:has(.park-card-rating) .card-heading > div { padding-right: 76px; }
+}
+
+/* 最近查看的小提示點位於卡內，不改變邊框厚度或點按區域。 */
+.on-street-card { position: relative; }
+.park-card.is-last-viewed::after,
+.on-street-card.is-last-viewed::after {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  top: 8px;
+  right: 8px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ffe17a;
+  box-shadow: 0 0 0 2px #12384d;
+  pointer-events: none;
+}
