@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Filters } from './components/Filters';
 import { MapView } from './components/MapView';
 import { ParkCard } from './components/ParkCard';
@@ -19,6 +19,28 @@ const INITIAL_FILTERS: ParkFilters = {
   minHeight: 0,
 };
 
+const PREFERENCES_KEY = 'parkspot:preferences:v1';
+
+function readPreferences() {
+  try {
+    const saved = JSON.parse(window.localStorage.getItem(PREFERENCES_KEY) ?? '{}') as Partial<{ vehicleType: VehicleType; filters: ParkFilters }>;
+    const vehicleType = saved.vehicleType && ['privateCar', 'motorCycle', 'LGV', 'HGV', 'coach'].includes(saved.vehicleType)
+      ? saved.vehicleType
+      : 'privateCar';
+    const savedFilters = saved.filters;
+    const filters: ParkFilters = {
+      availableOnly: typeof savedFilters?.availableOnly === 'boolean' ? savedFilters.availableOnly : INITIAL_FILTERS.availableOnly,
+      openOnly: typeof savedFilters?.openOnly === 'boolean' ? savedFilters.openOnly : INITIAL_FILTERS.openOnly,
+      hasEv: typeof savedFilters?.hasEv === 'boolean' ? savedFilters.hasEv : INITIAL_FILTERS.hasEv,
+      hasAccessible: typeof savedFilters?.hasAccessible === 'boolean' ? savedFilters.hasAccessible : INITIAL_FILTERS.hasAccessible,
+      minHeight: [0, 1.8, 2, 2.2].includes(savedFilters?.minHeight ?? -1) ? savedFilters?.minHeight ?? 0 : INITIAL_FILTERS.minHeight,
+    };
+    return { vehicleType, filters };
+  } catch {
+    return { vehicleType: 'privateCar' as VehicleType, filters: INITIAL_FILTERS };
+  }
+}
+
 type LocationState = 'default' | 'locating' | 'ready' | 'denied' | 'unavailable';
 
 function Logo() {
@@ -29,9 +51,17 @@ export default function App() {
   const { infos, vacancyById, loading, refreshing, error, lastFetchedAt, refresh, retry } = useCarparks();
   const [position, setPosition] = useState<Coordinates>(HONG_KONG_CENTER);
   const [locationState, setLocationState] = useState<LocationState>('default');
-  const [vehicleType, setVehicleType] = useState<VehicleType>('privateCar');
-  const [filters, setFilters] = useState<ParkFilters>(INITIAL_FILTERS);
+  const [vehicleType, setVehicleType] = useState<VehicleType>(() => readPreferences().vehicleType);
+  const [filters, setFilters] = useState<ParkFilters>(() => readPreferences().filters);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(PREFERENCES_KEY, JSON.stringify({ vehicleType, filters }));
+    } catch {
+      // 私隱模式或儲存空間不足時仍可正常使用篩選。
+    }
+  }, [vehicleType, filters]);
 
   const requestLocation = () => {
     if (!navigator.geolocation) {

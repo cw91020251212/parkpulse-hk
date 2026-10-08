@@ -13,7 +13,7 @@
 - 每 60 秒刷新空位，顯示來源最後更新時間，資料超過 5 分鐘要標示可能延遲。
 - 摘要及詳情顯示距離、車高、基本收費、設施、付款方式及外部導航。
 - 支援「只看有位」、最低車高、充電設施、無障礙設施、開放中篩選。
-- 維持免登入、純前端模式；不設帳戶、付款、預約、通知、總價計算、資料庫、後端代理。
+- 維持免登入；不設帳戶、付款、預約、通知、總價計算或資料庫。為提供可核實相片，額外加入只處理 Google Maps 相片搜尋與轉送的輕量後端代理，不保存使用者資料或精確位置。
 
 ## 資料與實作策略
 
@@ -23,7 +23,8 @@
 - 同一車種有多筆空位資料時，優先選擇 `HOURLY`（或未標示類別）的最新資料；月租／日租資料不會覆蓋即時時租判斷。
 - 前端用 Haversine 計算距離，依「可用性、資料新鮮度、距離」排序；定位失敗時以香港中心作起點並顯示替代操作。
 - 使用 Leaflet 疊加地政總署官方 WGS84 raster 底圖 `https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/basemap/WGS84/{z}/{x}/{y}.png` 及繁中地名標籤圖磚 `https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/label/hk/tc/WGS84/{z}/{x}/{y}.png`；於地圖面板保留官方版權連結及地政總署標誌。此做法參照開源 `hkbus/hk-independent-bus-eta` 的公開地圖設定，並符合地政總署 Map API 要求在地圖面顯示標誌與版權。導航採取座標式外部 Google Maps URL，無需私密金鑰。
-- 篩選狀態只存在目前瀏覽器工作階段；不儲存或傳送使用者精確位置。
+- 政府停車場 API 不提供相片欄位；詳情面板透過已啟用的 Manus server capability 呼叫受管 Google Maps Places 服務。後端以伺服器私密憑證搜尋和轉送相片，並將搜尋結果與官方停車場座標比對；只有 250 米內的地點才顯示相片，避免以同名但不相干的相片誤導使用者。相片顯示 Google Maps／供應者歸屬及直接開啟相片／地點的連結；查無結果時清楚顯示未有可核實的公開相片，不以 AI 或泛用停車場圖片充數。
+- 車種與篩選條件保存於使用者自身瀏覽器的 `localStorage`，下次開啟會恢復；不儲存或傳送使用者精確位置。
 
 ## 介面與品牌設計
 
@@ -75,16 +76,19 @@ src/
   components/Filters.tsx   # 車種和篩選控制
   App.tsx                  # 頁面狀態和組合
   styles.css               # 響應式視覺系統
+server.mjs                 # Express + Vite 中介層、Google Maps 相片搜尋／影像轉送、健康檢查
+scripts/check-photo-proxy.mjs # 實景相片位置核實與影像路由檢查
 public/
   manus-routes.json        # 單一路由宣告
 ```
 
 ## 依賴與服務
 
-- `react`、`react-dom`、`typescript`、`vite`：靜態單頁前端。
+- `react`、`react-dom`、`typescript`、`vite`：單頁前端與開發中介層。
 - `leaflet`、`react-leaflet`：地圖與 marker。
-- 無 API key、無伺服器、無資料庫、無使用者帳戶。
-- 啟動於 `0.0.0.0:3000`，輸出靜態 `dist/`。
+- `express`：只供相片代理、健康檢查及生產環境靜態資產服務。
+- Manus 受管 Google Maps Places 代理：伺服器端相片搜尋及轉送，無需使用者 API key。
+- 無資料庫、無使用者帳戶；啟動於 `0.0.0.0:3000`，以 `Dockerfile` 部署並服務 `dist/`。
 
 ## 刻意延後的功能
 

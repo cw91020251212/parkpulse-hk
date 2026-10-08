@@ -5,13 +5,16 @@
   "type": "module",
   "packageManager": "pnpm@11.25.0",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
+    "dev": "node server.mjs",
     "build": "tsc --noEmit && vite build",
     "check": "tsc --noEmit",
     "test:domain": "node --experimental-strip-types scripts/check-vacancy.mjs",
-    "preview": "vite preview --host 0.0.0.0"
+    "test:photos": "node scripts/check-photo-proxy.mjs",
+    "preview": "vite preview --host 0.0.0.0",
+    "start": "NODE_ENV=production node server.mjs"
   },
   "dependencies": {
+    "express": "^5.2.1",
     "leaflet": "^1.9.4",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
