@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties, type FormEvent } from 'react';
 import { Filters } from './components/Filters';
 import { MapView } from './components/MapView';
 import { ParkCard } from './components/ParkCard';
@@ -14,6 +14,30 @@ const HONG_KONG_CENTER: Coordinates = { lat: 22.3193, lng: 114.1694 };
 const NEARBY_RADIUS_KM = 2;
 const TEXT_SCALES = [100, 115, 130] as const;
 type TextScale = typeof TEXT_SCALES[number];
+type District = { label: string; aliases: string[]; coordinates: Coordinates };
+
+const DISTRICTS: District[] = [
+  { label: '中西區', aliases: ['中西區', '中西', 'central and western'], coordinates: { lat: 22.2855, lng: 114.1546 } },
+  { label: '灣仔區', aliases: ['灣仔區', '灣仔', 'wan chai'], coordinates: { lat: 22.279, lng: 114.173 } },
+  { label: '東區', aliases: ['東區', 'eastern'], coordinates: { lat: 22.284, lng: 114.224 } },
+  { label: '南區', aliases: ['南區', 'southern'], coordinates: { lat: 22.247, lng: 114.158 } },
+  { label: '油尖旺區', aliases: ['油尖旺區', '油尖旺', 'yau tsim mong'], coordinates: { lat: 22.319, lng: 114.169 } },
+  { label: '深水埗區', aliases: ['深水埗區', '深水埗', 'sham shui po'], coordinates: { lat: 22.329, lng: 114.16 } },
+  { label: '九龍城區', aliases: ['九龍城區', '九龍城', 'kowloon city'], coordinates: { lat: 22.33, lng: 114.188 } },
+  { label: '黃大仙區', aliases: ['黃大仙區', '黃大仙', 'wong tai sin'], coordinates: { lat: 22.341, lng: 114.193 } },
+  { label: '觀塘區', aliases: ['觀塘區', '觀塘', 'kwun tong'], coordinates: { lat: 22.313, lng: 114.225 } },
+  { label: '葵青區', aliases: ['葵青區', '葵青', 'kwai tsing'], coordinates: { lat: 22.353, lng: 114.129 } },
+  { label: '荃灣區', aliases: ['荃灣區', '荃灣', 'tsuen wan'], coordinates: { lat: 22.371, lng: 114.117 } },
+  { label: '屯門區', aliases: ['屯門區', '屯門', 'tuen mun'], coordinates: { lat: 22.391, lng: 113.975 } },
+  { label: '元朗區', aliases: ['元朗區', '元朗', 'yuen long'], coordinates: { lat: 22.445, lng: 114.022 } },
+  { label: '北區', aliases: ['北區', 'north district'], coordinates: { lat: 22.5, lng: 114.132 } },
+  { label: '大埔區', aliases: ['大埔區', '大埔', 'tai po'], coordinates: { lat: 22.4501, lng: 114.1688 } },
+  { label: '沙田區', aliases: ['沙田區', '沙田', 'sha tin'], coordinates: { lat: 22.387, lng: 114.195 } },
+  { label: '西貢區', aliases: ['西貢區', '西貢', 'sai kung'], coordinates: { lat: 22.383, lng: 114.271 } },
+  { label: '離島區', aliases: ['離島區', '離島', 'islands'], coordinates: { lat: 22.281, lng: 113.943 } },
+];
+
+const normalizeDistrict = (value: string) => value.trim().toLocaleLowerCase().replace(/[\s-]+/g, '');
 
 const INITIAL_FILTERS: ParkFilters = {
   availableOnly: true,
@@ -77,6 +101,9 @@ export default function App() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [mapExpanded, setMapExpanded] = useState(false);
   const [recenterRequest, setRecenterRequest] = useState(0);
+  const [districtSearchOpen, setDistrictSearchOpen] = useState(false);
+  const [districtQuery, setDistrictQuery] = useState('');
+  const [districtMessage, setDistrictMessage] = useState('');
 
   useEffect(() => {
     try {
@@ -162,6 +189,18 @@ export default function App() {
     setSelectedId(null);
     setMapExpanded(false);
   };
+  const submitDistrict = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const query = normalizeDistrict(districtQuery);
+    const district = DISTRICTS.find(({ label, aliases }) => [label, ...aliases].some((name) => normalizeDistrict(name) === query));
+    if (!district) {
+      setDistrictMessage('請輸入香港 18 區，例如「大埔」或「Tai Po」。');
+      return;
+    }
+    setDistrictMessage('');
+    setDistrictSearchOpen(false);
+    selectArea(district.coordinates, district.label, { recenter: true });
+  };
   const showResults = () => document.getElementById('parking-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   return (
@@ -194,6 +233,20 @@ export default function App() {
             <div><p className="eyebrow">{areaName} · {NEARBY_RADIUS_KM} 公里</p><h2>{loading ? '正在整理停車場…' : `${displayedParks.length} 個結果`}</h2></div>
             <p>{loading ? '資料載入中' : vacancyLoading ? '更新空位資料' : filters.hasEv && evLoading ? '更新充電器資料' : `${availableCount} 個有位選項`}</p>
           </div>
+          <section className="area-tools" aria-label="地圖搜尋與操作提示">
+            <div className="area-tools-row">
+              <button className="area-search-toggle" type="button" onClick={() => { setDistrictSearchOpen((current) => !current); setDistrictMessage(''); }} aria-expanded={districtSearchOpen}>搜尋地區</button>
+              <p className="map-gesture-note">長按地圖約 1 秒：選取 2 公里範圍</p>
+            </div>
+            {districtSearchOpen && (
+              <form className="area-search" onSubmit={submitDistrict}>
+                <label htmlFor="district-search">搜尋中心</label>
+                <div><input id="district-search" list="district-options" value={districtQuery} onChange={(event) => setDistrictQuery(event.target.value)} placeholder="例如：大埔／Tai Po" autoFocus /><button type="submit">顯示</button></div>
+                <datalist id="district-options">{DISTRICTS.map((district) => <option key={district.label} value={district.label}>{district.aliases.at(-1)}</option>)}</datalist>
+                <small>{districtMessage || '以所選地區中心顯示 2 公里內停車場'}</small>
+              </form>
+            )}
+          </section>
           <div className="results-list">
             {loading && <div className="loading-state"><span className="loader" />讀取停車場及即時空位…</div>}
             {!loading && filters.hasEv && evLoading && <div className="loading-note"><span className="loader" />正在補充官方充電器資料，暫時顯示附近停車場…</div>}
