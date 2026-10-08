@@ -16,3 +16,4 @@ GitHub Pages 是純靜態網站，不能安全使用原本伺服器端的 Google
 
 - `pnpm check`、`pnpm test:photos`、一般正式建置、`pnpm build:pages`、`pnpm test:pages` 和 `git diff --check` 均已通過。
 - 靜態版實測洗手間模式顯示 31 個「地圖相片 ↗」連結；第一個連結指向 Google Maps 搜尋 URL、使用新分頁，瀏覽器資源記錄中沒有 `/api/place-photo` 請求。
+- GitHub Actions workflow `37779411257` 已於 2026-10-08 成功 build 及 deploy；正式網站已回傳新 bundle，瀏覽器實測顯示「地圖相片 ↗」和 Google Maps 無障礙標籤。
