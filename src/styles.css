@@ -405,3 +405,19 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
   .brand h1 { font-size: 28px; }
   .brand .brand-kicker { font-size: 10px; }
 }
+
+
+/* 2026-10-09：加強左上角立體品牌圖示，保持標題與控制排列。 */
+.brand-mark {
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+}
+
+@media (max-width: 560px) {
+  .brand-mark {
+    width: 50px;
+    height: 50px;
+    border-radius: 15px;
+  }
+}
