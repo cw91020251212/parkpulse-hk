@@ -22,7 +22,7 @@ type PlaceTarget = {
   longitude: number;
 };
 
-function mapsPhotoSearchUrl(target: PlaceTarget) {
+export function mapsPhotoSearchUrl(target: Pick<PlaceTarget, 'name' | 'address'>) {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${target.name} ${target.address ?? ''}`.trim())}`;
 }
 

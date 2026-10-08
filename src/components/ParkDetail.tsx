@@ -1,6 +1,7 @@
 import { FACILITY_LABELS, formatAge, formatHeight, formatPrice, PAYMENT_LABELS } from '../domain/carpark';
 import { formatDistance } from '../domain/distance';
-import { usePlacePhoto } from '../hooks/usePlacePhoto';
+import { isStaticPages } from '../api/site';
+import { mapsPhotoSearchUrl, usePlacePhoto } from '../hooks/usePlacePhoto';
 import type { CarparkInfo, ParkViewModel, VehicleType } from '../types';
 
 type Props = {
@@ -18,11 +19,12 @@ function formatEpdUpdate(value?: string) {
 export function ParkDetail({ park, vehicleType, onClose }: Props) {
   const { info, status, distanceKm, heightLimit, evCharger } = park;
   const navigationUrl = `https://www.google.com/maps/dir/?api=1&destination=${info.latitude},${info.longitude}`;
+  const mapsPhotosUrl = mapsPhotoSearchUrl({ name: info.name, address: info.displayAddress });
   const facilities = (info.facilities ?? [])
     .filter((item) => item !== 'evCharger' || !evCharger)
     .map((item) => FACILITY_LABELS[item] ?? item);
   const payments = (info.paymentMethods ?? []).map((item) => PAYMENT_LABELS[item] ?? item);
-  const [photoState, setPhotoState] = usePlacePhoto({ id: info.park_Id, name: info.name, address: info.displayAddress, latitude: info.latitude, longitude: info.longitude });
+  const [photoState, setPhotoState] = usePlacePhoto({ id: info.park_Id, name: info.name, address: info.displayAddress, latitude: info.latitude, longitude: info.longitude }, !isStaticPages);
 
   return (
     <aside className="detail-panel" aria-label={`${info.name}詳情`}>
@@ -42,23 +44,32 @@ export function ParkDetail({ park, vehicleType, onClose }: Props) {
       )}
 
       <section className="detail-photo-section" aria-live="polite">
-        <div className="detail-section-heading"><h3>附近實景</h3><span>位置核實</span></div>
-        {photoState.kind === 'loading' && <p className="photo-state">正在尋找可核實的公開相片…</p>}
-        {photoState.kind === 'found' && (
-          <figure className="detail-photo">
-            <img
-              src={photoState.photo.photoUrl}
-              alt={`${info.name}附近實景相片`}
-              loading="lazy"
-              onError={() => setPhotoState({ kind: 'unavailable', placeUrl: photoState.photo.placeUrl })}
-            />
-            <figcaption>與停車場位置相距約 {photoState.photo.distanceMeters} 米 · {photoState.photo.attribution} 提供</figcaption>
-          </figure>
+        <div className="detail-section-heading"><h3>附近實景</h3><span>{isStaticPages ? 'Google Maps' : '位置核實'}</span></div>
+        {isStaticPages ? (
+          <>
+            <p className="photo-state">GitHub Pages 版會直接開啟 Google Maps 的相片頁。</p>
+            <a className="photo-link" href={mapsPhotosUrl} target="_blank" rel="noreferrer" aria-label={`在 Google Maps 查看${info.name}相片`}>開啟 Google Maps 相片 ↗</a>
+          </>
+        ) : (
+          <>
+            {photoState.kind === 'loading' && <p className="photo-state">正在尋找可核實的公開相片…</p>}
+            {photoState.kind === 'found' && (
+              <figure className="detail-photo">
+                <img
+                  src={photoState.photo.photoUrl}
+                  alt={`${info.name}附近實景相片`}
+                  loading="lazy"
+                  onError={() => setPhotoState({ kind: 'unavailable', placeUrl: photoState.photo.placeUrl })}
+                />
+                <figcaption>與停車場位置相距約 {photoState.photo.distanceMeters} 米 · {photoState.photo.attribution} 提供</figcaption>
+              </figure>
+            )}
+            {photoState.kind === 'not_found' && <p className="photo-state">暫未找到可核實的公開相片。</p>}
+            {photoState.kind === 'unavailable' && <p className="photo-state">相片暫時未能載入，請到地圖查看。</p>}
+            {photoState.kind === 'found' && <a className="photo-link" href={photoState.photo.placeUrl} target="_blank" rel="noreferrer">在 Google Maps 查看更多相片</a>}
+            {(photoState.kind === 'not_found' || photoState.kind === 'unavailable') && <a className="photo-link" href={photoState.placeUrl} target="_blank" rel="noreferrer">在 Google Maps 查看更多相片</a>}
+          </>
         )}
-        {photoState.kind === 'not_found' && <p className="photo-state">暫未找到可核實的公開相片。</p>}
-        {photoState.kind === 'unavailable' && <p className="photo-state">相片暫時未能載入，請到地圖查看。</p>}
-        {photoState.kind === 'found' && <a className="photo-link" href={photoState.photo.placeUrl} target="_blank" rel="noreferrer">在 Google Maps 查看更多相片</a>}
-        {(photoState.kind === 'not_found' || photoState.kind === 'unavailable') && <a className="photo-link" href={photoState.placeUrl} target="_blank" rel="noreferrer">在 Google Maps 查看更多相片</a>}
       </section>
 
       <dl className="detail-grid">
