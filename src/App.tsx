@@ -192,7 +192,7 @@ export default function App() {
         </section>
       </section>
 
-      {selectedPark && !mapExpanded && <ParkDetail park={selectedPark} vehicleType={vehicleType} onClose={() => setSelectedId(null)} />}
+      {selectedPark && <ParkDetail park={selectedPark} vehicleType={vehicleType} onClose={() => setSelectedId(null)} />}
 
       <footer>
         <span>資料來源：香港政府 <a href="https://data.gov.hk/tc-data/dataset/hk-dpo-datagovhk1-carpark-info-vacancy" target="_blank" rel="noreferrer">data.gov.hk</a>、環境保護署</span>
