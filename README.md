@@ -11,6 +11,10 @@ GitHub Actions 會在每次推送 `main`、每 6 小時或手動執行時，重�
 
 GitHub Pages 版本保留停車位（data.gov.hk 即時讀取）、公廁、康文署場館、充電器、油站、ATM 和銀行篩選。公廁／油站／ATM／充電器資料於 GitHub Actions 建置時更新；已核實 Google Maps 相片需要私密後端憑證，因此靜態版本只保留 Google Maps 連結。
 
+## 安裝至手機主畫面
+
+GitHub Pages 版本是一個可安裝的 PWA。Android／Chrome 可在瀏覽器選單選擇「安裝應用程式」或「加到主畫面」；iPhone／iPad 請在 Safari 點擊分享按鈕，選擇「加入主畫面」。安裝後以獨立視窗開啟，並會保留最近讀取的應用外殼與靜態設施資料供短暫離線查看；即時停車空位和地圖仍需要網絡。
+
 ## Local development
 
 ```bash

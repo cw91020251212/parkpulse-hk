@@ -18,6 +18,7 @@
     "test:lcsd-venues": "node scripts/check-lcsd-venues.mjs",
     "test:nearby-facilities": "node scripts/check-nearby-facilities.mjs",
     "test:pages": "node scripts/check-pages-build.mjs",
+    "test:pwa": "node scripts/check-pwa.mjs",
     "preview": "vite preview --host 0.0.0.0",
     "start": "NODE_ENV=production node server.mjs"
   },
