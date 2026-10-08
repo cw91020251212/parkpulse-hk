@@ -9,6 +9,7 @@ import { getHeightLimit, getVacancyStatus, isAvailable, selectVacancyEntry, stat
 import { distanceInKm } from './domain/distance';
 import { useCarparks } from './hooks/useCarparks';
 import { useEvChargers } from './hooks/useEvChargers';
+import { useLcsdVenues } from './hooks/useLcsdVenues';
 import { usePublicToilets } from './hooks/usePublicToilets';
 import type { Coordinates, ParkFilters, ParkViewModel, PublicToiletViewModel, VehicleType } from './types';
 
@@ -110,6 +111,7 @@ export default function App() {
   const [districtMessage, setDistrictMessage] = useState('');
   const detailHistoryActive = useRef(false);
   const { toilets, loading: toiletLoading, error: toiletError, retry: retryToilets } = usePublicToilets(filters.showToilets);
+  const { venues: lcsdVenues, loading: lcsdLoading, error: lcsdError, retry: retryLcsdVenues } = useLcsdVenues(filters.showToilets);
 
   useEffect(() => {
     try {
@@ -173,10 +175,10 @@ export default function App() {
       });
   }, [chargers, infos, position, vacancyById, vehicleType]);
 
-  const nearbyToilets = useMemo<PublicToiletViewModel[]>(() => toilets
+  const nearbyToilets = useMemo<PublicToiletViewModel[]>(() => [...toilets, ...lcsdVenues]
     .map((toilet) => ({ toilet, distanceKm: distanceInKm(position, { lat: toilet.latitude, lng: toilet.longitude }) }))
     .filter((toilet) => toilet.distanceKm <= NEARBY_RADIUS_KM)
-    .sort((left, right) => left.distanceKm - right.distanceKm), [position, toilets]);
+    .sort((left, right) => left.distanceKm - right.distanceKm), [lcsdVenues, position, toilets]);
 
   const resultsVerified = !loading
     && (!vacancyLoading || vacancyById.size > 0)
@@ -202,6 +204,8 @@ export default function App() {
   }, [filters, nearbyParks, resultsVerified]);
 
   const showingToilets = filters.showToilets;
+  const washroomLoading = toiletLoading || lcsdLoading;
+  const retryWashrooms = () => { retryToilets(); retryLcsdVenues(); };
   const selectedPark = !showingToilets ? displayedParks.find((park) => park.info.park_Id === selectedId) : undefined;
   const availableCount = displayedParks.filter((park) => isAvailable(park.status)).length;
   const visibleError = error || (filters.hasEv && evError ? `充電器資料提示：${evError}` : null);
@@ -273,7 +277,7 @@ export default function App() {
         </div>
       </header>
 
-      <Filters vehicleType={vehicleType} filters={filters} evLoading={evLoading} toiletLoading={toiletLoading} onVehicleChange={(type) => { setVehicleType(type); setSelectedId(null); }} onFiltersChange={updateFilters} />
+      <Filters vehicleType={vehicleType} filters={filters} evLoading={evLoading} toiletLoading={washroomLoading} onVehicleChange={(type) => { setVehicleType(type); setSelectedId(null); }} onFiltersChange={updateFilters} />
 
       {visibleError && <div className="error-banner" role="alert"><span>資料連線提示：{visibleError}</span><button type="button" onClick={retry}>重試</button></div>}
 
@@ -285,6 +289,7 @@ export default function App() {
               <button className="area-search-toggle" type="button" onClick={() => { setDistrictSearchOpen((current) => !current); setDistrictMessage(''); }} aria-expanded={districtSearchOpen}>搜尋地區</button>
               <p className="map-gesture-note">長按地圖約 1 秒：選取 2 公里範圍</p>
             </div>
+            <div className="map-marker-legend" aria-label="地圖標記顏色說明"><span><i className="legend-swatch legend-available" />有位</span><span><i className="legend-swatch legend-full" />已滿</span><span><i className="legend-swatch legend-closed" />關閉</span><span><i className="legend-swatch legend-unknown" />無資料</span><span><i className="legend-swatch legend-toilet" />公廁</span><span><i className="legend-swatch legend-venue" />場館</span><span className="legend-center">📍 中心</span></div>
             {districtSearchOpen && (
               <form className="area-search" onSubmit={submitDistrict}>
                 <label htmlFor="district-search">搜尋中心</label>
@@ -297,14 +302,15 @@ export default function App() {
         </div>
         <section className="results-panel" id="parking-results" aria-label={showingToilets ? '附近洗手間清單' : '附近停車場清單'}>
           <div className="results-heading">
-            <div><p className="eyebrow">{areaName} · {NEARBY_RADIUS_KM} 公里</p><h2>{showingToilets ? (toiletLoading ? '正在讀取洗手間…' : toiletError ? '洗手間資料未能讀取' : `${nearbyToilets.length} 間洗手間`) : (resultsVerified ? `${displayedParks.length} 個結果` : '正在核實停車場…')}</h2></div>
-            <p>{showingToilets ? '食環署公廁' : (resultsVerified ? `${availableCount} 個有位選項` : verificationLabel)}</p>
+            <div><p className="eyebrow">{areaName} · {NEARBY_RADIUS_KM} 公里</p><h2>{showingToilets ? (washroomLoading && nearbyToilets.length === 0 ? '正在讀取洗手間…' : toiletError && nearbyToilets.length === 0 ? '洗手間資料未能讀取' : `${nearbyToilets.length} 個洗手間`) : (resultsVerified ? `${displayedParks.length} 個結果` : '正在核實停車場…')}</h2></div>
+            <p>{showingToilets ? '食環署 · 康文署' : (resultsVerified ? `${availableCount} 個有位選項` : verificationLabel)}</p>
           </div>
           <div className="results-list">
-            {showingToilets && toiletLoading && <div className="loading-state"><span className="loader" />正在讀取食環署公廁資料…<small>只顯示目前中心 2 公里內的官方公廁。</small></div>}
-            {showingToilets && toiletError && !toiletLoading && <div className="empty-state" role="alert"><strong>暫時未能讀取洗手間資料</strong><p>{toiletError}</p><button className="toilet-retry" type="button" onClick={retryToilets}>重試</button></div>}
-            {showingToilets && !toiletLoading && !toiletError && nearbyToilets.map((toilet) => <ToiletCard key={toilet.toilet.id} toilet={toilet} />)}
-            {showingToilets && !toiletLoading && !toiletError && nearbyToilets.length === 0 && <div className="empty-state"><strong>呢個範圍暫時冇官方公廁資料</strong><p>試下選擇其他地區或在地圖長按新中心。</p></div>}
+            {showingToilets && washroomLoading && nearbyToilets.length === 0 && <div className="loading-state"><span className="loader" />正在讀取官方洗手間資料…<small>只顯示目前中心 2 公里內的食環署公廁及康文署場館。</small></div>}
+            {showingToilets && toiletError && nearbyToilets.length === 0 && !washroomLoading && <div className="empty-state" role="alert"><strong>暫時未能讀取洗手間資料</strong><p>{toiletError}</p><button className="toilet-retry" type="button" onClick={retryWashrooms}>重試</button></div>}
+            {showingToilets && nearbyToilets.map((toilet) => <ToiletCard key={toilet.toilet.id} toilet={toilet} />)}
+            {showingToilets && lcsdError && <p className="loading-note">康文署場館資料提示：{lcsdError}</p>}
+            {showingToilets && !washroomLoading && !toiletError && nearbyToilets.length === 0 && <div className="empty-state"><strong>呢個範圍暫時冇官方洗手間資料</strong><p>試下選擇其他地區或在地圖長按新中心。</p></div>}
             {!showingToilets && !resultsVerified && <div className="loading-state"><span className="loader" />{verificationLabel}<small>只會顯示已核實的停車場結果。</small></div>}
             {!showingToilets && resultsVerified && displayedParks.map((park) => (
               <ParkCard key={park.info.park_Id} park={park} vehicleType={vehicleType} selected={park.info.park_Id === selectedId} onSelect={() => openDetail(park.info.park_Id)} />
@@ -319,7 +325,7 @@ export default function App() {
       {selectedPark && <ParkDetail park={selectedPark} vehicleType={vehicleType} onClose={closeDetail} />}
 
       <footer>
-        <span>資料來源：香港政府 <a href="https://data.gov.hk/tc-data/dataset/hk-dpo-datagovhk1-carpark-info-vacancy" target="_blank" rel="noreferrer">data.gov.hk</a>、環境保護署{showingToilets && '、食物環境衞生署'}</span>
+        <span>資料來源：香港政府 <a href="https://data.gov.hk/tc-data/dataset/hk-dpo-datagovhk1-carpark-info-vacancy" target="_blank" rel="noreferrer">data.gov.hk</a>、環境保護署{showingToilets && '、食物環境衞生署、康樂及文化事務署'}</span>
         <span>{showingToilets ? '公廁資料只供參考，請以現場情況為準。' : '空位及充電器資料只供參考，請以現場情況為準。'}</span>
       </footer>
     </main>

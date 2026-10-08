@@ -153,12 +153,15 @@ const selectedCenterIcon = L.divIcon({
   iconAnchor: [16, 36],
 });
 
-const toiletIcon = L.divIcon({
-  className: 'toilet-marker-shell',
-  html: '<span class="toilet-marker"><span aria-hidden="true">🚻</span></span>',
-  iconSize: [34, 34],
-  iconAnchor: [17, 34],
-});
+function washroomIcon(kind?: 'publicToilet' | 'lcsdVenue') {
+  const venue = kind === 'lcsdVenue';
+  return L.divIcon({
+    className: 'toilet-marker-shell',
+    html: `<span class="toilet-marker${venue ? ' is-venue' : ''}"><span aria-hidden="true">${venue ? '🏟️' : '🚻'}</span></span>`,
+    iconSize: [34, 34],
+    iconAnchor: [17, 34],
+  });
+}
 
 function MapFocusIcon({ expanded }: { expanded: boolean }) {
   return expanded ? (
@@ -200,8 +203,8 @@ export function MapView({ position, parks, toilets, selectedId, onSelect, onLoca
           </Marker>
         ))}
         {toilets.map(({ toilet, distanceKm }) => (
-          <Marker key={toilet.id} position={[toilet.latitude, toilet.longitude]} icon={toiletIcon} zIndexOffset={300}>
-            <Popup><div className="toilet-popup"><strong>{toilet.name}</strong><small>{formatDistance(distanceKm)} · {toilet.openingHours ?? '開放時間未提供'}</small>{toilet.address && <small>{toilet.address}</small>}<a href={`https://www.google.com/maps/dir/?api=1&destination=${toilet.latitude},${toilet.longitude}`} target="_blank" rel="noreferrer">導航</a></div></Popup>
+          <Marker key={toilet.id} position={[toilet.latitude, toilet.longitude]} icon={washroomIcon(toilet.kind)} zIndexOffset={300}>
+            <Popup><div className="toilet-popup"><strong>{toilet.name}</strong><small>{toilet.kind === 'lcsdVenue' ? '康文署場館洗手間（開放時段）' : '食環署公廁'}</small><small>{formatDistance(distanceKm)} · {toilet.openingHours ?? '開放時間未提供'}</small>{toilet.address && <small>{toilet.address}</small>}<a href={`https://www.google.com/maps/dir/?api=1&destination=${toilet.latitude},${toilet.longitude}`} target="_blank" rel="noreferrer">導航</a></div></Popup>
           </Marker>
         ))}
       </MapContainer>

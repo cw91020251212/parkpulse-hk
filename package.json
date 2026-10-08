@@ -13,6 +13,8 @@
     "test:photos": "node scripts/check-photo-proxy.mjs",
     "test:startup": "node scripts/check-fast-start.mjs",
     "test:toilets": "node scripts/check-public-toilets.mjs",
+    "test:toilet-photos": "node scripts/check-toilet-photos.mjs",
+    "test:lcsd-venues": "node scripts/check-lcsd-venues.mjs",
     "preview": "vite preview --host 0.0.0.0",
     "start": "NODE_ENV=production node server.mjs"
   },

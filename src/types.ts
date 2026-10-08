@@ -113,6 +113,10 @@ export interface PublicToilet {
   updatedAt?: string;
   latitude: number;
   longitude: number;
+  kind?: 'publicToilet' | 'lcsdVenue';
+  source?: string;
+  sourceUrl?: string;
+  category?: string;
 }
 
 export interface PublicToiletViewModel {
