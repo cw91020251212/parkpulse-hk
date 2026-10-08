@@ -78,42 +78,60 @@ function LongPressPicker({ onPick }: { onPick: (coordinates: Coordinates) => voi
     const container = map.getContainer();
     let timer: number | undefined;
     let start: { x: number; y: number } | undefined;
-
+    const isBlocked = (target: EventTarget | null) => target instanceof Element && Boolean(target.closest('.leaflet-marker-icon, .leaflet-control'));
     const cancel = () => {
       if (timer !== undefined) window.clearTimeout(timer);
       timer = undefined;
       start = undefined;
     };
-    const pointerDown = (event: PointerEvent) => {
-      if (event.pointerType === 'mouse' && event.button !== 0) return;
-      if (event.target instanceof Element && event.target.closest('.leaflet-marker-icon, .leaflet-control')) return;
-      start = { x: event.clientX, y: event.clientY };
+    const begin = (x: number, y: number, target: EventTarget | null) => {
+      if (isBlocked(target)) return;
+      start = { x, y };
       timer = window.setTimeout(() => {
-        const point = map.mouseEventToContainerPoint(event);
-        const latLng = map.containerPointToLatLng(point);
+        const bounds = container.getBoundingClientRect();
+        const latLng = map.containerPointToLatLng([x - bounds.left, y - bounds.top]);
         onPick({ lat: latLng.lat, lng: latLng.lng });
-        window.navigator.vibrate?.(15);
+        window.navigator.vibrate?.(18);
         cancel();
-      }, 900);
+      }, 700);
     };
-    const pointerMove = (event: PointerEvent) => {
-      if (start && Math.hypot(event.clientX - start.x, event.clientY - start.y) > 12) cancel();
+    const move = (x: number, y: number) => {
+      if (start && Math.hypot(x - start.x, y - start.y) > 12) cancel();
     };
+    const touchStart = (event: TouchEvent) => {
+      const touch = event.touches[0];
+      if (touch) begin(touch.clientX, touch.clientY, event.target);
+    };
+    const touchMove = (event: TouchEvent) => {
+      const touch = event.touches[0];
+      if (touch) move(touch.clientX, touch.clientY);
+    };
+    const mouseDown = (event: MouseEvent) => {
+      if (event.button === 0) begin(event.clientX, event.clientY, event.target);
+    };
+    const mouseMove = (event: MouseEvent) => move(event.clientX, event.clientY);
+    const preventContextMenu = (event: Event) => event.preventDefault();
 
-    container.addEventListener('pointerdown', pointerDown);
-    container.addEventListener('pointermove', pointerMove);
-    container.addEventListener('pointerup', cancel);
-    container.addEventListener('pointercancel', cancel);
-    container.addEventListener('pointerleave', cancel);
-    container.addEventListener('contextmenu', cancel);
+    container.addEventListener('touchstart', touchStart, { passive: true });
+    container.addEventListener('touchmove', touchMove, { passive: true });
+    container.addEventListener('touchend', cancel);
+    container.addEventListener('touchcancel', cancel);
+    container.addEventListener('mousedown', mouseDown);
+    container.addEventListener('mousemove', mouseMove);
+    container.addEventListener('mouseup', cancel);
+    container.addEventListener('mouseleave', cancel);
+    container.addEventListener('contextmenu', preventContextMenu);
     return () => {
       cancel();
-      container.removeEventListener('pointerdown', pointerDown);
-      container.removeEventListener('pointermove', pointerMove);
-      container.removeEventListener('pointerup', cancel);
-      container.removeEventListener('pointercancel', cancel);
-      container.removeEventListener('pointerleave', cancel);
-      container.removeEventListener('contextmenu', cancel);
+      container.removeEventListener('touchstart', touchStart);
+      container.removeEventListener('touchmove', touchMove);
+      container.removeEventListener('touchend', cancel);
+      container.removeEventListener('touchcancel', cancel);
+      container.removeEventListener('mousedown', mouseDown);
+      container.removeEventListener('mousemove', mouseMove);
+      container.removeEventListener('mouseup', cancel);
+      container.removeEventListener('mouseleave', cancel);
+      container.removeEventListener('contextmenu', preventContextMenu);
     };
   }, [map, onPick]);
   return null;
@@ -133,6 +151,7 @@ export function MapView({ position, parks, selectedId, onSelect, onLocationSelec
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [searchMessage, setSearchMessage] = useState('');
+  const [longPressMessage, setLongPressMessage] = useState('長按地圖約 1 秒：選取 2 公里範圍');
   const selected = parks.find((park) => park.info.park_Id === selectedId);
 
   const submitDistrict = (event: FormEvent<HTMLFormElement>) => {
@@ -144,8 +163,13 @@ export function MapView({ position, parks, selectedId, onSelect, onLocationSelec
       return;
     }
     setSearchMessage('');
+    setLongPressMessage('長按地圖約 1 秒：選取 2 公里範圍');
     setSearchOpen(false);
     onLocationSelect(district.coordinates, district.label);
+  };
+  const selectMapPoint = (coordinates: Coordinates) => {
+    setLongPressMessage('已選取位置 · 顯示 2 公里範圍');
+    onLocationSelect(coordinates, '地圖選取位置');
   };
 
   return (
@@ -159,7 +183,7 @@ export function MapView({ position, parks, selectedId, onSelect, onLocationSelec
         <Recenter position={position} />
         <FocusSelected park={selected} />
         <ResizeMap expanded={expanded} />
-        <LongPressPicker onPick={(coordinates) => onLocationSelect(coordinates, '地圖選取位置')} />
+        <LongPressPicker onPick={selectMapPoint} />
         <Circle center={[position.lat, position.lng]} radius={2_000} pathOptions={{ color: '#14B8A6', fillColor: '#14B8A6', fillOpacity: 0.08, weight: 1 }} />
         <Circle center={[position.lat, position.lng]} radius={22} pathOptions={{ color: '#ffffff', fillColor: '#14B8A6', fillOpacity: 1, weight: 2 }} />
         {parks.map((park) => (
@@ -177,7 +201,7 @@ export function MapView({ position, parks, selectedId, onSelect, onLocationSelec
       <button className="map-area-search-toggle" type="button" onClick={() => { setSearchOpen((current) => !current); setSearchMessage(''); }} aria-expanded={searchOpen}>
         搜尋地區
       </button>
-      {!searchOpen && <span className="map-long-press-tip">長按地圖約 1 秒：選取 2 公里範圍</span>}
+      {!searchOpen && <span className="map-long-press-tip">{longPressMessage}</span>}
       {searchOpen && (
         <form className="map-area-search" onSubmit={submitDistrict}>
           <label htmlFor="district-search">搜尋中心</label>
