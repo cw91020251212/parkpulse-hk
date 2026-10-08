@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties, type FormEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent } from 'react';
 import { Filters } from './components/Filters';
 import { MapView } from './components/MapView';
 import { ParkCard } from './components/ParkCard';
@@ -104,6 +104,7 @@ export default function App() {
   const [districtSearchOpen, setDistrictSearchOpen] = useState(false);
   const [districtQuery, setDistrictQuery] = useState('');
   const [districtMessage, setDistrictMessage] = useState('');
+  const detailHistoryActive = useRef(false);
 
   useEffect(() => {
     try {
@@ -121,6 +122,16 @@ export default function App() {
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [mapExpanded]);
+
+  useEffect(() => {
+    const closeDetailFromBack = () => {
+      if (!detailHistoryActive.current) return;
+      detailHistoryActive.current = false;
+      setSelectedId(null);
+    };
+    window.addEventListener('popstate', closeDetailFromBack);
+    return () => window.removeEventListener('popstate', closeDetailFromBack);
+  }, []);
 
   const requestLocation = () => {
     if (!navigator.geolocation) {
@@ -189,6 +200,20 @@ export default function App() {
     setSelectedId(null);
     setMapExpanded((current) => !current);
   };
+  const openDetail = (parkId: string) => {
+    if (!detailHistoryActive.current) {
+      window.history.pushState({ ...(window.history.state ?? {}), parkspotDetail: true }, '');
+      detailHistoryActive.current = true;
+    }
+    setSelectedId(parkId);
+  };
+  const closeDetail = () => {
+    setSelectedId(null);
+    if (detailHistoryActive.current) {
+      detailHistoryActive.current = false;
+      window.history.back();
+    }
+  };
   const selectArea = (coordinates: Coordinates, label: string, behavior: { recenter: boolean }) => {
     setPosition(coordinates);
     setAreaName(label);
@@ -236,7 +261,7 @@ export default function App() {
 
       <section className="workspace">
         <div className="map-column">
-          <MapView position={position} parks={displayedParks} selectedId={selectedId} onSelect={setSelectedId} onLocationSelect={selectArea} recenterRequest={recenterRequest} expanded={mapExpanded} onToggleExpanded={toggleMap} onShowResults={showResults} />
+          <MapView position={position} parks={displayedParks} selectedId={selectedId} onSelect={openDetail} onLocationSelect={selectArea} recenterRequest={recenterRequest} expanded={mapExpanded} onToggleExpanded={toggleMap} onShowResults={showResults} />
           <section className="area-tools map-bottom-tools" aria-label="地圖搜尋與操作提示">
             <div className="area-tools-row">
               <button className="area-search-toggle" type="button" onClick={() => { setDistrictSearchOpen((current) => !current); setDistrictMessage(''); }} aria-expanded={districtSearchOpen}>搜尋地區</button>
@@ -260,7 +285,7 @@ export default function App() {
           <div className="results-list">
             {!resultsVerified && <div className="loading-state"><span className="loader" />{verificationLabel}<small>只會顯示已核實的停車場結果。</small></div>}
             {resultsVerified && displayedParks.map((park) => (
-              <ParkCard key={park.info.park_Id} park={park} vehicleType={vehicleType} selected={park.info.park_Id === selectedId} onSelect={() => setSelectedId(park.info.park_Id)} />
+              <ParkCard key={park.info.park_Id} park={park} vehicleType={vehicleType} selected={park.info.park_Id === selectedId} onSelect={() => openDetail(park.info.park_Id)} />
             ))}
             {resultsVerified && displayedParks.length === 0 && (
               <div className="empty-state"><strong>呢個範圍暫時冇符合條件嘅結果</strong><p>試下取消部分篩選，或者使用定位後再刷新。</p></div>
@@ -269,7 +294,7 @@ export default function App() {
         </section>
       </section>
 
-      {selectedPark && <ParkDetail park={selectedPark} vehicleType={vehicleType} onClose={() => setSelectedId(null)} />}
+      {selectedPark && <ParkDetail park={selectedPark} vehicleType={vehicleType} onClose={closeDetail} />}
 
       <footer>
         <span>資料來源：香港政府 <a href="https://data.gov.hk/tc-data/dataset/hk-dpo-datagovhk1-carpark-info-vacancy" target="_blank" rel="noreferrer">data.gov.hk</a>、環境保護署</span>
