@@ -8,7 +8,9 @@ type Props = {
   parks: ParkViewModel[];
   selectedId: string | null;
   onSelect: (id: string) => void;
-  onLocationSelect: (coordinates: Coordinates, label: string) => void;
+  onLocationSelect: (coordinates: Coordinates, label: string, behavior: { recenter: boolean; showMarker: boolean }) => void;
+  recenterRequest: number;
+  showSelectedCenter: boolean;
   expanded: boolean;
   onToggleExpanded: () => void;
   onShowResults: () => void;
@@ -47,11 +49,12 @@ const DISTRICTS: District[] = [
 
 const normalize = (value: string) => value.trim().toLocaleLowerCase().replace(/[\s-]+/g, '');
 
-function Recenter({ position }: { position: Coordinates }) {
+function Recenter({ position, request }: { position: Coordinates; request: number }) {
   const map = useMap();
   useEffect(() => {
+    if (request === 0) return;
     map.setView([position.lat, position.lng], 14, { animate: true });
-  }, [map, position.lat, position.lng]);
+  }, [map, position.lat, position.lng, request]);
   return null;
 }
 
@@ -89,7 +92,11 @@ function LongPressPicker({ onPick }: { onPick: (coordinates: Coordinates) => voi
       start = { x, y };
       timer = window.setTimeout(() => {
         const bounds = container.getBoundingClientRect();
-        const latLng = map.containerPointToLatLng([x - bounds.left, y - bounds.top]);
+        const size = map.getSize();
+        const latLng = map.containerPointToLatLng([
+          (x - bounds.left) * (size.x / bounds.width),
+          (y - bounds.top) * (size.y / bounds.height),
+        ]);
         onPick({ lat: latLng.lat, lng: latLng.lng });
         window.navigator.vibrate?.(18);
         cancel();
@@ -154,7 +161,7 @@ const selectedCenterIcon = L.divIcon({
   iconAnchor: [25, 50],
 });
 
-export function MapView({ position, parks, selectedId, onSelect, onLocationSelect, expanded, onToggleExpanded, onShowResults }: Props) {
+export function MapView({ position, parks, selectedId, onSelect, onLocationSelect, recenterRequest, showSelectedCenter, expanded, onToggleExpanded, onShowResults }: Props) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [searchMessage, setSearchMessage] = useState('');
@@ -172,11 +179,11 @@ export function MapView({ position, parks, selectedId, onSelect, onLocationSelec
     setSearchMessage('');
     setLongPressMessage('長按地圖約 1 秒：選取 2 公里範圍');
     setSearchOpen(false);
-    onLocationSelect(district.coordinates, district.label);
+    onLocationSelect(district.coordinates, district.label, { recenter: true, showMarker: false });
   };
   const selectMapPoint = (coordinates: Coordinates) => {
     setLongPressMessage('已選取位置 · 顯示 2 公里範圍');
-    onLocationSelect(coordinates, '地圖選取位置');
+    onLocationSelect(coordinates, '地圖選取位置', { recenter: false, showMarker: true });
   };
 
   return (
@@ -187,12 +194,12 @@ export function MapView({ position, parks, selectedId, onSelect, onLocationSelec
           url={LANDSD_BASEMAP_URL}
         />
         <TileLayer url={LANDSD_LABEL_URL} opacity={1} zIndex={10} />
-        <Recenter position={position} />
+        <Recenter position={position} request={recenterRequest} />
         <FocusSelected park={selected} />
         <ResizeMap expanded={expanded} />
         <LongPressPicker onPick={selectMapPoint} />
         <Circle center={[position.lat, position.lng]} radius={2_000} pathOptions={{ color: '#14B8A6', fillColor: '#14B8A6', fillOpacity: 0.1, weight: 2, dashArray: '6 6' }} />
-        <Marker position={[position.lat, position.lng]} icon={selectedCenterIcon} zIndexOffset={1_000} keyboard={false} />
+        {showSelectedCenter && <Marker position={[position.lat, position.lng]} icon={selectedCenterIcon} zIndexOffset={1_000} keyboard={false} />}
         {parks.map((park) => (
           <Marker
             key={park.info.park_Id}
