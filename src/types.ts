@@ -42,6 +42,7 @@ export interface CarparkInfo {
   park_Id: string;
   name: string;
   displayAddress?: string;
+  photoPlaceUrl?: string;
   district?: string;
   latitude: number;
   longitude: number;
@@ -108,6 +109,7 @@ export interface PublicToilet {
   id: string;
   name: string;
   address?: string;
+  photoPlaceUrl?: string;
   openingHours?: string;
   remarks?: string;
   updatedAt?: string;

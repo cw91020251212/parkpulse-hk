@@ -32,7 +32,7 @@ export function Filters({ vehicleType, filters, evLoading, facilityMode, facilit
       </div>
       <div className="filter-row" aria-label="條件篩選">
         <button className={filters.availableOnly ? 'chip is-on' : 'chip'} type="button" aria-pressed={filters.availableOnly} onClick={() => update({ availableOnly: !filters.availableOnly })}>只看有位</button>
-        <button className={filters.openOnly ? 'chip is-on' : 'chip'} type="button" aria-pressed={filters.openOnly} onClick={() => update({ openOnly: !filters.openOnly })}>開放中</button>
+        <button className={filters.openOnly ? 'chip is-on' : 'chip'} type="button" aria-pressed={filters.openOnly} aria-label="只看官方資料標示開放的停車場，不代表有空位" onClick={() => update({ openOnly: !filters.openOnly })}>只看開放</button>
         <button className={filters.hasEv ? 'chip is-on' : 'chip'} type="button" aria-pressed={filters.hasEv} onClick={() => update({ hasEv: !filters.hasEv })}>{evLoading ? '充電資料更新中' : '充電設施'}</button>
         <button className={filters.hasAccessible ? 'chip is-on' : 'chip'} type="button" aria-pressed={filters.hasAccessible} onClick={() => update({ hasAccessible: !filters.hasAccessible })}>無障礙</button>
         <label className="height-select">

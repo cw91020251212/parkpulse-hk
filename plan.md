@@ -74,7 +74,7 @@
 - 個性：**冷靜、精準、在地**。
 - 文案語氣：短句、直接、避免過度承諾。例如「附近有位，先看更新時間。」與「資料慢咗，去之前再睇一眼。」
 - 英文品牌名稱定為 **ParkPulse HK**，GitHub repository 建議使用 `parkpulse-hk`；中文產品名稱「泊邊有位」保留作主要面向香港使用者的標題。主圖示採用已選定的 A 版：深墨藍圓角方形底、青綠定位釘、暖黃車身及珊瑚紅即時訊號，帶克制立體光澤，能在 GitHub 頭像、網站 favicon 和 32px 小尺寸中辨認。提交 1024px PNG 到 `public/parkpulse-hk-icon.png`，網站標題／favicon／品牌圖示改用它；`app.config.ts` 使用已上傳的公開 HTTPS 圖示 URL，供專案平台與 GitHub 相關展示使用。
-- 正式網站改由 **GitHub Pages** 直接發佈，預期網址為 `https://cw91020251212.github.io/parkpulse-hk/`，並在 repository 的 GitHub Actions 於 `main` 每次更新、手動執行及每 6 小時建置。GitHub Pages 模式使用 `/parkpulse-hk/` 資產 base path，不會呼叫 Manus 的 `/api` 路徑；建置時以官方食環署 XML、環保署 JSON、消委會油站頁面及金管局／其 ArcGIS 後備資料產出靜態 JSON，一併放進 Pages artifact，因此保留停車場、公廁、康文署場館、充電器、油站與 ATM 功能。空位仍由瀏覽器直接讀取 CORS 開放的 data.gov.hk API。純靜態 Pages 無法安全使用需要私密服務憑證的已核實 Google Maps 相片代理，因此停車場詳情及洗手間卡的「相片」入口要直接開啟由名稱／官方地址組成的公開 Google Maps 地點相片頁，並清楚說明外部地圖相片不屬於已核實內嵌相片；不得向 `/api/place-photo` 發出請求。伺服器版仍只顯示位置相距 250 米內的已核實 Google Maps 相片；日後如要讓靜態版直接嵌入相片，必須接駁使用者自管後端，而非 Manus。
+- 正式網站改由 **GitHub Pages** 直接發佈，預期網址為 `https://cw91020251212.github.io/parkpulse-hk/`，並在 repository 的 GitHub Actions 於 `main` 每次更新、手動執行及每 6 小時建置。GitHub Pages 模式使用 `/parkpulse-hk/` 資產 base path，不會呼叫 Manus 的 `/api` 路徑；建置時以官方食環署 XML、環保署 JSON、消委會油站頁面及金管局／其 ArcGIS 後備資料產出靜態 JSON，一併放進 Pages artifact，因此保留停車場、公廁、康文署場館、充電器、油站與 ATM 功能。空位仍由瀏覽器直接讀取 CORS 開放的 data.gov.hk API。純靜態 Pages 無法安全使用需要私密服務憑證的已核實 Google Maps 相片代理，因此另有受版本控制的「已核實 Google Maps 地點」靜態快照：由既有代理以官方名稱／地址和座標取得 `query_place_id` 連結；公廁必須同時符合公廁／浴室語義及 100 米內座標，場館和停車場亦只接受 100 米內候選。靜態卡只在有此快照時才顯示「已核實相片 ↗」，直接開啟確實地點的 Google Maps 相片頁；沒有快照時明示「暫無已核實相片」，不得再把單純名稱／地址搜尋當作相片頁，亦不得向 `/api/place-photo` 發出請求。伺服器版同樣排除公廁附近但名稱不符的候選，並保留相片／距離／歸屬；日後如要讓靜態版直接嵌入相片，必須接駁使用者自管後端，而非 Manus。
 - GitHub Pages 須是可安裝的 PWA：應用程式自有 `manifest.webmanifest`、192px／512px PNG 圖示及只限同源資源的 service worker；使用 Vite `BASE_URL`，令 repository 網址的 scope／start URL 固定為 `/parkpulse-hk/` 而非根目錄。Service worker 預先快取應用外殼和圖示，為 HTML／官方靜態資料採網絡優先、離線回退快取，並只快取同源 GET；不攔截 data.gov.hk 即時空位、地政總署地圖或 Google Maps 等第三方資料，避免誤把即時資料變舊。iOS 提供 `apple-mobile-web-app-capable`、touch icon、主題色；Android／Chrome 符合 manifest 加 service worker 的安裝資格。每次 `main` 更新後 GitHub Pages 同時更新 PWA 版本，使用者重開程式可收到新版本。
 
 ## 技術結構
@@ -86,6 +86,7 @@ src/
   api/publicToilets.ts     # 食環署公廁同源資料讀取
   api/lcsdVenues.ts        # 康文署體育館／室內體育設施快照讀取
   api/nearbyFacilities.ts  # 油站／ATM 同源資料讀取
+  api/verifiedPlaceLinks.ts # GitHub Pages 已核實 Google Maps Place ID 快照讀取
   domain/carpark.ts        # API 資料轉換、A/B/C/-1 狀態判讀、收費／設施格式化
   domain/evChargers.ts     # 官方充電器與停車場的保守名稱／地址／座標匹配
   domain/distance.ts       # Haversine 距離與附近排序
@@ -95,6 +96,7 @@ src/
   hooks/useLcsdVenues.ts   # 啟用「洗手間」後才載入的康文署場館資料狀態
   hooks/useNearbyFacilities.ts # 啟用油站或 ATM 後才載入的資料狀態
   hooks/usePlacePhoto.ts   # 已核實 Google Maps 相片的按需查詢狀態
+  hooks/useVerifiedPlaceLinks.ts # 靜態版精確相片地點快照載入
   components/MapView.tsx   # Leaflet 地圖、使用者位置、marker
   components/ParkCard.tsx  # 清單條目
   components/ParkDetail.tsx # 選中停車場的詳情面板
@@ -109,7 +111,9 @@ scripts/check-fast-start.mjs # 靜態停車場基本資料完整性檢查
 public/
   carpark-info.json        # 官方停車場基本資料快速啟動快照
   lcsd-washroom-venues.json # 經官方地址服務核實座標的康文署場館快照
+  pages-data/verified-place-links.json # 100 米內核實的 Google Maps 相片地點連結
   manus-routes.json        # 單一路由宣告
+scripts/build-verified-place-links.mjs # 產生精確地點相片快照
 ```
 
 ## 依賴與服務

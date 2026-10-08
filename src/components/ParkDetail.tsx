@@ -1,7 +1,7 @@
 import { FACILITY_LABELS, formatAge, formatHeight, formatPrice, PAYMENT_LABELS } from '../domain/carpark';
 import { formatDistance } from '../domain/distance';
 import { isStaticPages } from '../api/site';
-import { mapsPhotoSearchUrl, usePlacePhoto } from '../hooks/usePlacePhoto';
+import { usePlacePhoto } from '../hooks/usePlacePhoto';
 import type { CarparkInfo, ParkViewModel, VehicleType } from '../types';
 
 type Props = {
@@ -19,7 +19,6 @@ function formatEpdUpdate(value?: string) {
 export function ParkDetail({ park, vehicleType, onClose }: Props) {
   const { info, status, distanceKm, heightLimit, evCharger } = park;
   const navigationUrl = `https://www.google.com/maps/dir/?api=1&destination=${info.latitude},${info.longitude}`;
-  const mapsPhotosUrl = mapsPhotoSearchUrl({ name: info.name, address: info.displayAddress });
   const facilities = (info.facilities ?? [])
     .filter((item) => item !== 'evCharger' || !evCharger)
     .map((item) => FACILITY_LABELS[item] ?? item);
@@ -46,10 +45,9 @@ export function ParkDetail({ park, vehicleType, onClose }: Props) {
       <section className="detail-photo-section" aria-live="polite">
         <div className="detail-section-heading"><h3>附近實景</h3><span>{isStaticPages ? 'Google Maps' : '位置核實'}</span></div>
         {isStaticPages ? (
-          <>
-            <p className="photo-state">GitHub Pages 版會直接開啟 Google Maps 的相片頁。</p>
-            <a className="photo-link" href={mapsPhotosUrl} target="_blank" rel="noreferrer" aria-label={`在 Google Maps 查看${info.name}相片`}>開啟 Google Maps 相片 ↗</a>
-          </>
+          info.photoPlaceUrl
+            ? <a className="photo-link" href={info.photoPlaceUrl} target="_blank" rel="noreferrer" aria-label={`在 Google Maps 查看${info.name}已核實相片`}>開啟已核實 Google Maps 相片 ↗</a>
+            : <p className="photo-state">暫無已核實相片。</p>
         ) : (
           <>
             {photoState.kind === 'loading' && <p className="photo-state">正在尋找可核實的公開相片…</p>}

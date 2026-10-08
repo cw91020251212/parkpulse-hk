@@ -75,6 +75,10 @@ function plainAttribution(values) {
   return text || 'Google Maps';
 }
 
+function isWashroomName(value) {
+  return /toilet|bathhouse|urinal|washroom|restroom|公廁|尿廁|浴室|洗手間/i.test(value);
+}
+
 async function refreshEpdEvChargers() {
   if (evCache.pending) return evCache.pending;
 
@@ -186,6 +190,7 @@ async function refreshAtms() {
         const primary = await fetch(HKMA_ATMS_URL, { headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(5_000) });
         if (!primary.ok) throw new Error(`HKMA ATM service returned ${primary.status}`);
         records = parseHkmaAtms(await primary.json());
+        if (records.length < 1_500) throw new Error('HKMA ATM service returned an incomplete page');
       } catch {
         const fallback = await fetch(HKMA_ATMS_FALLBACK_URL, { headers: { Accept: 'application/geo+json,application/json' }, signal: AbortSignal.timeout(20_000) });
         if (!fallback.ok) throw new Error(`HKMA ATM fallback returned ${fallback.status}`);
@@ -267,6 +272,7 @@ app.get('/api/place-photo', async (request, response) => {
   }
 
   const fallbackPlaceUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${name} ${address}`.trim())}`;
+  const isWashroom = isWashroomName(name);
 
   try {
     const mapsResponse = await mapsRequest('maps/api/place/textsearch/json', {
@@ -277,6 +283,7 @@ app.get('/api/place-photo', async (request, response) => {
     const payload = await mapsResponse.json();
     const candidate = (payload.results ?? [])
       .filter((item) => item?.photos?.[0]?.photo_reference && item?.geometry?.location)
+      .filter((item) => !isWashroom || isWashroomName(item.name ?? ''))
       .map((item) => ({
         ...item,
         distanceMeters: distanceInMeters(coordinates, {
@@ -284,7 +291,7 @@ app.get('/api/place-photo', async (request, response) => {
           lng: Number(item.geometry.location.lng),
         }),
       }))
-      .filter((item) => Number.isFinite(item.distanceMeters) && item.distanceMeters <= 250)
+      .filter((item) => Number.isFinite(item.distanceMeters) && item.distanceMeters <= (isWashroom ? 100 : 250))
       .sort((left, right) => left.distanceMeters - right.distanceMeters)[0];
 
     if (!candidate) {

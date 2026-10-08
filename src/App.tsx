@@ -13,6 +13,7 @@ import { useEvChargers } from './hooks/useEvChargers';
 import { useLcsdVenues } from './hooks/useLcsdVenues';
 import { useNearbyFacilities } from './hooks/useNearbyFacilities';
 import { usePublicToilets } from './hooks/usePublicToilets';
+import { useVerifiedPlaceLinks } from './hooks/useVerifiedPlaceLinks';
 import { publicAsset } from './api/site';
 import type { Coordinates, NearbyFacilityViewModel, NearbyMode, ParkFilters, ParkViewModel, PublicToiletViewModel, VehicleType } from './types';
 
@@ -118,6 +119,7 @@ export default function App() {
   const { toilets, loading: toiletLoading, error: toiletError, retry: retryToilets } = usePublicToilets(facilityMode === 'toilets');
   const { venues: lcsdVenues, loading: lcsdLoading, error: lcsdError, retry: retryLcsdVenues } = useLcsdVenues(facilityMode === 'toilets');
   const { facilities: nearbyFacilityData, source: nearbyFacilitySource, loading: nearbyFacilityLoading, error: nearbyFacilityError, retry: retryNearbyFacilities } = useNearbyFacilities(facilityMode);
+  const verifiedPlaceLinks = useVerifiedPlaceLinks();
 
   useEffect(() => {
     try {
@@ -171,7 +173,8 @@ export default function App() {
         const vacancyEntry = selectVacancyEntry(vacancyById.get(info.park_Id)?.[vehicleType]);
         const status = getVacancyStatus(info, vacancyEntry);
         const distanceKm = distanceInKm(position, { lat: info.latitude, lng: info.longitude });
-        return { info, status, distanceKm, heightLimit: getHeightLimit(info), evCharger: findEvCharger(info, chargers) };
+        const photoPlaceUrl = verifiedPlaceLinks.get(`carpark:${info.park_Id}`);
+        return { info: photoPlaceUrl ? { ...info, photoPlaceUrl } : info, status, distanceKm, heightLimit: getHeightLimit(info), evCharger: findEvCharger(info, chargers) };
       })
       .filter((park) => park.distanceKm <= NEARBY_RADIUS_KM)
       .sort((left, right) => {
@@ -179,12 +182,15 @@ export default function App() {
         if (statusDifference !== 0) return statusDifference;
         return left.distanceKm - right.distanceKm;
       });
-  }, [chargers, infos, position, vacancyById, vehicleType]);
+  }, [chargers, infos, position, vacancyById, vehicleType, verifiedPlaceLinks]);
 
   const nearbyToilets = useMemo<PublicToiletViewModel[]>(() => [...toilets, ...lcsdVenues]
-    .map((toilet) => ({ toilet, distanceKm: distanceInKm(position, { lat: toilet.latitude, lng: toilet.longitude }) }))
+    .map((toilet) => {
+      const photoPlaceUrl = verifiedPlaceLinks.get(`${toilet.kind ?? 'publicToilet'}:${toilet.id}`);
+      return { toilet: photoPlaceUrl ? { ...toilet, photoPlaceUrl } : toilet, distanceKm: distanceInKm(position, { lat: toilet.latitude, lng: toilet.longitude }) };
+    })
     .filter((toilet) => toilet.distanceKm <= NEARBY_RADIUS_KM)
-    .sort((left, right) => left.distanceKm - right.distanceKm), [lcsdVenues, position, toilets]);
+    .sort((left, right) => left.distanceKm - right.distanceKm), [lcsdVenues, position, toilets, verifiedPlaceLinks]);
   const nearbyFacilities = useMemo<NearbyFacilityViewModel[]>(() => {
     if (facilityMode !== 'fuel' && facilityMode !== 'atm') return [];
     return nearbyFacilityData
