@@ -177,6 +177,7 @@ export interface OnStreetParkingGroup {
   kind: OnStreetParking['kind'];
   name: string;
   address: string;
+  sections: string[];
   latitude: number;
   longitude: number;
   total: number;

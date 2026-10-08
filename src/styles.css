@@ -550,3 +550,73 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .toilet-marker.is-onstreet,.toilet-card-icon.is-onstreet{font-family:Inter,system-ui,sans-serif;font-weight:950;color:#fff;background:#475569}.toilet-marker.is-onstreet.is-vacant,.toilet-card-icon.is-onstreet.is-vacant{background:#0f9f82}.toilet-marker.is-onstreet.is-occupied,.toilet-card-icon.is-onstreet.is-occupied{background:#e05a4f}.toilet-marker.is-onstreet.is-unavailable,.toilet-card-icon.is-onstreet.is-unavailable{background:#64748b}.on-street-card{border-left:3px solid #64748b}.on-street-card.is-vacant{border-left-color:#0f9f82}.on-street-card.is-occupied{border-left-color:#e05a4f}.washroom-source.is-onstreet{background:#e0f2fe;color:#075985}.on-street-card .toilet-facts{grid-template-rows:repeat(4,minmax(0,1fr));min-height:76px}.on-street-card .toilet-card-actions{grid-template-rows:1fr}.on-street-card .nav-link{height:100%;display:grid;place-items:center;text-align:center}
 .google-rating{display:inline-block;border-radius:5px;padding:3px 5px;color:#ffe39a!important;background:#594920;text-decoration:none;font-weight:900}.google-rating:hover{background:#79622b}.google-rating-detail a{color:#ffe39a;font-weight:900}.google-rating-detail small{display:block;margin-top:5px;color:#91aab4;font-size:11px;line-height:1.45}
 .legend-swatch.legend-onstreet{background:#64748b}
+
+/* 2026-10-09：路邊位卡只保留可讀摘要，點按開固定詳情。 */
+.on-street-card {
+  grid-template-columns: minmax(0, 1fr) 66px;
+  min-height: 136px;
+}
+
+.on-street-card-main {
+  min-height: 136px !important;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.on-street-card .toilet-facts {
+  grid-template-rows: auto auto auto;
+  min-height: 0;
+  max-height: none;
+  overflow: visible;
+}
+
+.on-street-card .toilet-facts span {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.on-street-card .onstreet-space-summary {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  line-height: 1.3;
+}
+
+.onstreet-space-summary strong { color: #dcfff8; font-size: 12px; }
+.onstreet-space-summary em { color: #a8c6cd; font-size: 11px; font-style: normal; }
+.onstreet-detail-hint { color: #76dcd0; font-size: 10px; font-weight: 900; line-height: 1.25; }
+.on-street-card .toilet-card-actions { width: 66px; padding: 10px 8px 10px 0; }
+.on-street-card .nav-link { align-self: center; height: 42px; min-height: 42px; padding: 6px 2px; font-size: 12px; }
+.on-street-card-main:focus-visible { outline: 2px solid #67e9d9; outline-offset: -3px; }
+.on-street-status.is-vacant { background: #0d514c; color: #c3fff7; }
+.on-street-status.is-occupied { background: #5a2e28; color: #ffe1d7; }
+.on-street-status.is-unavailable { background: #344851; color: #dce7e9; }
+
+/* 評分放在名稱行右端，讓評價先於次要資料被看見。 */
+.park-card-main { position: relative; min-height: 148px; padding: 0; }
+.park-card-select { display: grid; grid-template-rows: 36px 20px 22px 14px; align-content: center; gap: 7px; width: 100%; min-height: 148px; border: 0; padding: 13px 11px 13px 13px; color: inherit; background: transparent; font: inherit; text-align: left; cursor: pointer; }
+.park-card-select:focus-visible { outline: 2px solid #67e9d9; outline-offset: -3px; }
+.park-card-rating { position: absolute; top: 35px; right: 43px; z-index: 1; border-radius: 6px; padding: 3px 5px; color: #ffe39a; background: #594920; font-size: 11px; font-weight: 900; line-height: 1; text-decoration: none; }
+.park-card-rating:hover { background: #79622b; }
+.park-card:has(.park-card-rating) .card-heading > div { padding-right: 38px; }
+
+@media (max-width: 560px) {
+  .on-street-card,
+  .on-street-card-main { min-height: 136px !important; }
+  .park-card-select { min-height: 152px; }
+  .park-card-rating { top: 34px; right: 40px; }
+}
+
+/* 手機結果標題不可被來源文字壓成逐字直排。 */
+.results-heading > div { min-width: 0; }
+
+@media (max-width: 560px) {
+  .results-heading { display: block; padding-bottom: 10px; }
+  .results-heading h2 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .results-heading > p { margin: 5px 0 0; white-space: normal; line-height: 1.35; }
+}

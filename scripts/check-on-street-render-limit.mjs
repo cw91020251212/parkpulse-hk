@@ -13,6 +13,7 @@ const grouped = groupOnStreetResults([
 ]);
 assert.equal(grouped.length, 1);
 assert.deepEqual({ total: grouped[0].onStreet.total, vacant: grouped[0].onStreet.vacant, occupied: grouped[0].onStreet.occupied, unavailable: grouped[0].onStreet.unavailable }, { total: 3, vacant: 1, occupied: 1, unavailable: 1 });
+assert.deepEqual(grouped[0].onStreet.sections, ['桂林街 · 近長沙灣道', '桂林街 · 近元州街']);
 assert.equal(grouped[0].distanceKm, 0.1);
 
 const manyStreets = Array.from({ length: 180 }, (_, index) => ({

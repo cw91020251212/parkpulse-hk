@@ -8,7 +8,7 @@ type Props = { language: Language; park: ParkViewModel; vehicleType: VehicleType
 function chargingSummary(park: ParkViewModel, language: Language) {
   if (park.evCharger) return language === 'en'
     ? (park.evCharger.available === null ? `${park.evCharger.total} chargers` : `${park.evCharger.available}/${park.evCharger.total} chargers available`)
-    : (park.evCharger.available === null ? `充電 ${park.evCharger.total} 支` : `充電 ${park.evCharger.available}/${park.evCharger.total} 可用`);
+    : (park.evCharger.available === null ? `充電 ${park.evCharger.total} 支` : `充電 ${park.evCharger.available}/${park.evCharger.total} 支可用`);
   return (park.info.facilities ?? []).includes('evCharger') ? text(language, 'evFacilities') : null;
 }
 
@@ -22,12 +22,15 @@ export function ParkCard({ language, park, vehicleType, selected, onSelect }: Pr
   const totalSpaces = info[vehicleType]?.space;
 
   return <article className={selected ? 'park-card is-selected' : 'park-card'}>
-    <button className="park-card-main" type="button" onClick={onSelect} aria-label={`${text(language, 'details')}: ${info.name}`}>
-      <div className="card-heading"><span className={`status-dot status-${status.kind}`} aria-hidden="true" /><div><h3>{info.name}</h3><p>{info.district || info.displayAddress || 'Hong Kong'}</p></div><strong className="distance">{formatDistance(distanceKm)}</strong></div>
-      <div className="availability-line"><strong className={`availability status-${status.kind}`}>{vacancyLabel(language, status)}</strong><span>{status.sourceCategory === 'MONTHLY' ? text(language, 'monthly') : vehicleType === 'privateCar' ? vehicleLabel(language, vehicleType) : text(language, 'liveData')}</span>{status.stale && <span className="stale-badge">{text(language, 'stale')}</span>}</div>
-      <div className="card-facts">{typeof totalSpaces === 'number' && <span className="total-spaces">{text(language, 'totalSpaces')} {totalSpaces}</span>}{info.googleRating && <a className="google-rating" href={info.googleRating.placeUrl} target="_blank" rel="noreferrer" title={`${text(language, 'googleUserRating')} · ${text(language, 'ratingCount', { count: info.googleRating.userRatingCount })}`}>★ {info.googleRating.rating.toFixed(1)} ({info.googleRating.userRatingCount})</a>}<span>{text(language, 'height')} {heightLabel(language, heightLimit)}</span><span>{text(language, 'hourlyRate')} {price ?? text(language, 'officialRateNotProvided')}</span>{paymentSummary && <span>{paymentSummary}</span>}{charging && <span className="charging-fact">{charging}</span>}{facilities.includes('disabilities') && <span>{text(language, 'accessible')}</span>}</div>
-      <p className="updated">{updatedLabel(language, status.updatedAt)}</p>
-    </button>
+    <div className="park-card-main">
+      <button className="park-card-select" type="button" onClick={onSelect} aria-label={`${text(language, 'details')}: ${info.name}`}>
+        <div className="card-heading"><span className={`status-dot status-${status.kind}`} aria-hidden="true" /><div><div className="park-title-row"><h3>{info.name}</h3></div><p>{info.district || info.displayAddress || 'Hong Kong'}</p></div><strong className="distance">{formatDistance(distanceKm)}</strong></div>
+        <div className="availability-line"><strong className={`availability status-${status.kind}`}>{vacancyLabel(language, status)}</strong><span>{status.sourceCategory === 'MONTHLY' ? text(language, 'monthly') : vehicleType === 'privateCar' ? vehicleLabel(language, vehicleType) : text(language, 'liveData')}</span>{status.stale && <span className="stale-badge">{text(language, 'stale')}</span>}</div>
+        <div className="card-facts">{typeof totalSpaces === 'number' && <span className="total-spaces">{text(language, 'totalSpaces')} {totalSpaces}</span>}<span>{text(language, 'height')} {heightLabel(language, heightLimit)}</span><span>{text(language, 'hourlyRate')} {price ?? text(language, 'officialRateNotProvided')}</span>{paymentSummary && <span>{paymentSummary}</span>}{charging && <span className="charging-fact">{charging}</span>}{facilities.includes('disabilities') && <span>{text(language, 'accessible')}</span>}</div>
+        <p className="updated">{updatedLabel(language, status.updatedAt)}</p>
+      </button>
+      {info.googleRating && <a className="park-card-rating" href={info.googleRating.placeUrl} target="_blank" rel="noreferrer" title={`${text(language, 'googleUserRating')} · ${text(language, 'ratingCount', { count: info.googleRating.userRatingCount })}`}>★ {info.googleRating.rating.toFixed(1)}</a>}
+    </div>
     <a className="nav-link" href={navigateUrl} target="_blank" rel="noreferrer" aria-label={`${text(language, 'navigation')}: ${info.name}`}>{text(language, 'navigation')}</a>
     {!isAvailable(status) && status.kind === 'unknown' && <span className="card-note">{text(language, 'operatorNoVacancy')}</span>}
   </article>;

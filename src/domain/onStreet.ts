@@ -29,6 +29,7 @@ export function groupOnStreetResults(items: OnStreetParkingRecordViewModel[]) {
       kind: first.kind,
       name: streetName(first.name),
       address: sections.length <= 1 ? (sections[0] ?? '') : `${streetName(first.name)} · ${sections.length} 路段`,
+      sections,
       latitude: members.reduce((sum, { onStreet }) => sum + onStreet.latitude, 0) / members.length,
       longitude: members.reduce((sum, { onStreet }) => sum + onStreet.longitude, 0) / members.length,
       total: members.length,
