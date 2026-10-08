@@ -172,8 +172,32 @@ export interface OnStreetParking {
   snapshot: boolean;
 }
 
-export interface OnStreetParkingViewModel {
+export interface OnStreetParkingGroup {
+  id: string;
+  kind: OnStreetParking['kind'];
+  name: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  total: number;
+  vacant: number;
+  occupied: number;
+  unavailable: number;
+  occupancy: OnStreetParking['occupancy'];
+  operatingPeriod?: string;
+  timeUnit?: string;
+  paymentUnit?: string;
+  source: string;
+  snapshot: boolean;
+}
+
+export interface OnStreetParkingRecordViewModel {
   onStreet: OnStreetParking;
+  distanceKm: number;
+}
+
+export interface OnStreetParkingViewModel {
+  onStreet: OnStreetParkingGroup;
   distanceKm: number;
 }
 
