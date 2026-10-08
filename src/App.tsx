@@ -1,116 +1,84 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent } from 'react';
 import { Filters } from './components/Filters';
+import { HelpDialog } from './components/HelpDialog';
 import { MapView } from './components/MapView';
 import { NearbyFacilityCard } from './components/NearbyFacilityCard';
 import { ParkCard } from './components/ParkCard';
 import { ParkDetail } from './components/ParkDetail';
 import { ToiletCard } from './components/ToiletCard';
-import { findEvCharger } from './domain/evChargers';
+import { publicAsset } from './api/site';
 import { getHeightLimit, getVacancyStatus, isAvailable, selectVacancyEntry, statusPriority } from './domain/carpark';
 import { distanceInKm } from './domain/distance';
+import { findEvCharger } from './domain/evChargers';
+import { text, type Language } from './i18n';
 import { useCarparks } from './hooks/useCarparks';
 import { useEvChargers } from './hooks/useEvChargers';
 import { useLcsdVenues } from './hooks/useLcsdVenues';
 import { useNearbyFacilities } from './hooks/useNearbyFacilities';
 import { usePublicToilets } from './hooks/usePublicToilets';
 import { useVerifiedPlaceLinks } from './hooks/useVerifiedPlaceLinks';
-import { publicAsset } from './api/site';
 import type { Coordinates, NearbyFacilityViewModel, NearbyMode, ParkFilters, ParkViewModel, PublicToiletViewModel, VehicleType } from './types';
 
 const HONG_KONG_CENTER: Coordinates = { lat: 22.3193, lng: 114.1694 };
 const NEARBY_RADIUS_KM = 2;
 const TEXT_SCALES = [100, 115, 130] as const;
 type TextScale = typeof TEXT_SCALES[number];
-type District = { label: string; aliases: string[]; coordinates: Coordinates };
+type District = { label: string; englishLabel: string; aliases: string[]; coordinates: Coordinates };
 
 const DISTRICTS: District[] = [
-  { label: '中西區', aliases: ['中西區', '中西', 'central and western'], coordinates: { lat: 22.2855, lng: 114.1546 } },
-  { label: '灣仔區', aliases: ['灣仔區', '灣仔', 'wan chai'], coordinates: { lat: 22.279, lng: 114.173 } },
-  { label: '東區', aliases: ['東區', 'eastern'], coordinates: { lat: 22.284, lng: 114.224 } },
-  { label: '南區', aliases: ['南區', 'southern'], coordinates: { lat: 22.247, lng: 114.158 } },
-  { label: '油尖旺區', aliases: ['油尖旺區', '油尖旺', 'yau tsim mong'], coordinates: { lat: 22.319, lng: 114.169 } },
-  { label: '深水埗區', aliases: ['深水埗區', '深水埗', 'sham shui po'], coordinates: { lat: 22.329, lng: 114.16 } },
-  { label: '九龍城區', aliases: ['九龍城區', '九龍城', 'kowloon city'], coordinates: { lat: 22.33, lng: 114.188 } },
-  { label: '黃大仙區', aliases: ['黃大仙區', '黃大仙', 'wong tai sin'], coordinates: { lat: 22.341, lng: 114.193 } },
-  { label: '觀塘區', aliases: ['觀塘區', '觀塘', 'kwun tong'], coordinates: { lat: 22.313, lng: 114.225 } },
-  { label: '葵青區', aliases: ['葵青區', '葵青', 'kwai tsing'], coordinates: { lat: 22.353, lng: 114.129 } },
-  { label: '荃灣區', aliases: ['荃灣區', '荃灣', 'tsuen wan'], coordinates: { lat: 22.371, lng: 114.117 } },
-  { label: '屯門區', aliases: ['屯門區', '屯門', 'tuen mun'], coordinates: { lat: 22.391, lng: 113.975 } },
-  { label: '元朗區', aliases: ['元朗區', '元朗', 'yuen long'], coordinates: { lat: 22.445, lng: 114.022 } },
-  { label: '北區', aliases: ['北區', 'north district'], coordinates: { lat: 22.5, lng: 114.132 } },
-  { label: '大埔區', aliases: ['大埔區', '大埔', 'tai po'], coordinates: { lat: 22.4501, lng: 114.1688 } },
-  { label: '沙田區', aliases: ['沙田區', '沙田', 'sha tin'], coordinates: { lat: 22.387, lng: 114.195 } },
-  { label: '西貢區', aliases: ['西貢區', '西貢', 'sai kung'], coordinates: { lat: 22.383, lng: 114.271 } },
-  { label: '離島區', aliases: ['離島區', '離島', 'islands'], coordinates: { lat: 22.281, lng: 113.943 } },
+  { label: '中西區', englishLabel: 'Central and Western', aliases: ['中西區', '中西', 'central and western'], coordinates: { lat: 22.2855, lng: 114.1546 } },
+  { label: '灣仔區', englishLabel: 'Wan Chai', aliases: ['灣仔區', '灣仔', 'wan chai'], coordinates: { lat: 22.279, lng: 114.173 } },
+  { label: '東區', englishLabel: 'Eastern', aliases: ['東區', 'eastern'], coordinates: { lat: 22.284, lng: 114.224 } },
+  { label: '南區', englishLabel: 'Southern', aliases: ['南區', 'southern'], coordinates: { lat: 22.247, lng: 114.158 } },
+  { label: '油尖旺區', englishLabel: 'Yau Tsim Mong', aliases: ['油尖旺區', '油尖旺', 'yau tsim mong'], coordinates: { lat: 22.319, lng: 114.169 } },
+  { label: '深水埗區', englishLabel: 'Sham Shui Po', aliases: ['深水埗區', '深水埗', 'sham shui po'], coordinates: { lat: 22.329, lng: 114.16 } },
+  { label: '九龍城區', englishLabel: 'Kowloon City', aliases: ['九龍城區', '九龍城', 'kowloon city'], coordinates: { lat: 22.33, lng: 114.188 } },
+  { label: '黃大仙區', englishLabel: 'Wong Tai Sin', aliases: ['黃大仙區', '黃大仙', 'wong tai sin'], coordinates: { lat: 22.341, lng: 114.193 } },
+  { label: '觀塘區', englishLabel: 'Kwun Tong', aliases: ['觀塘區', '觀塘', 'kwun tong'], coordinates: { lat: 22.313, lng: 114.225 } },
+  { label: '葵青區', englishLabel: 'Kwai Tsing', aliases: ['葵青區', '葵青', 'kwai tsing'], coordinates: { lat: 22.353, lng: 114.129 } },
+  { label: '荃灣區', englishLabel: 'Tsuen Wan', aliases: ['荃灣區', '荃灣', 'tsuen wan'], coordinates: { lat: 22.371, lng: 114.117 } },
+  { label: '屯門區', englishLabel: 'Tuen Mun', aliases: ['屯門區', '屯門', 'tuen mun'], coordinates: { lat: 22.391, lng: 113.975 } },
+  { label: '元朗區', englishLabel: 'Yuen Long', aliases: ['元朗區', '元朗', 'yuen long'], coordinates: { lat: 22.445, lng: 114.022 } },
+  { label: '北區', englishLabel: 'North', aliases: ['北區', 'north district'], coordinates: { lat: 22.5, lng: 114.132 } },
+  { label: '大埔區', englishLabel: 'Tai Po', aliases: ['大埔區', '大埔', 'tai po'], coordinates: { lat: 22.4501, lng: 114.1688 } },
+  { label: '沙田區', englishLabel: 'Sha Tin', aliases: ['沙田區', '沙田', 'sha tin'], coordinates: { lat: 22.387, lng: 114.195 } },
+  { label: '西貢區', englishLabel: 'Sai Kung', aliases: ['西貢區', '西貢', 'sai kung'], coordinates: { lat: 22.383, lng: 114.271 } },
+  { label: '離島區', englishLabel: 'Islands', aliases: ['離島區', '離島', 'islands'], coordinates: { lat: 22.281, lng: 113.943 } },
 ];
 
 const normalizeDistrict = (value: string) => value.trim().toLocaleLowerCase().replace(/[\s-]+/g, '');
 const shortBankName = (bank: string) => bank.replace(/\(香港\)\s*/g, '').replace(/\s*有限公司$/, '');
-
-const INITIAL_FILTERS: ParkFilters = {
-  availableOnly: true,
-  openOnly: false,
-  hasEv: false,
-  hasAccessible: false,
-  minHeight: 0,
-};
-
+const INITIAL_FILTERS: ParkFilters = { availableOnly: true, openOnly: false, hasEv: false, hasAccessible: false, minHeight: 0 };
 const PREFERENCES_KEY = 'parkspot:preferences:v1';
 
 function readPreferences() {
   try {
-    const saved = JSON.parse(window.localStorage.getItem(PREFERENCES_KEY) ?? '{}') as Partial<{ vehicleType: VehicleType; filters: ParkFilters & { showToilets?: boolean }; textScale: TextScale; facilityMode: NearbyMode; atmBank: string }>;
-    const vehicleType = saved.vehicleType && ['privateCar', 'motorCycle', 'LGV', 'HGV', 'coach'].includes(saved.vehicleType)
-      ? saved.vehicleType
-      : 'privateCar';
-    const savedFilters = saved.filters;
-    const filters: ParkFilters = {
-      availableOnly: typeof savedFilters?.availableOnly === 'boolean' ? savedFilters.availableOnly : INITIAL_FILTERS.availableOnly,
-      openOnly: typeof savedFilters?.openOnly === 'boolean' ? savedFilters.openOnly : INITIAL_FILTERS.openOnly,
-      hasEv: typeof savedFilters?.hasEv === 'boolean' ? savedFilters.hasEv : INITIAL_FILTERS.hasEv,
-      hasAccessible: typeof savedFilters?.hasAccessible === 'boolean' ? savedFilters.hasAccessible : INITIAL_FILTERS.hasAccessible,
-      minHeight: [0, 1.8, 2, 2.2].includes(savedFilters?.minHeight ?? -1) ? savedFilters?.minHeight ?? 0 : INITIAL_FILTERS.minHeight,
-    };
-    const textScale = TEXT_SCALES.includes(saved.textScale ?? 0 as TextScale) ? saved.textScale as TextScale : 100;
-    const facilityMode = ['toilets', 'fuel', 'atm'].includes(saved.facilityMode ?? '') ? saved.facilityMode : savedFilters?.showToilets ? 'toilets' : null;
-    return { vehicleType, filters, textScale, facilityMode, atmBank: typeof saved.atmBank === 'string' ? saved.atmBank : '' };
-  } catch {
-    return { vehicleType: 'privateCar' as VehicleType, filters: INITIAL_FILTERS, textScale: 100 as TextScale, facilityMode: null, atmBank: '' };
-  }
+    const saved = JSON.parse(window.localStorage.getItem(PREFERENCES_KEY) ?? '{}') as Partial<{ vehicleType: VehicleType; filters: ParkFilters & { showToilets?: boolean }; textScale: TextScale; facilityMode: NearbyMode; atmBank: string; language: Language }>;
+    const vehicleType = saved.vehicleType && ['privateCar', 'motorCycle', 'LGV', 'HGV', 'coach'].includes(saved.vehicleType) ? saved.vehicleType : 'privateCar';
+    const filters: ParkFilters = { availableOnly: typeof saved.filters?.availableOnly === 'boolean' ? saved.filters.availableOnly : INITIAL_FILTERS.availableOnly, openOnly: typeof saved.filters?.openOnly === 'boolean' ? saved.filters.openOnly : INITIAL_FILTERS.openOnly, hasEv: typeof saved.filters?.hasEv === 'boolean' ? saved.filters.hasEv : INITIAL_FILTERS.hasEv, hasAccessible: typeof saved.filters?.hasAccessible === 'boolean' ? saved.filters.hasAccessible : INITIAL_FILTERS.hasAccessible, minHeight: [0, 1.8, 2, 2.2].includes(saved.filters?.minHeight ?? -1) ? saved.filters?.minHeight ?? 0 : INITIAL_FILTERS.minHeight };
+    return { vehicleType, filters, textScale: TEXT_SCALES.includes(saved.textScale ?? 0 as TextScale) ? saved.textScale as TextScale : 100 as TextScale, facilityMode: ['toilets', 'fuel', 'atm'].includes(saved.facilityMode ?? '') ? saved.facilityMode : saved.filters?.showToilets ? 'toilets' : null, atmBank: typeof saved.atmBank === 'string' ? saved.atmBank : '', language: saved.language === 'en' ? 'en' as const : 'zh-Hant' as const };
+  } catch { return { vehicleType: 'privateCar' as VehicleType, filters: INITIAL_FILTERS, textScale: 100 as TextScale, facilityMode: null, atmBank: '', language: 'zh-Hant' as Language }; }
 }
 
-type LocationState = 'default' | 'locating' | 'ready' | 'denied' | 'unavailable';
-
-function Logo() {
-  return <img className="brand-mark" src={publicAsset('parkpulse-hk-icon.png')} alt="" aria-hidden="true" />;
-}
-
-function RefreshIcon() {
-  return (
-    <svg className="refresh-icon" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M21 12a9 9 0 1 1-3-6.7" fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2.2" />
-      <path d="M21 3v6h-6" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" />
-    </svg>
-  );
-}
-
-function LocateIcon() {
-  return <img className="locate-icon" src={publicAsset('location-control.png')} alt="" />;
-}
+function Logo() { return <img className="brand-mark" src={publicAsset('parkpulse-hk-icon.png')} alt="" aria-hidden="true" />; }
+function RefreshIcon() { return <svg className="refresh-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7" fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2.2" /><path d="M21 3v6h-6" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" /></svg>; }
+function LocateIcon() { return <img className="locate-icon" src={publicAsset('location-control.png')} alt="" />; }
 
 export default function App() {
   const { infos, vacancyById, loading, vacancyLoading, refreshing, error, refresh, retry } = useCarparks();
   const { chargers, loading: evLoading, error: evError } = useEvChargers();
   const [position, setPosition] = useState<Coordinates>(HONG_KONG_CENTER);
   const [areaName, setAreaName] = useState('香港中心');
-  const [locationState, setLocationState] = useState<LocationState>('default');
+  const [locationState, setLocationState] = useState<'default' | 'locating' | 'ready' | 'denied' | 'unavailable'>('default');
   const [vehicleType, setVehicleType] = useState<VehicleType>(() => readPreferences().vehicleType);
   const [filters, setFilters] = useState<ParkFilters>(() => readPreferences().filters);
   const [textScale, setTextScale] = useState<TextScale>(() => readPreferences().textScale);
   const [facilityMode, setFacilityMode] = useState<NearbyMode | null>(() => readPreferences().facilityMode ?? null);
   const [atmBank, setAtmBank] = useState(() => readPreferences().atmBank);
+  const [language, setLanguage] = useState<Language>(() => readPreferences().language);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [mapExpanded, setMapExpanded] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   const [recenterRequest, setRecenterRequest] = useState(0);
   const [districtSearchOpen, setDistrictSearchOpen] = useState(false);
   const [districtQuery, setDistrictQuery] = useState('');
@@ -121,247 +89,57 @@ export default function App() {
   const { facilities: nearbyFacilityData, source: nearbyFacilitySource, loading: nearbyFacilityLoading, error: nearbyFacilityError, retry: retryNearbyFacilities } = useNearbyFacilities(facilityMode);
   const verifiedPlaceLinks = useVerifiedPlaceLinks();
 
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(PREFERENCES_KEY, JSON.stringify({ vehicleType, filters, textScale, facilityMode, atmBank }));
-    } catch {
-      // 私隱模式或儲存空間不足時仍可正常使用。
-    }
-  }, [vehicleType, filters, textScale, facilityMode, atmBank]);
+  useEffect(() => { try { window.localStorage.setItem(PREFERENCES_KEY, JSON.stringify({ vehicleType, filters, textScale, facilityMode, atmBank, language })); } catch { /* privacy mode remains usable */ } }, [vehicleType, filters, textScale, facilityMode, atmBank, language]);
+  useEffect(() => { document.documentElement.lang = language; document.title = language === 'en' ? 'ParkPulse HK | Find Parking' : 'ParkPulse HK｜泊邊有位'; }, [language]);
+  useEffect(() => { if (!mapExpanded) return; const onKeyDown = (event: KeyboardEvent) => { if (event.key === 'Escape') setMapExpanded(false); }; window.addEventListener('keydown', onKeyDown); return () => window.removeEventListener('keydown', onKeyDown); }, [mapExpanded]);
+  useEffect(() => { const closeDetailFromBack = () => { if (!detailHistoryActive.current) return; detailHistoryActive.current = false; setSelectedId(null); }; window.addEventListener('popstate', closeDetailFromBack); return () => window.removeEventListener('popstate', closeDetailFromBack); }, []);
 
-  useEffect(() => {
-    if (!mapExpanded) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setMapExpanded(false);
-    };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [mapExpanded]);
+  const requestLocation = () => { if (!navigator.geolocation) { setLocationState('unavailable'); return; } setLocationState('locating'); navigator.geolocation.getCurrentPosition(({ coords }) => { setPosition({ lat: coords.latitude, lng: coords.longitude }); setAreaName('我的位置'); setLocationState('ready'); setRecenterRequest((current) => current + 1); }, () => setLocationState('denied'), { enableHighAccuracy: true, timeout: 10_000, maximumAge: 60_000 }); };
+  const nearbyParks = useMemo<ParkViewModel[]>(() => infos.map((info) => { const vacancyEntry = selectVacancyEntry(vacancyById.get(info.park_Id)?.[vehicleType]); const status = getVacancyStatus(info, vacancyEntry); const distanceKm = distanceInKm(position, { lat: info.latitude, lng: info.longitude }); const photoPlaceUrl = verifiedPlaceLinks.get(`carpark:${info.park_Id}`); return { info: photoPlaceUrl ? { ...info, photoPlaceUrl } : info, status, distanceKm, heightLimit: getHeightLimit(info), evCharger: findEvCharger(info, chargers) }; }).filter((park) => park.distanceKm <= NEARBY_RADIUS_KM).sort((left, right) => { const statusDifference = statusPriority(left.status) - statusPriority(right.status); return statusDifference || left.distanceKm - right.distanceKm; }), [chargers, infos, position, vacancyById, vehicleType, verifiedPlaceLinks]);
 
-  useEffect(() => {
-    const closeDetailFromBack = () => {
-      if (!detailHistoryActive.current) return;
-      detailHistoryActive.current = false;
-      setSelectedId(null);
-    };
-    window.addEventListener('popstate', closeDetailFromBack);
-    return () => window.removeEventListener('popstate', closeDetailFromBack);
-  }, []);
-
-  const requestLocation = () => {
-    if (!navigator.geolocation) {
-      setLocationState('unavailable');
-      return;
-    }
-
-    setLocationState('locating');
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }) => {
-        setPosition({ lat: coords.latitude, lng: coords.longitude });
-        setAreaName('我的位置');
-        setLocationState('ready');
-        setRecenterRequest((current) => current + 1);
-      },
-      () => setLocationState('denied'),
-      { enableHighAccuracy: true, timeout: 10_000, maximumAge: 60_000 },
-    );
-  };
-
-  const nearbyParks = useMemo<ParkViewModel[]>(() => {
-    return infos
-      .map((info) => {
-        const vacancyEntry = selectVacancyEntry(vacancyById.get(info.park_Id)?.[vehicleType]);
-        const status = getVacancyStatus(info, vacancyEntry);
-        const distanceKm = distanceInKm(position, { lat: info.latitude, lng: info.longitude });
-        const photoPlaceUrl = verifiedPlaceLinks.get(`carpark:${info.park_Id}`);
-        return { info: photoPlaceUrl ? { ...info, photoPlaceUrl } : info, status, distanceKm, heightLimit: getHeightLimit(info), evCharger: findEvCharger(info, chargers) };
-      })
-      .filter((park) => park.distanceKm <= NEARBY_RADIUS_KM)
-      .sort((left, right) => {
-        const statusDifference = statusPriority(left.status) - statusPriority(right.status);
-        if (statusDifference !== 0) return statusDifference;
-        return left.distanceKm - right.distanceKm;
-      });
-  }, [chargers, infos, position, vacancyById, vehicleType, verifiedPlaceLinks]);
-
-  const nearbyToilets = useMemo<PublicToiletViewModel[]>(() => [...toilets, ...lcsdVenues]
-    .map((toilet) => {
-      const photoPlaceUrl = verifiedPlaceLinks.get(`${toilet.kind ?? 'publicToilet'}:${toilet.id}`);
-      return { toilet: photoPlaceUrl ? { ...toilet, photoPlaceUrl } : toilet, distanceKm: distanceInKm(position, { lat: toilet.latitude, lng: toilet.longitude }) };
-    })
-    .filter((toilet) => toilet.distanceKm <= NEARBY_RADIUS_KM)
-    .sort((left, right) => left.distanceKm - right.distanceKm), [lcsdVenues, position, toilets, verifiedPlaceLinks]);
-  const nearbyFacilities = useMemo<NearbyFacilityViewModel[]>(() => {
-    if (facilityMode !== 'fuel' && facilityMode !== 'atm') return [];
-    return nearbyFacilityData
-      .filter((facility) => facility.kind === facilityMode && (facilityMode !== 'atm' || !atmBank || facility.brand === atmBank))
-      .map((facility) => ({ facility, distanceKm: distanceInKm(position, { lat: facility.latitude, lng: facility.longitude }) }))
-      .filter((facility) => facility.distanceKm <= NEARBY_RADIUS_KM)
-      .sort((left, right) => left.distanceKm - right.distanceKm)
-      .slice(0, facilityMode === 'atm' ? 50 : undefined);
-  }, [atmBank, facilityMode, nearbyFacilityData, position]);
+  const nearbyToilets = useMemo<PublicToiletViewModel[]>(() => [...toilets, ...lcsdVenues].map((toilet) => { const photoPlaceUrl = verifiedPlaceLinks.get(`${toilet.kind ?? 'publicToilet'}:${toilet.id}`); return { toilet: photoPlaceUrl ? { ...toilet, photoPlaceUrl } : toilet, distanceKm: distanceInKm(position, { lat: toilet.latitude, lng: toilet.longitude }) }; }).filter((toilet) => toilet.distanceKm <= NEARBY_RADIUS_KM).sort((left, right) => left.distanceKm - right.distanceKm), [lcsdVenues, position, toilets, verifiedPlaceLinks]);
+  const nearbyFacilities = useMemo<NearbyFacilityViewModel[]>(() => (facilityMode !== 'fuel' && facilityMode !== 'atm' ? [] : nearbyFacilityData.filter((facility) => facility.kind === facilityMode && (facilityMode !== 'atm' || !atmBank || facility.brand === atmBank)).map((facility) => ({ facility, distanceKm: distanceInKm(position, { lat: facility.latitude, lng: facility.longitude }) })).filter((facility) => facility.distanceKm <= NEARBY_RADIUS_KM).sort((left, right) => left.distanceKm - right.distanceKm).slice(0, facilityMode === 'atm' ? 50 : undefined)), [atmBank, facilityMode, nearbyFacilityData, position]);
   const atmBanks = useMemo(() => [...new Set(nearbyFacilityData.filter((facility) => facility.kind === 'atm').map((facility) => facility.brand).filter((bank): bank is string => Boolean(bank)))].sort((left, right) => left.localeCompare(right, 'zh-Hant')), [nearbyFacilityData]);
-
-  const resultsVerified = !loading
-    && (!vacancyLoading || vacancyById.size > 0)
-    && (!filters.hasEv || (!evLoading && !evError));
-  const verificationLabel = loading || (vacancyLoading && vacancyById.size === 0)
-    ? '正在核實官方即時空位…'
-    : '正在核實官方充電器資料…';
-
-  const displayedParks = useMemo(() => {
-    if (!resultsVerified) return [];
-    return nearbyParks.filter((park) => {
-      const facilities = park.info.facilities ?? [];
-      const isOpen = park.info.opening_status === 'OPEN' && park.status.kind !== 'closed';
-      const hasEv = Boolean(park.evCharger) || facilities.includes('evCharger');
-      return (
-        (!filters.availableOnly || isAvailable(park.status)) &&
-        (!filters.openOnly || isOpen) &&
-        (!filters.hasEv || hasEv) &&
-        (!filters.hasAccessible || facilities.includes('disabilities')) &&
-        (!filters.minHeight || (park.heightLimit !== undefined && park.heightLimit >= filters.minHeight))
-      );
-    });
-  }, [filters, nearbyParks, resultsVerified]);
-
+  const resultsVerified = !loading && (!vacancyLoading || vacancyById.size > 0) && (!filters.hasEv || (!evLoading && !evError));
+  const verificationLabel = loading || (vacancyLoading && vacancyById.size === 0) ? text(language, 'verifyingVacancy') : text(language, 'verifyingEv');
+  const displayedParks = useMemo(() => !resultsVerified ? [] : nearbyParks.filter((park) => { const facilities = park.info.facilities ?? []; const isOpen = park.info.opening_status === 'OPEN' && park.status.kind !== 'closed'; return (!filters.availableOnly || isAvailable(park.status)) && (!filters.openOnly || isOpen) && (!filters.hasEv || facilities.includes('evCharger')) && (!filters.hasAccessible || facilities.includes('disabilities')) && (!filters.minHeight || (park.heightLimit !== undefined && park.heightLimit >= filters.minHeight)); }), [filters, nearbyParks, resultsVerified]);
   const showingToilets = facilityMode === 'toilets';
   const washroomLoading = toiletLoading || lcsdLoading;
-  const retryWashrooms = () => { retryToilets(); retryLcsdVenues(); };
   const facilityLoading = showingToilets ? washroomLoading : nearbyFacilityLoading;
   const facilityError = showingToilets ? toiletError : nearbyFacilityError;
-  const facilityLabel = facilityMode === 'toilets' ? '洗手間' : facilityMode === 'fuel' ? '油站' : facilityMode === 'atm' ? 'ATM' : null;
+  const facilityLabel = facilityMode === 'toilets' ? text(language, 'washrooms') : facilityMode === 'fuel' ? text(language, 'fuel') : facilityMode === 'atm' ? 'ATM' : null;
   const facilityResultLabel = facilityMode === 'atm' && atmBank ? `${shortBankName(atmBank)} ATM` : facilityLabel;
+  const countLabel = (count: number, label: string) => language === 'en' ? `${count} ${label}` : `${count} 個${label}`;
   const activeNearbyResults = showingToilets ? nearbyToilets : nearbyFacilities;
   const selectedPark = !facilityMode ? displayedParks.find((park) => park.info.park_Id === selectedId) : undefined;
   const availableCount = displayedParks.filter((park) => isAvailable(park.status)).length;
-  const visibleError = error || (filters.hasEv && evError ? `充電器資料提示：${evError}` : null);
+  const visibleError = error || (filters.hasEv && evError ? `${language === 'en' ? 'EV data notice' : '充電器資料提示'}：${evError}` : null);
   const mapParks = facilityMode ? [] : displayedParks;
   const mapNearbyItems = facilityMode ? activeNearbyResults : [];
-  const mapResultLabel = facilityMode ? `${activeNearbyResults.length} 個${facilityResultLabel}` : `${displayedParks.length} 個停車場`;
+  const mapResultLabel = facilityMode ? countLabel(activeNearbyResults.length, facilityResultLabel ?? '') : text(language, 'carparks', { count: displayedParks.length });
+  const displayedAreaName = useMemo(() => { if (language !== 'en') return areaName; if (areaName === '香港中心') return 'Hong Kong centre'; if (areaName === '我的位置') return 'My location'; if (areaName === '地圖選取位置') return text(language, 'mapSelected'); return DISTRICTS.find((district) => district.label === areaName)?.englishLabel ?? areaName; }, [areaName, language]);
   const scaleDown = () => setTextScale((current) => TEXT_SCALES[Math.max(0, TEXT_SCALES.indexOf(current) - 1)]);
   const scaleUp = () => setTextScale((current) => TEXT_SCALES[Math.min(TEXT_SCALES.length - 1, TEXT_SCALES.indexOf(current) + 1)]);
-  const toggleMap = () => {
-    setSelectedId(null);
-    setMapExpanded((current) => !current);
-  };
-  const openDetail = (parkId: string) => {
-    if (!detailHistoryActive.current) {
-      window.history.pushState({ ...(window.history.state ?? {}), parkspotDetail: true }, '');
-      detailHistoryActive.current = true;
-    }
-    setSelectedId(parkId);
-  };
-  const closeDetail = () => {
-    setSelectedId(null);
-    if (detailHistoryActive.current) {
-      detailHistoryActive.current = false;
-      window.history.back();
-    }
-  };
-  const selectArea = (coordinates: Coordinates, label: string, behavior: { recenter: boolean }) => {
-    setPosition(coordinates);
-    setAreaName(label);
-    setLocationState('ready');
-    if (behavior.recenter) setRecenterRequest((current) => current + 1);
-    setSelectedId(null);
-    setMapExpanded(false);
-  };
-  const submitDistrict = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const query = normalizeDistrict(districtQuery);
-    const district = DISTRICTS.find(({ label, aliases }) => [label, ...aliases].some((name) => normalizeDistrict(name) === query));
-    if (!district) {
-      setDistrictMessage('請輸入香港 18 區，例如「大埔」或「Tai Po」。');
-      return;
-    }
-    setDistrictMessage('');
-    setDistrictSearchOpen(false);
-    selectArea(district.coordinates, district.label, { recenter: true });
-  };
-  const updateFilters = (nextFilters: ParkFilters) => {
-    setFilters(nextFilters);
-  };
+  const toggleMap = () => { setSelectedId(null); setMapExpanded((current) => !current); };
+  const openDetail = (parkId: string) => { if (!detailHistoryActive.current) { window.history.pushState({ ...(window.history.state ?? {}), parkspotDetail: true }, ''); detailHistoryActive.current = true; } setSelectedId(parkId); };
+  const closeDetail = () => { setSelectedId(null); if (detailHistoryActive.current) { detailHistoryActive.current = false; window.history.back(); } };
+  const selectArea = (coordinates: Coordinates, label: string, behavior: { recenter: boolean }) => { setPosition(coordinates); setAreaName(label); setLocationState('ready'); if (behavior.recenter) setRecenterRequest((current) => current + 1); setSelectedId(null); setMapExpanded(false); };
+  const submitDistrict = (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); const query = normalizeDistrict(districtQuery); const district = DISTRICTS.find(({ label, aliases }) => [label, ...aliases].some((name) => normalizeDistrict(name) === query)); if (!district) { setDistrictMessage(text(language, 'districtInvalid')); return; } setDistrictMessage(''); setDistrictSearchOpen(false); selectArea(district.coordinates, district.label, { recenter: true }); };
+  const retryWashrooms = () => { retryToilets(); retryLcsdVenues(); };
   const updateFacilityMode = (mode: NearbyMode | null) => { setSelectedId(null); setFacilityMode(mode); };
   const showResults = () => document.getElementById('parking-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-  return (
-    <main className={`app-shell${mapExpanded ? ' map-focus' : ''}`} style={{ '--ui-zoom': String(textScale / 100) } as CSSProperties}>
-      <header className="topbar">
-        <div className="brand"><Logo /><div><p className="brand-kicker">PARKPULSE HK · HONG KONG PARKING</p><h1>泊邊有位</h1></div></div>
-        <div className="top-actions">
-          <div className="text-size-control" role="group" aria-label="文字大小">
-            <button type="button" onClick={scaleDown} disabled={textScale === 100} aria-label="縮小文字">A−</button>
-            <span>文字 {textScale}%</span>
-            <button type="button" onClick={scaleUp} disabled={textScale === 130} aria-label="放大文字">A+</button>
-          </div>
-          <button className={refreshing ? 'refresh-button is-refreshing' : 'refresh-button'} type="button" onClick={refresh} disabled={refreshing || loading} aria-label={refreshing ? '正在更新停車位資料' : '立即更新停車位資料'} title={refreshing ? '正在更新' : '立即更新'}>
-            <RefreshIcon />
-          </button>
-          <button className={locationState === 'locating' ? 'locate-button is-locating' : 'locate-button'} type="button" onClick={requestLocation} disabled={locationState === 'locating'} aria-label={locationState === 'locating' ? '正在定位目前位置' : '使用我的位置'} title={locationState === 'locating' ? '正在定位' : '使用我的位置'}>
-            <LocateIcon />
-          </button>
-        </div>
-      </header>
-
-      <Filters vehicleType={vehicleType} filters={filters} evLoading={evLoading} facilityMode={facilityMode} facilityLoading={facilityLoading} onVehicleChange={(type) => { setVehicleType(type); setSelectedId(null); }} onFiltersChange={updateFilters} onFacilityModeChange={updateFacilityMode} />
-
-      {facilityMode === 'atm' && <section className="atm-bank-filter" aria-label="ATM 銀行篩選"><label htmlFor="atm-bank">ATM 銀行</label><select id="atm-bank" value={atmBank} onChange={(event) => setAtmBank(event.target.value)}><option value="">全部銀行</option>{atmBanks.map((bank) => <option key={bank} value={bank}>{shortBankName(bank)}</option>)}</select><p>{atmBank ? `地圖只顯示${shortBankName(atmBank)}的 ATM` : '揀返你用嘅銀行，毋須逐個 ATM 打開睇。'}</p></section>}
-
-      {visibleError && <div className="error-banner" role="alert"><span>資料連線提示：{visibleError}</span><button type="button" onClick={retry}>重試</button></div>}
-
-      <section className="workspace">
-        <div className="map-column">
-          <MapView position={position} parks={mapParks} nearbyItems={mapNearbyItems} selectedId={selectedId} onSelect={openDetail} onLocationSelect={selectArea} recenterRequest={recenterRequest} expanded={mapExpanded} onToggleExpanded={toggleMap} onShowResults={showResults} resultsLabel={mapResultLabel} />
-          <section className="area-tools map-bottom-tools" aria-label="地圖搜尋與操作提示">
-            <div className="area-tools-row">
-              <button className="area-search-toggle" type="button" onClick={() => { setDistrictSearchOpen((current) => !current); setDistrictMessage(''); }} aria-expanded={districtSearchOpen}>搜尋地區</button>
-              <p className="map-gesture-note">長按地圖約 1 秒：選取 2 公里範圍</p>
-            </div>
-            <div className="map-marker-legend" aria-label="地圖標記顏色說明"><span><i className="legend-swatch legend-available" />有位</span><span><i className="legend-swatch legend-full" />已滿</span><span><i className="legend-swatch legend-closed" />關閉</span><span><i className="legend-swatch legend-unknown" />無資料</span><span><i className="legend-swatch legend-toilet" />公廁</span><span><i className="legend-swatch legend-venue" />場館</span><span><i className="legend-swatch legend-fuel" />油站</span><span><i className="legend-swatch legend-atm" />ATM</span><span className="legend-center">📍 中心</span></div>
-            {districtSearchOpen && (
-              <form className="area-search" onSubmit={submitDistrict}>
-                <label htmlFor="district-search">搜尋中心</label>
-                <div><input id="district-search" list="district-options" value={districtQuery} onChange={(event) => setDistrictQuery(event.target.value)} placeholder="例如：大埔／Tai Po" autoFocus /><button type="submit">顯示</button></div>
-                <datalist id="district-options">{DISTRICTS.map((district) => <option key={district.label} value={district.label}>{district.aliases.at(-1)}</option>)}</datalist>
-                <small>{districtMessage || '以所選地區中心顯示 2 公里內停車場'}</small>
-              </form>
-            )}
-          </section>
-        </div>
-        <section className="results-panel" id="parking-results" aria-label={facilityMode ? `附近${facilityResultLabel}清單` : '附近停車場清單'}>
-          <div className={`results-heading${facilityMode === 'atm' && atmBank ? ' is-bank-filtered' : ''}`}>
-            <div><p className="eyebrow">{areaName} · {NEARBY_RADIUS_KM} 公里</p><h2>{facilityMode ? (facilityLoading && activeNearbyResults.length === 0 ? `正在讀取${facilityLabel}…` : facilityError && activeNearbyResults.length === 0 ? `${facilityLabel}資料未能讀取` : `${activeNearbyResults.length} 個${facilityResultLabel}`) : (resultsVerified ? `${displayedParks.length} 個結果` : '正在核實停車場…')}</h2></div>
-            <p>{showingToilets ? '食環署 · 康文署' : facilityMode === 'fuel' ? '消委會油價資訊通' : facilityMode === 'atm' ? (nearbyFacilitySource ?? '香港金融管理局') : (resultsVerified ? `${availableCount} 個有位選項` : verificationLabel)}</p>
-          </div>
-          <div className="results-list">
-            {showingToilets && washroomLoading && nearbyToilets.length === 0 && <div className="loading-state"><span className="loader" />正在讀取官方洗手間資料…<small>只顯示目前中心 2 公里內的食環署公廁及康文署場館。</small></div>}
-            {showingToilets && toiletError && nearbyToilets.length === 0 && !washroomLoading && <div className="empty-state" role="alert"><strong>暫時未能讀取洗手間資料</strong><p>{toiletError}</p><button className="toilet-retry" type="button" onClick={retryWashrooms}>重試</button></div>}
-            {showingToilets && nearbyToilets.map((toilet) => <ToiletCard key={toilet.toilet.id} toilet={toilet} />)}
-            {showingToilets && lcsdError && <p className="loading-note">康文署場館資料提示：{lcsdError}</p>}
-            {showingToilets && !washroomLoading && !toiletError && nearbyToilets.length === 0 && <div className="empty-state"><strong>呢個範圍暫時冇官方洗手間資料</strong><p>試下選擇其他地區或在地圖長按新中心。</p></div>}
-            {facilityMode && !showingToilets && facilityLoading && nearbyFacilities.length === 0 && <div className="loading-state"><span className="loader" />正在讀取{facilityLabel}資料…<small>只顯示目前中心 2 公里內的附近設施。</small></div>}
-            {facilityMode && !showingToilets && facilityError && nearbyFacilities.length === 0 && !facilityLoading && <div className="empty-state" role="alert"><strong>暫時未能讀取{facilityLabel}資料</strong><p>{facilityError}</p><button className="toilet-retry" type="button" onClick={retryNearbyFacilities}>重試</button></div>}
-            {facilityMode && !showingToilets && nearbyFacilities.map((item) => <NearbyFacilityCard key={item.facility.id} item={item} />)}
-            {facilityMode === 'atm' && nearbyFacilities.length === 50 && <p className="loading-note">ATM 選項較多，現只顯示最近 50 個。</p>}
-            {facilityMode && !showingToilets && !facilityLoading && !facilityError && nearbyFacilities.length === 0 && <div className="empty-state"><strong>呢個範圍暫時冇{facilityResultLabel}資料</strong><p>試下選擇其他地區或在地圖長按新中心。</p></div>}
-            {!facilityMode && !resultsVerified && <div className="loading-state"><span className="loader" />{verificationLabel}<small>只會顯示已核實的停車場結果。</small></div>}
-            {!facilityMode && resultsVerified && displayedParks.map((park) => (
-              <ParkCard key={park.info.park_Id} park={park} vehicleType={vehicleType} selected={park.info.park_Id === selectedId} onSelect={() => openDetail(park.info.park_Id)} />
-            ))}
-            {!facilityMode && resultsVerified && displayedParks.length === 0 && (
-              <div className="empty-state"><strong>呢個範圍暫時冇符合條件嘅結果</strong><p>試下取消部分篩選，或者使用定位後再刷新。</p></div>
-            )}
-          </div>
-        </section>
-      </section>
-
-      {selectedPark && <ParkDetail park={selectedPark} vehicleType={vehicleType} onClose={closeDetail} />}
-
-      <footer>
-        <span>資料來源：香港政府 <a href="https://data.gov.hk/tc-data/dataset/hk-dpo-datagovhk1-carpark-info-vacancy" target="_blank" rel="noreferrer">data.gov.hk</a>、環境保護署{showingToilets ? '、食物環境衞生署、康樂及文化事務署' : facilityMode === 'fuel' ? '、消費者委員會油價資訊通' : facilityMode === 'atm' ? '、香港金融管理局' : ''}</span>
-        <span>{facilityMode ? `${facilityLabel}資料只供參考，請以現場情況為準。` : '空位及充電器資料只供參考，請以現場情況為準。'}</span>
-      </footer>
-    </main>
-  );
+  return <main className={`app-shell${mapExpanded ? ' map-focus' : ''}`} style={{ '--ui-zoom': String(textScale / 100) } as CSSProperties}>
+    <header className="topbar"><div className="brand"><Logo /><div><p className="brand-kicker">{text(language, 'brandKicker')}</p><h1>{text(language, 'brandTitle')}</h1></div></div><div className="top-actions"><div className="text-size-control" role="group" aria-label={text(language, 'textSize')}><button type="button" onClick={scaleDown} disabled={textScale === 100} aria-label={text(language, 'shrinkText')}>A−</button><span>{text(language, 'textSize')} {textScale}%</span><button type="button" onClick={scaleUp} disabled={textScale === 130} aria-label={text(language, 'enlargeText')}>A+</button></div><button className={refreshing ? 'refresh-button is-refreshing' : 'refresh-button'} type="button" onClick={refresh} disabled={refreshing || loading} aria-label={refreshing ? text(language, 'refreshing') : text(language, 'refresh')} title={refreshing ? text(language, 'refreshing') : text(language, 'refresh')}><RefreshIcon /></button><button className={locationState === 'locating' ? 'locate-button is-locating' : 'locate-button'} type="button" onClick={requestLocation} disabled={locationState === 'locating'} aria-label={locationState === 'locating' ? text(language, 'locating') : text(language, 'useLocation')} title={locationState === 'locating' ? text(language, 'locating') : text(language, 'useLocation')}><LocateIcon /></button></div></header>
+    <div className="utility-row"><div className="language-switcher" role="group" aria-label={text(language, 'language')}><button type="button" className={language === 'zh-Hant' ? 'is-active' : ''} aria-pressed={language === 'zh-Hant'} onClick={() => setLanguage('zh-Hant')}>繁</button><button type="button" className={language === 'en' ? 'is-active' : ''} aria-pressed={language === 'en'} onClick={() => setLanguage('en')}>EN</button></div><button className="help-button" type="button" onClick={() => setHelpOpen(true)} aria-haspopup="dialog"><span aria-hidden="true">?</span><span>{text(language, 'help')}</span></button></div>
+    <Filters language={language} vehicleType={vehicleType} filters={filters} evLoading={evLoading} facilityMode={facilityMode} facilityLoading={facilityLoading} onVehicleChange={(type) => { setVehicleType(type); setSelectedId(null); }} onFiltersChange={setFilters} onFacilityModeChange={updateFacilityMode} />
+    {facilityMode === 'atm' && <section className="atm-bank-filter" aria-label={text(language, 'atmBank')}><label htmlFor="atm-bank">{text(language, 'atmBank')}</label><select id="atm-bank" value={atmBank} onChange={(event) => setAtmBank(event.target.value)}><option value="">{text(language, 'allBanks')}</option>{atmBanks.map((bank) => <option key={bank} value={bank}>{shortBankName(bank)}</option>)}</select><p>{atmBank ? text(language, 'atmBankMap', { bank: shortBankName(atmBank) }) : text(language, 'atmBankHint')}</p></section>}
+    {visibleError && <div className="error-banner" role="alert"><span>{text(language, 'dataConnection')}{visibleError}</span><button type="button" onClick={retry}>{text(language, 'retry')}</button></div>}
+    <section className="workspace"><div className="map-column"><MapView language={language} position={position} parks={mapParks} nearbyItems={mapNearbyItems} selectedId={selectedId} onSelect={openDetail} onLocationSelect={(coordinates, behavior) => selectArea(coordinates, '地圖選取位置', behavior)} recenterRequest={recenterRequest} expanded={mapExpanded} onToggleExpanded={toggleMap} onShowResults={showResults} resultsLabel={mapResultLabel} /><section className="area-tools map-bottom-tools" aria-label={`${text(language, 'districtSearch')} / ${text(language, 'mapGesture')}`}><div className="area-tools-row"><button className="area-search-toggle" type="button" onClick={() => { setDistrictSearchOpen((current) => !current); setDistrictMessage(''); }} aria-expanded={districtSearchOpen}>{text(language, 'districtSearch')}</button><p className="map-gesture-note">{text(language, 'mapGesture')}</p></div><div className="map-marker-legend" aria-label={text(language, 'mapLabel')}><span><i className="legend-swatch legend-available" />{text(language, 'legendAvailable')}</span><span><i className="legend-swatch legend-full" />{text(language, 'legendFull')}</span><span><i className="legend-swatch legend-closed" />{text(language, 'legendClosed')}</span><span><i className="legend-swatch legend-unknown" />{text(language, 'legendUnknown')}</span><span><i className="legend-swatch legend-toilet" />{text(language, 'legendToilet')}</span><span><i className="legend-swatch legend-venue" />{text(language, 'legendVenue')}</span><span><i className="legend-swatch legend-fuel" />{text(language, 'legendFuel')}</span><span><i className="legend-swatch legend-atm" />{text(language, 'legendAtm')}</span><span className="legend-center">📍 {text(language, 'legendCentre')}</span></div>{districtSearchOpen && <form className="area-search" onSubmit={submitDistrict}><label htmlFor="district-search">{text(language, 'searchCentre')}</label><div><input id="district-search" list="district-options" value={districtQuery} onChange={(event) => setDistrictQuery(event.target.value)} placeholder={text(language, 'districtPlaceholder')} autoFocus /><button type="submit">{text(language, 'show')}</button></div><datalist id="district-options">{DISTRICTS.map((district) => <option key={district.label} value={language === 'en' ? district.englishLabel : district.label}>{language === 'en' ? district.label : district.englishLabel}</option>)}</datalist><small>{districtMessage || text(language, 'districtHelp')}</small></form>}</section></div>
+      <section className="results-panel" id="parking-results" aria-label={facilityMode ? text(language, 'resultList', { label: facilityResultLabel ?? '' }) : text(language, 'resultList', { label: text(language, 'carparks', { count: '' }) })}><div className={`results-heading${facilityMode === 'atm' && atmBank ? ' is-bank-filtered' : ''}`}><div><p className="eyebrow">{displayedAreaName} · {NEARBY_RADIUS_KM} {language === 'en' ? 'km' : '公里'}</p><h2>{facilityMode ? (facilityLoading && activeNearbyResults.length === 0 ? text(language, 'loadingFacility', { label: facilityLabel ?? '' }) : facilityError && activeNearbyResults.length === 0 ? text(language, 'facilityUnavailable', { label: facilityLabel ?? '' }) : countLabel(activeNearbyResults.length, facilityResultLabel ?? '')) : (resultsVerified ? text(language, 'results', { count: displayedParks.length }) : text(language, 'verifyingCarparks'))}</h2></div><p>{showingToilets ? text(language, 'washroomSources') : facilityMode === 'fuel' ? (language === 'en' ? 'Consumer Council Oil Price Watch' : '消委會油價資訊通') : facilityMode === 'atm' ? (language === 'en' ? 'Hong Kong Monetary Authority' : (nearbyFacilitySource ?? '香港金融管理局')) : (resultsVerified ? text(language, 'availableChoices', { count: availableCount }) : verificationLabel)}</p></div>
+        <div className="results-list">{showingToilets && washroomLoading && nearbyToilets.length === 0 && <div className="loading-state"><span className="loader" />{text(language, 'loadingWashrooms')}<small>{text(language, 'washroomRange')}</small></div>}{showingToilets && toiletError && nearbyToilets.length === 0 && !washroomLoading && <div className="empty-state" role="alert"><strong>{text(language, 'facilityLoadFailed', { label: text(language, 'washrooms') })}</strong><p>{toiletError}</p><button className="toilet-retry" type="button" onClick={retryWashrooms}>{text(language, 'retry')}</button></div>}{showingToilets && nearbyToilets.map((toilet) => <ToiletCard language={language} key={toilet.toilet.id} toilet={toilet} />)}{showingToilets && lcsdError && <p className="loading-note">{language === 'en' ? 'LCSD venue data notice:' : '康文署場館資料提示：'} {lcsdError}</p>}{showingToilets && !washroomLoading && !toiletError && nearbyToilets.length === 0 && <div className="empty-state"><strong>{text(language, 'noWashrooms')}</strong><p>{text(language, 'tryAnotherArea')}</p></div>}{facilityMode && !showingToilets && facilityLoading && nearbyFacilities.length === 0 && <div className="loading-state"><span className="loader" />{text(language, 'loadingFacility', { label: facilityLabel ?? '' })}<small>{text(language, 'facilityRange')}</small></div>}{facilityMode && !showingToilets && facilityError && nearbyFacilities.length === 0 && !facilityLoading && <div className="empty-state" role="alert"><strong>{text(language, 'facilityLoadFailed', { label: facilityLabel ?? '' })}</strong><p>{facilityError}</p><button className="toilet-retry" type="button" onClick={retryNearbyFacilities}>{text(language, 'retry')}</button></div>}{facilityMode && !showingToilets && nearbyFacilities.map((item) => <NearbyFacilityCard language={language} key={item.facility.id} item={item} />)}{facilityMode === 'atm' && nearbyFacilities.length === 50 && <p className="loading-note">{text(language, 'onlyNearestAtms')}</p>}{facilityMode && !showingToilets && !facilityLoading && !facilityError && nearbyFacilities.length === 0 && <div className="empty-state"><strong>{text(language, 'noFacilities', { label: facilityResultLabel ?? '' })}</strong><p>{text(language, 'tryAnotherArea')}</p></div>}{!facilityMode && !resultsVerified && <div className="loading-state"><span className="loader" />{verificationLabel}<small>{text(language, 'verifiedOnly')}</small></div>}{!facilityMode && resultsVerified && displayedParks.map((park) => <ParkCard language={language} key={park.info.park_Id} park={park} vehicleType={vehicleType} selected={park.info.park_Id === selectedId} onSelect={() => openDetail(park.info.park_Id)} />)}{!facilityMode && resultsVerified && displayedParks.length === 0 && <div className="empty-state"><strong>{text(language, 'noParking')}</strong><p>{text(language, 'relaxFilters')}</p></div>}</div>
+      </section></section>
+    {selectedPark && <ParkDetail language={language} park={selectedPark} vehicleType={vehicleType} onClose={closeDetail} />}{helpOpen && <HelpDialog language={language} onClose={() => setHelpOpen(false)} />}
+    <footer><span>{text(language, 'sources')} <a href="https://data.gov.hk/tc-data/dataset/hk-dpo-datagovhk1-carpark-info-vacancy" target="_blank" rel="noreferrer">data.gov.hk</a>{showingToilets ? (language === 'en' ? ' · Environmental Protection Department · Food and Environmental Hygiene Department · Leisure and Cultural Services Department' : '、環境保護署、食物環境衞生署、康樂及文化事務署') : facilityMode === 'fuel' ? (language === 'en' ? ' · Consumer Council Oil Price Watch' : '、消費者委員會油價資訊通') : facilityMode === 'atm' ? (language === 'en' ? ' · Hong Kong Monetary Authority' : '、香港金融管理局') : (language === 'en' ? ' · Environmental Protection Department' : '、環境保護署')}</span><span>{facilityMode ? text(language, 'dataDisclaimer', { label: facilityLabel ?? '' }) : text(language, 'parkingDisclaimer')}</span></footer>
+  </main>;
 }

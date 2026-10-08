@@ -1,6 +1,8 @@
-import { VEHICLE_LABELS, VEHICLE_TYPES, type NearbyMode, type ParkFilters, type VehicleType } from '../types';
+import { VEHICLE_TYPES, type NearbyMode, type ParkFilters, type VehicleType } from '../types';
+import { text, vehicleLabel, type Language } from '../i18n';
 
 type Props = {
+  language: Language;
   vehicleType: VehicleType;
   filters: ParkFilters;
   evLoading: boolean;
@@ -11,40 +13,24 @@ type Props = {
   onFiltersChange: (filters: ParkFilters) => void;
 };
 
-export function Filters({ vehicleType, filters, evLoading, facilityMode, facilityLoading, onVehicleChange, onFiltersChange, onFacilityModeChange }: Props) {
+export function Filters({ language, vehicleType, filters, evLoading, facilityMode, facilityLoading, onVehicleChange, onFiltersChange, onFacilityModeChange }: Props) {
   const update = (patch: Partial<ParkFilters>) => onFiltersChange({ ...filters, ...patch });
+  const facilityText = (mode: NearbyMode) => mode === 'toilets' ? text(language, 'washrooms') : mode === 'fuel' ? text(language, 'fuel') : 'ATM';
 
   return (
-    <section className="filters" aria-label="篩選停車場">
-      <div className="filter-row vehicle-tabs" role="tablist" aria-label="車種">
+    <section className="filters" aria-label={text(language, 'filterParking')}>
+      <div className="filter-row vehicle-tabs" role="tablist" aria-label={text(language, 'vehicleType')}>
         {VEHICLE_TYPES.map((type) => (
-          <button
-            className={type === vehicleType ? 'chip is-active' : 'chip'}
-            key={type}
-            type="button"
-            role="tab"
-            aria-selected={type === vehicleType}
-            onClick={() => onVehicleChange(type)}
-          >
-            {VEHICLE_LABELS[type]}
-          </button>
+          <button className={type === vehicleType ? 'chip is-active' : 'chip'} key={type} type="button" role="tab" aria-selected={type === vehicleType} onClick={() => onVehicleChange(type)}>{vehicleLabel(language, type)}</button>
         ))}
       </div>
-      <div className="filter-row" aria-label="條件篩選">
-        <button className={filters.availableOnly ? 'chip is-on' : 'chip'} type="button" aria-pressed={filters.availableOnly} onClick={() => update({ availableOnly: !filters.availableOnly })}>只看有位</button>
-        <button className={filters.openOnly ? 'chip is-on' : 'chip'} type="button" aria-pressed={filters.openOnly} aria-label="只看官方資料標示開放的停車場，不代表有空位" onClick={() => update({ openOnly: !filters.openOnly })}>只看開放</button>
-        <button className={filters.hasEv ? 'chip is-on' : 'chip'} type="button" aria-pressed={filters.hasEv} onClick={() => update({ hasEv: !filters.hasEv })}>{evLoading ? '充電資料更新中' : '充電設施'}</button>
-        <button className={filters.hasAccessible ? 'chip is-on' : 'chip'} type="button" aria-pressed={filters.hasAccessible} onClick={() => update({ hasAccessible: !filters.hasAccessible })}>無障礙</button>
-        <label className="height-select">
-          <span>車高</span>
-          <select value={filters.minHeight} onChange={(event) => update({ minHeight: Number(event.target.value) })}>
-            <option value={0}>不限</option>
-            <option value={1.8}>≥ 1.8m</option>
-            <option value={2}>≥ 2.0m</option>
-            <option value={2.2}>≥ 2.2m</option>
-          </select>
-        </label>
-        {(['toilets', 'fuel', 'atm'] as const).map((mode) => <button key={mode} className={facilityMode === mode ? 'chip is-on' : 'chip'} type="button" aria-pressed={facilityMode === mode} onClick={() => onFacilityModeChange(facilityMode === mode ? null : mode)}>{facilityLoading && facilityMode === mode ? '資料更新中' : mode === 'toilets' ? '洗手間' : mode === 'fuel' ? '油站' : 'ATM'}</button>)}
+      <div className="filter-row" aria-label={text(language, 'filterConditions')}>
+        <button className={filters.availableOnly ? 'chip is-on' : 'chip'} type="button" aria-pressed={filters.availableOnly} onClick={() => update({ availableOnly: !filters.availableOnly })}>{text(language, 'availableOnly')}</button>
+        <button className={filters.openOnly ? 'chip is-on' : 'chip'} type="button" aria-pressed={filters.openOnly} aria-label={text(language, 'openOnlyHelp')} onClick={() => update({ openOnly: !filters.openOnly })}>{text(language, 'openOnly')}</button>
+        <button className={filters.hasEv ? 'chip is-on' : 'chip'} type="button" aria-pressed={filters.hasEv} onClick={() => update({ hasEv: !filters.hasEv })}>{evLoading ? text(language, 'evLoading') : text(language, 'evFacilities')}</button>
+        <button className={filters.hasAccessible ? 'chip is-on' : 'chip'} type="button" aria-pressed={filters.hasAccessible} onClick={() => update({ hasAccessible: !filters.hasAccessible })}>{text(language, 'accessible')}</button>
+        <label className="height-select"><span>{text(language, 'height')}</span><select value={filters.minHeight} onChange={(event) => update({ minHeight: Number(event.target.value) })}><option value={0}>{text(language, 'unlimited')}</option><option value={1.8}>≥ 1.8m</option><option value={2}>≥ 2.0m</option><option value={2.2}>≥ 2.2m</option></select></label>
+        {(['toilets', 'fuel', 'atm'] as const).map((mode) => <button key={mode} className={facilityMode === mode ? 'chip is-on' : 'chip'} type="button" aria-pressed={facilityMode === mode} onClick={() => onFacilityModeChange(facilityMode === mode ? null : mode)}>{facilityLoading && facilityMode === mode ? text(language, 'dataLoading') : facilityText(mode)}</button>)}
       </div>
     </section>
   );

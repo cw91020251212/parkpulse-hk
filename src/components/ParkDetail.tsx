@@ -1,88 +1,36 @@
-import { FACILITY_LABELS, formatAge, formatHeight, formatPrice, PAYMENT_LABELS } from '../domain/carpark';
+import { formatPrice } from '../domain/carpark';
 import { formatDistance } from '../domain/distance';
 import { isStaticPages } from '../api/site';
 import { usePlacePhoto } from '../hooks/usePlacePhoto';
-import type { CarparkInfo, ParkViewModel, VehicleType } from '../types';
+import { facilityLabel, heightLabel, paymentLabel, text, updatedLabel, vacancyLabel, type Language } from '../i18n';
+import type { ParkViewModel, VehicleType } from '../types';
 
-type Props = {
-  park: ParkViewModel;
-  vehicleType: VehicleType;
-  onClose: () => void;
-};
+type Props = { language: Language; park: ParkViewModel; vehicleType: VehicleType; onClose: () => void };
 
-function formatEpdUpdate(value?: string) {
-  if (!value) return '未提供更新時間';
+function formatEpdUpdate(value: string | undefined, language: Language) {
+  if (!value) return text(language, 'unavailable');
   const parsed = new Date(value);
-  return Number.isNaN(parsed.getTime()) ? value : parsed.toLocaleString('zh-HK', { hour: '2-digit', minute: '2-digit', month: 'numeric', day: 'numeric' });
+  return Number.isNaN(parsed.getTime()) ? value : parsed.toLocaleString(language === 'en' ? 'en-HK' : 'zh-HK', { hour: '2-digit', minute: '2-digit', month: 'numeric', day: 'numeric' });
 }
 
-export function ParkDetail({ park, vehicleType, onClose }: Props) {
+export function ParkDetail({ language, park, vehicleType, onClose }: Props) {
   const { info, status, distanceKm, heightLimit, evCharger } = park;
   const navigationUrl = `https://www.google.com/maps/dir/?api=1&destination=${info.latitude},${info.longitude}`;
-  const facilities = (info.facilities ?? [])
-    .filter((item) => item !== 'evCharger' || !evCharger)
-    .map((item) => FACILITY_LABELS[item] ?? item);
-  const payments = (info.paymentMethods ?? []).map((item) => PAYMENT_LABELS[item] ?? item);
+  const facilities = (info.facilities ?? []).filter((item) => item !== 'evCharger' || !evCharger).map((item) => facilityLabel(language, item));
+  const payments = (info.paymentMethods ?? []).map((item) => paymentLabel(language, item));
   const [photoState, setPhotoState] = usePlacePhoto({ id: info.park_Id, name: info.name, address: info.displayAddress, latitude: info.latitude, longitude: info.longitude }, !isStaticPages);
+  const price = formatPrice(info, vehicleType);
 
-  return (
-    <aside className="detail-panel" aria-label={`${info.name}詳情`}>
-      <button className="close-detail" type="button" onClick={onClose} aria-label="關閉詳情">×</button>
-      <p className="eyebrow">{formatDistance(distanceKm)} · {info.district || '香港'}</p>
-      <h2>{info.name}</h2>
-      <p className="detail-address">{info.displayAddress || '未提供地址'}</p>
-      <div className={`detail-status status-${status.kind}`}><strong>{status.label}</strong><span>{formatAge(status.updatedAt)}</span></div>
-      {status.stale && <p className="warning">資料已超過 5 分鐘，實際情況可能有變。</p>}
-
-      {evCharger && (
-        <section className="charging-detail">
-          <div className="detail-section-heading"><h3>電動車充電</h3><span>位置核實</span></div>
-          <p><strong>{evCharger.available === null ? `共 ${evCharger.total} 支充電器` : `${evCharger.available}/${evCharger.total} 支可用`}</strong>{evCharger.types.length ? ` · ${evCharger.types.join('、')}` : ''}</p>
-          <small>環境保護署資料 · {formatEpdUpdate(evCharger.updatedAt)} · 與停車場相距約 {evCharger.distanceMeters} 米</small>
-        </section>
-      )}
-
-      <section className="detail-photo-section" aria-live="polite">
-        <div className="detail-section-heading"><h3>附近實景</h3><span>{isStaticPages ? 'Google Maps' : '位置核實'}</span></div>
-        {isStaticPages ? (
-          info.photoPlaceUrl
-            ? <a className="photo-link" href={info.photoPlaceUrl} target="_blank" rel="noreferrer" aria-label={`在 Google Maps 查看${info.name}已核實相片`}>開啟已核實 Google Maps 相片 ↗</a>
-            : <p className="photo-state">暫無已核實相片。</p>
-        ) : (
-          <>
-            {photoState.kind === 'loading' && <p className="photo-state">正在尋找可核實的公開相片…</p>}
-            {photoState.kind === 'found' && (
-              <figure className="detail-photo">
-                <img
-                  src={photoState.photo.photoUrl}
-                  alt={`${info.name}附近實景相片`}
-                  loading="lazy"
-                  onError={() => setPhotoState({ kind: 'unavailable', placeUrl: photoState.photo.placeUrl })}
-                />
-                <figcaption>與停車場位置相距約 {photoState.photo.distanceMeters} 米 · {photoState.photo.attribution} 提供</figcaption>
-              </figure>
-            )}
-            {photoState.kind === 'not_found' && <p className="photo-state">暫未找到可核實的公開相片。</p>}
-            {photoState.kind === 'unavailable' && <p className="photo-state">相片暫時未能載入，請到地圖查看。</p>}
-            {photoState.kind === 'found' && <a className="photo-link" href={photoState.photo.placeUrl} target="_blank" rel="noreferrer">在 Google Maps 查看更多相片</a>}
-            {(photoState.kind === 'not_found' || photoState.kind === 'unavailable') && <a className="photo-link" href={photoState.placeUrl} target="_blank" rel="noreferrer">在 Google Maps 查看更多相片</a>}
-          </>
-        )}
-      </section>
-
-      <dl className="detail-grid">
-        <div><dt>車高限制</dt><dd>{formatHeight(heightLimit)}</dd></div>
-        <div><dt>基本時租</dt><dd>{formatPrice(info, vehicleType)}</dd></div>
-        <div><dt>開放狀態</dt><dd>{info.opening_status === 'CLOSED' ? '已關閉' : '開放中／請以現場為準'}</dd></div>
-        <div><dt>聯絡電話</dt><dd>{info.contactNo || '未提供'}</dd></div>
-      </dl>
-      <section className="detail-section"><h3>設施</h3><p>{facilities.length ? facilities.join(' · ') : '未提供'}</p></section>
-      <section className="detail-section"><h3>付款方式</h3><p>{payments.length ? payments.join(' · ') : '未提供'}</p></section>
-      <div className="detail-actions">
-        <a className="primary-action" href={navigationUrl} target="_blank" rel="noreferrer">開啟導航</a>
-        {info.website && <a className="secondary-action" href={info.website} target="_blank" rel="noreferrer">停車場網站</a>}
-      </div>
-      <p className="data-note">空位資料：香港政府 data.gov.hk；充電器：環境保護署；相片：Google Maps。資料只供參考，請以現場情況為準。</p>
-    </aside>
-  );
+  return <aside className="detail-panel" aria-label={`${info.name} ${text(language, 'details')} `}>
+    <button className="close-detail" type="button" onClick={onClose} aria-label={text(language, 'closeDetails')}>×</button>
+    <p className="eyebrow">{formatDistance(distanceKm)} · {info.district || 'Hong Kong'}</p><h2>{info.name}</h2><p className="detail-address">{info.displayAddress || text(language, 'addressUnavailable')}</p>
+    <div className={`detail-status status-${status.kind}`}><strong>{vacancyLabel(language, status)}</strong><span>{updatedLabel(language, status.updatedAt)}</span></div>
+    {status.stale && <p className="warning">{language === 'en' ? 'Data is over 5 minutes old; conditions may have changed.' : '資料已超過 5 分鐘，實際情況可能有變。'}</p>}
+    {evCharger && <section className="charging-detail"><div className="detail-section-heading"><h3>{text(language, 'evCharging')}</h3><span>{text(language, 'locationVerified')}</span></div><p><strong>{language === 'en' ? (evCharger.available === null ? `${evCharger.total} chargers` : `${evCharger.available}/${evCharger.total} chargers available`) : (evCharger.available === null ? `共 ${evCharger.total} 支充電器` : `${evCharger.available}/${evCharger.total} 支可用`)}</strong>{evCharger.types.length ? ` · ${evCharger.types.join('、')}` : ''}</p><small>{language === 'en' ? 'Environmental Protection Department' : '環境保護署'} · {formatEpdUpdate(evCharger.updatedAt, language)} · {language === 'en' ? `${evCharger.distanceMeters} m from the car park` : `與停車場相距約 ${evCharger.distanceMeters} 米`}</small></section>}
+    <section className="detail-photo-section" aria-live="polite"><div className="detail-section-heading"><h3>{text(language, 'nearbyPhoto')}</h3><span>{isStaticPages ? 'Google Maps' : text(language, 'locationVerified')}</span></div>{isStaticPages ? (info.photoPlaceUrl ? <a className="photo-link" href={info.photoPlaceUrl} target="_blank" rel="noreferrer" aria-label={`${text(language, 'verifiedPhotos')}: ${info.name}`}>{text(language, 'verifiedPhotos')}</a> : <p className="photo-state">{text(language, 'noStaticPhoto')}</p>) : <>{photoState.kind === 'loading' && <p className="photo-state">{text(language, 'searchingPhoto')}</p>}{photoState.kind === 'found' && <figure className="detail-photo"><img src={photoState.photo.photoUrl} alt={`${info.name} ${text(language, 'nearbyPhoto')}`} loading="lazy" onError={() => setPhotoState({ kind: 'unavailable', placeUrl: photoState.photo.placeUrl })} /><figcaption>{language === 'en' ? `${photoState.photo.distanceMeters} m from the car park · ${photoState.photo.attribution}` : `與停車場位置相距約 ${photoState.photo.distanceMeters} 米 · ${photoState.photo.attribution} 提供`}</figcaption></figure>}{photoState.kind === 'not_found' && <p className="photo-state">{text(language, 'noVerifiedPhoto')}</p>}{photoState.kind === 'unavailable' && <p className="photo-state">{text(language, 'photoUnavailable')}</p>}{photoState.kind === 'found' && <a className="photo-link" href={photoState.photo.placeUrl} target="_blank" rel="noreferrer">{text(language, 'morePhotos')}</a>}{(photoState.kind === 'not_found' || photoState.kind === 'unavailable') && <a className="photo-link" href={photoState.placeUrl} target="_blank" rel="noreferrer">{text(language, 'morePhotos')}</a>}</>}</section>
+    <dl className="detail-grid"><div><dt>{text(language, 'heightLimit')}</dt><dd>{heightLabel(language, heightLimit)}</dd></div><div><dt>{text(language, 'hourlyRate')}</dt><dd>{price === '未提供' ? text(language, 'unavailable') : price}</dd></div><div><dt>{text(language, 'openStatus')}</dt><dd>{info.opening_status === 'CLOSED' ? text(language, 'closed') : text(language, 'openSiteCheck')}</dd></div><div><dt>{text(language, 'contact')}</dt><dd>{info.contactNo || text(language, 'unavailable')}</dd></div></dl>
+    <section className="detail-section"><h3>{text(language, 'facilities')}</h3><p>{facilities.length ? facilities.join(' · ') : text(language, 'unavailable')}</p></section><section className="detail-section"><h3>{text(language, 'payments')}</h3><p>{payments.length ? payments.join(' · ') : text(language, 'unavailable')}</p></section>
+    <div className="detail-actions"><a className="primary-action" href={navigationUrl} target="_blank" rel="noreferrer">{text(language, 'openNavigation')}</a>{info.website && <a className="secondary-action" href={info.website} target="_blank" rel="noreferrer">{text(language, 'carparkWebsite')}</a>}</div>
+    <p className="data-note">{language === 'en' ? 'Availability: Hong Kong Government data.gov.hk; charging: Environmental Protection Department; photos: Google Maps. Data is for reference only; check conditions on site.' : '空位資料：香港政府 data.gov.hk；充電器：環境保護署；相片：Google Maps。資料只供參考，請以現場情況為準。'}</p>
+  </aside>;
 }
