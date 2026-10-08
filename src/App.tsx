@@ -52,6 +52,26 @@ function Logo() {
   return <span className="brand-mark" aria-hidden="true"><span>P</span></span>;
 }
 
+function RefreshIcon() {
+  return (
+    <svg className="refresh-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M21 12a9 9 0 1 1-3-6.7" fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2.2" />
+      <path d="M21 3v6h-6" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" />
+    </svg>
+  );
+}
+
+function LocateIcon() {
+  return (
+    <svg className="locate-icon" viewBox="0 0 32 32" aria-hidden="true">
+      <path d="m3 9 9-4 9 4 8-4v18l-8 4-9-4-9 4z" fill="#d9e7eb" />
+      <path d="m3 9 9 4 9-4 8 4M12 13v14M21 9v18" fill="none" stroke="#5f7c8d" strokeLinejoin="round" strokeWidth="1.5" />
+      <path d="M16 5.5a5.4 5.4 0 0 0-5.4 5.4c0 4.1 5.4 9.6 5.4 9.6s5.4-5.5 5.4-9.6A5.4 5.4 0 0 0 16 5.5Z" fill="#14b8a6" stroke="#eafffb" strokeWidth="1.2" />
+      <circle cx="16" cy="10.9" r="2" fill="#0b263d" />
+    </svg>
+  );
+}
+
 export default function App() {
   const { infos, vacancyById, loading, refreshing, error, refresh, retry } = useCarparks();
   const { chargers, loading: evLoading, error: evError } = useEvChargers();
@@ -149,10 +169,10 @@ export default function App() {
             <button type="button" onClick={scaleUp} disabled={textScale === 130} aria-label="放大文字">A+</button>
           </div>
           <button className={refreshing ? 'refresh-button is-refreshing' : 'refresh-button'} type="button" onClick={refresh} disabled={refreshing || loading} aria-label={refreshing ? '正在更新停車位資料' : '立即更新停車位資料'} title={refreshing ? '正在更新' : '立即更新'}>
-            <span aria-hidden="true">↻</span>
+            <RefreshIcon />
           </button>
-          <button className="locate-button" type="button" onClick={requestLocation} disabled={locationState === 'locating'}>
-            <span aria-hidden="true">⌖</span>{locationState === 'locating' ? '定位中' : '使用我的位置'}
+          <button className={locationState === 'locating' ? 'locate-button is-locating' : 'locate-button'} type="button" onClick={requestLocation} disabled={locationState === 'locating'} aria-label={locationState === 'locating' ? '正在定位目前位置' : '使用我的位置'} title={locationState === 'locating' ? '正在定位' : '使用我的位置'}>
+            <LocateIcon />
           </button>
         </div>
       </header>
