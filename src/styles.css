@@ -421,3 +421,127 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
     border-radius: 15px;
   }
 }
+
+
+/* 2026-10-09：把文字、語言與教學控制收納到右上角兩個垂直工具欄。 */
+.top-actions {
+  display: grid;
+  grid-template-columns: 100px 34px 34px;
+  grid-template-rows: 34px 34px;
+  gap: 4px 6px;
+  align-items: start;
+}
+.text-tools,
+.quick-tools {
+  display: grid;
+  gap: 4px;
+}
+.text-tools {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  grid-template-rows: 30px 30px;
+}
+.quick-tools {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  grid-template-rows: 34px 34px;
+}
+.top-actions .locate-button {
+  grid-column: 3;
+  grid-row: 1;
+}
+.text-tools .text-size-control,
+.text-tools .language-switcher {
+  width: 100%;
+  min-height: 30px;
+  height: 30px;
+  padding: 2px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+.text-tools .text-size-control {
+  justify-content: space-between;
+}
+.text-tools .text-size-control button {
+  min-width: 22px;
+  min-height: 24px;
+  padding: 0;
+  font-size: 13px;
+}
+.text-tools .text-size-control span {
+  padding: 0;
+}
+.text-tools .language-switcher {
+  display: flex;
+}
+.text-tools .language-switcher button {
+  min-width: 0;
+  min-height: 24px;
+  flex: 1;
+  padding: 0;
+  font-size: 12px;
+}
+.top-actions .refresh-button,
+.top-actions .locate-button,
+.quick-tools .help-button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  min-height: 34px;
+  margin: 0;
+  padding: 0;
+  border-radius: 50%;
+}
+.quick-tools .help-button > span:first-child {
+  width: 17px;
+  height: 17px;
+  font-size: 11px;
+}
+.quick-tools .help-button > span:last-child {
+  display: none;
+}
+
+.filters {
+  margin-top: 4px;
+}
+.chip {
+  padding-inline: 8px;
+}
+.height-select {
+  padding-left: 8px;
+  padding-right: 6px;
+}
+
+@media (max-width: 720px) {
+  .top-actions {
+    grid-template-columns: 54px 30px 30px;
+    grid-template-rows: 30px 30px;
+    gap: 4px;
+  }
+  .text-tools { grid-template-rows: 30px 30px; }
+  .quick-tools { grid-template-rows: 30px 30px; }
+  .top-actions .refresh-button,
+  .top-actions .locate-button,
+  .quick-tools .help-button {
+    width: 30px;
+    height: 30px;
+    min-height: 30px;
+  }
+  .text-tools .text-size-control span { display: none; }
+  .map-wrap,
+  .landsd-map {
+    height: clamp(360px, calc((100dvh - 296px) / var(--ui-zoom, 1)), 500px);
+  }
+}
+
+@media (max-width: 560px) {
+  html[lang='en'] .brand-mark {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+  }
+  html[lang='en'] .brand { gap: 6px; }
+  html[lang='en'] .brand h1 { font-size: 20px; }
+  html[lang='en'] .brand .brand-kicker { display: none; }
+}
