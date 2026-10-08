@@ -165,3 +165,178 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 
 .footer-link { border: 0; padding: 0; color: #8ddfd3; background: transparent; font: inherit; font-size: inherit; text-decoration: underline; }
 .footer-link:hover { color: #d5fff9; }
+
+
+/* 統一篩選牌及結果卡：內容長短不再改變基本卡片節奏。 */
+:root {
+  --filter-control-height: 38px;
+  --result-card-gap: 10px;
+  --result-action-width: 76px;
+}
+
+.filter-row {
+  align-items: center;
+  min-height: var(--filter-control-height);
+  gap: 8px;
+}
+
+.chip,
+.height-select {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--filter-control-height);
+  height: var(--filter-control-height);
+  padding-block: 0;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.height-select select {
+  height: 100%;
+  padding-block: 0;
+  line-height: 1;
+}
+
+.results-list { gap: var(--result-card-gap); }
+
+.park-card,
+.toilet-card {
+  grid-template-columns: minmax(0, 1fr) var(--result-action-width);
+  min-height: 148px;
+}
+
+.park-card-main {
+  display: grid;
+  grid-template-rows: 36px 20px 22px 14px;
+  align-content: center;
+  gap: 7px;
+  min-height: 148px;
+  padding: 13px 11px 13px 13px;
+}
+
+.park-card .card-heading,
+.toilet-card .card-heading {
+  min-height: 36px;
+}
+
+.card-heading h3,
+.card-heading p,
+.toilet-facts span,
+.card-facts span,
+.availability-line,
+.updated {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.park-card .availability-line {
+  min-height: 20px;
+  margin: 0 0 0 16px;
+  flex-wrap: nowrap;
+}
+
+.park-card .card-facts {
+  min-height: 22px;
+  margin: 0 0 0 16px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  align-items: center;
+}
+
+.park-card .card-facts span {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.park-card .updated {
+  min-height: 14px;
+  margin: 0 0 0 16px;
+}
+
+.park-card > .nav-link {
+  width: calc(var(--result-action-width) - 15px);
+  min-height: 44px;
+  margin: 0 8px 0 0;
+  padding-inline: 5px;
+  text-align: center;
+}
+
+.toilet-card-main {
+  display: grid;
+  grid-template-rows: 36px minmax(0, 1fr);
+  align-content: center;
+  gap: 8px;
+  min-height: 148px;
+  padding: 13px 10px 13px 13px;
+}
+
+.toilet-facts {
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  align-content: center;
+  gap: 5px;
+  min-height: 62px;
+  max-height: 62px;
+  margin: 0 0 0 30px;
+  overflow: hidden;
+}
+
+.toilet-facts span {
+  max-width: 100%;
+}
+
+.toilet-card-actions {
+  align-self: stretch;
+  width: var(--result-action-width);
+  grid-template-rows: repeat(2, minmax(44px, 1fr));
+  gap: 7px;
+  padding: 10px 9px 10px 0;
+}
+
+.toilet-card-actions .nav-link,
+.toilet-card-actions .toilet-photo-toggle,
+.toilet-card-actions .toilet-photo-unavailable {
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  margin: 0;
+  padding: 6px 4px;
+  line-height: 1.2;
+}
+
+.nearby-facility-card {
+  min-height: 122px;
+}
+
+.nearby-facility-card .toilet-card-main {
+  min-height: 122px;
+  grid-template-rows: 36px minmax(0, 1fr);
+}
+
+.nearby-facility-card .toilet-card-actions {
+  grid-template-rows: minmax(44px, 1fr);
+}
+
+.toilet-card:has(.toilet-photo-section) {
+  min-height: unset;
+}
+
+.toilet-card:has(.toilet-photo-section) .toilet-card-main {
+  display: block;
+  min-height: 0;
+}
+
+@media (max-width: 560px) {
+  :root {
+    --filter-control-height: 40px;
+    --result-action-width: 78px;
+  }
+
+  .filter-row { padding-bottom: 7px; }
+  .park-card,
+  .toilet-card { min-height: 152px; }
+  .park-card-main,
+  .toilet-card-main { min-height: 152px; }
+  .toilet-card-actions { padding-right: 8px; }
+}
