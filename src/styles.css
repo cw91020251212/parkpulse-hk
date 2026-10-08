@@ -531,7 +531,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
   .text-tools .text-size-control span { display: none; }
   .map-wrap,
   .landsd-map {
-    height: clamp(360px, calc((100dvh - 296px) / var(--ui-zoom, 1)), 500px);
+    height: clamp(360px, calc((100dvh - 284px) / var(--ui-zoom, 1)), 520px);
   }
 }
 
