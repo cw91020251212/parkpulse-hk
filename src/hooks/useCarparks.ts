@@ -8,6 +8,7 @@ export function useCarparks() {
   const [infos, setInfos] = useState<CarparkInfo[]>([]);
   const [vacancyById, setVacancyById] = useState<Map<string, VacancyRecord>>(new Map());
   const [loading, setLoading] = useState(true);
+  const [vacancyLoading, setVacancyLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastFetchedAt, setLastFetchedAt] = useState<Date | null>(null);
@@ -17,18 +18,23 @@ export function useCarparks() {
     if (requestInFlight.current) return;
     requestInFlight.current = true;
     const controller = new AbortController();
+    const vacancyRequest = fetchVacancies(controller.signal);
 
     try {
       setError(null);
       if (includeInfo) setLoading(true);
       else setRefreshing(true);
+      setVacancyLoading(true);
 
-      const [nextInfos, vacancies] = await Promise.all([
-        includeInfo ? fetchCarparkInfo(controller.signal) : Promise.resolve(null),
-        fetchVacancies(controller.signal),
-      ]);
+      if (includeInfo) {
+        try {
+          setInfos(await fetchCarparkInfo(controller.signal));
+        } finally {
+          setLoading(false);
+        }
+      }
 
-      if (nextInfos) setInfos(nextInfos);
+      const vacancies = await vacancyRequest;
       setVacancyById(new Map(vacancies.map((record) => [record.park_Id, record])));
       setLastFetchedAt(new Date());
     } catch (caught) {
@@ -37,6 +43,7 @@ export function useCarparks() {
     } finally {
       requestInFlight.current = false;
       setLoading(false);
+      setVacancyLoading(false);
       setRefreshing(false);
     }
   }, []);
@@ -51,6 +58,7 @@ export function useCarparks() {
     infos,
     vacancyById,
     loading,
+    vacancyLoading,
     refreshing,
     error,
     lastFetchedAt,

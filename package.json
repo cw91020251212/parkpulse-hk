@@ -11,6 +11,7 @@
     "test:domain": "node --experimental-strip-types scripts/check-vacancy.mjs",
     "test:charging": "node --experimental-strip-types scripts/check-ev-charging.mjs",
     "test:photos": "node scripts/check-photo-proxy.mjs",
+    "test:startup": "node scripts/check-fast-start.mjs",
     "preview": "vite preview --host 0.0.0.0",
     "start": "NODE_ENV=production node server.mjs"
   },

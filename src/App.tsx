@@ -66,7 +66,7 @@ function LocateIcon() {
 }
 
 export default function App() {
-  const { infos, vacancyById, loading, refreshing, error, refresh, retry } = useCarparks();
+  const { infos, vacancyById, loading, vacancyLoading, refreshing, error, refresh, retry } = useCarparks();
   const { chargers, loading: evLoading, error: evError } = useEvChargers();
   const [position, setPosition] = useState<Coordinates>(HONG_KONG_CENTER);
   const [areaName, setAreaName] = useState('香港中心');
@@ -138,9 +138,9 @@ export default function App() {
       const isOpen = park.info.opening_status === 'OPEN' && park.status.kind !== 'closed';
       const hasEv = Boolean(park.evCharger) || facilities.includes('evCharger');
       return (
-        (!filters.availableOnly || isAvailable(park.status)) &&
+        (!filters.availableOnly || vacancyLoading || isAvailable(park.status)) &&
         (!filters.openOnly || isOpen) &&
-        (!filters.hasEv || hasEv) &&
+        (!filters.hasEv || evLoading || hasEv) &&
         (!filters.hasAccessible || facilities.includes('disabilities')) &&
         (!filters.minHeight || (park.heightLimit !== undefined && park.heightLimit >= filters.minHeight))
       );
@@ -195,15 +195,15 @@ export default function App() {
         <section className="results-panel" id="parking-results" aria-label="附近停車場清單">
           <div className="results-heading">
             <div><p className="eyebrow">{areaName} · {NEARBY_RADIUS_KM} 公里</p><h2>{loading ? '正在整理停車場…' : `${displayedParks.length} 個結果`}</h2></div>
-            <p>{loading ? '資料載入中' : filters.hasEv && evLoading ? '更新充電器資料' : `${availableCount} 個有位選項`}</p>
+            <p>{loading ? '資料載入中' : vacancyLoading ? '更新空位資料' : filters.hasEv && evLoading ? '更新充電器資料' : `${availableCount} 個有位選項`}</p>
           </div>
           <div className="results-list">
             {loading && <div className="loading-state"><span className="loader" />讀取停車場及即時空位…</div>}
-            {!loading && filters.hasEv && evLoading && <div className="loading-state"><span className="loader" />正在讀取環保署官方充電器資料…</div>}
-            {!loading && (!filters.hasEv || !evLoading) && displayedParks.map((park) => (
+            {!loading && filters.hasEv && evLoading && <div className="loading-note"><span className="loader" />正在補充官方充電器資料，暫時顯示附近停車場…</div>}
+            {!loading && displayedParks.map((park) => (
               <ParkCard key={park.info.park_Id} park={park} vehicleType={vehicleType} selected={park.info.park_Id === selectedId} onSelect={() => setSelectedId(park.info.park_Id)} />
             ))}
-            {!loading && !evLoading && displayedParks.length === 0 && (
+            {!loading && !vacancyLoading && (!filters.hasEv || !evLoading) && displayedParks.length === 0 && (
               <div className="empty-state"><strong>呢個範圍暫時冇符合條件嘅結果</strong><p>試下取消部分篩選，或者使用定位後再刷新。</p></div>
             )}
           </div>

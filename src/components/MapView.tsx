@@ -157,8 +157,8 @@ function markerIcon(park: ParkViewModel) {
 const selectedCenterIcon = L.divIcon({
   className: 'selected-center-marker-shell',
   html: '<span class="selected-center-marker" aria-hidden="true"></span>',
-  iconSize: [50, 50],
-  iconAnchor: [25, 50],
+  iconSize: [28, 28],
+  iconAnchor: [14, 28],
 });
 
 export function MapView({ position, parks, selectedId, onSelect, onLocationSelect, recenterRequest, showSelectedCenter, expanded, onToggleExpanded, onShowResults }: Props) {

@@ -92,15 +92,14 @@ function simplifyEpdRecord(record) {
   };
 }
 
-async function loadEpdEvChargers() {
-  if (evCache.value && Date.now() - evCache.loadedAt < EV_CACHE_MS) return evCache.value;
+async function refreshEpdEvChargers() {
   if (evCache.pending) return evCache.pending;
 
   evCache.pending = (async () => {
     try {
       const response = await fetch(EPD_EV_URL, {
         headers: { Accept: 'application/json' },
-        signal: AbortSignal.timeout(120_000),
+        signal: AbortSignal.timeout(25_000),
       });
       if (!response.ok) throw new Error(`EPD EV service returned ${response.status}`);
       const payload = await response.json();
@@ -120,6 +119,14 @@ async function loadEpdEvChargers() {
   })();
 
   return evCache.pending;
+}
+
+async function loadEpdEvChargers() {
+  if (evCache.value) {
+    if (Date.now() - evCache.loadedAt >= EV_CACHE_MS) void refreshEpdEvChargers().catch(() => undefined);
+    return evCache.value;
+  }
+  return refreshEpdEvChargers();
 }
 
 app.get('/health', (_request, response) => response.status(200).json({ ok: true }));
@@ -222,4 +229,5 @@ if (isProduction) {
 
 app.listen(port, '0.0.0.0', () => {
   console.log(`泊邊有位正在監聽 ${port}`);
+  void loadEpdEvChargers().catch(() => undefined);
 });
