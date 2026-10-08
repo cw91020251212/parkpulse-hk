@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { simplifyEpdRecord } from '../lib/epd-ev-chargers.mjs';
 import { parseArcGisAtms, parseFuelStations, parseHkmaAtms } from '../lib/nearby-facilities.mjs';
+import { buildOnStreetParking, NON_METER_LOCATIONS_URL, NON_METER_STATUS_URL } from '../lib/on-street-parking.mjs';
 import { parsePublicToilets } from '../lib/public-toilets.mjs';
 
 const publicDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../public');
@@ -75,4 +76,16 @@ await refreshOrKeep('atms.json', async () => {
     if (!records.length) throw new Error('HKMA fallback returned no usable records');
     return { source: '香港金融管理局 ATM 資料（ArcGIS 空間資料後備）', records };
   }
+});
+
+await refreshOrKeep('on-street-parking.json', async () => {
+  const headers = { 'User-Agent': 'ParkPulse HK data checker' };
+  const [locations, status] = await Promise.all([
+    fetch(NON_METER_LOCATIONS_URL, { headers, signal: AbortSignal.timeout(30_000) }),
+    fetch(NON_METER_STATUS_URL, { headers, signal: AbortSignal.timeout(30_000) }),
+  ]);
+  if (!locations.ok || !status.ok) throw new Error('Transport Department non-metered service returned an error');
+  const { nonMetered } = buildOnStreetParking({ nonMeterLocations: await locations.text(), nonMeterStatus: await status.text(), meterLocations: '', meterStatus: '', nonMeterSnapshot: true });
+  if (!nonMetered.length) throw new Error('Transport Department returned no usable non-metered records');
+  return { source: '運輸署路旁感應試行（GitHub Pages 建置快照）', generatedAt: new Date().toISOString(), nonMetered };
 });

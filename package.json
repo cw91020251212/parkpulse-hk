@@ -20,6 +20,7 @@
     "test:verified-place-links": "node scripts/check-verified-place-links.mjs",
     "test:lcsd-venues": "node scripts/check-lcsd-venues.mjs",
     "test:nearby-facilities": "node scripts/check-nearby-facilities.mjs",
+    "test:on-street": "node scripts/check-on-street-parking.mjs",
     "test:pages": "node scripts/check-pages-build.mjs",
     "test:pwa": "node scripts/check-pwa.mjs",
     "preview": "vite preview --host 0.0.0.0",

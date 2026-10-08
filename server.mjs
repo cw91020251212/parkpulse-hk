@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { simplifyEpdRecord } from './lib/epd-ev-chargers.mjs';
 import { parseArcGisAtms, parseFuelStations, parseHkmaAtms } from './lib/nearby-facilities.mjs';
+import { buildOnStreetParking, METER_LOCATIONS_URL, METER_STATUS_URL, NON_METER_LOCATIONS_URL, NON_METER_STATUS_URL } from './lib/on-street-parking.mjs';
 import { parsePublicToilets } from './lib/public-toilets.mjs';
 
 const app = express();
@@ -23,6 +24,8 @@ const HKMA_ATMS_FALLBACK_URL = 'https://services3.arcgis.com/6j1KwZfY2fZrfNMR/ar
 const FACILITY_CACHE_MS = 30 * 60_000;
 let fuelCache = { value: null, loadedAt: 0, pending: null };
 let atmCache = { value: null, loadedAt: 0, pending: null };
+const ON_STREET_CACHE_MS = 60_000;
+let onStreetCache = { value: null, loadedAt: 0, pending: null };
 
 function distanceInMeters(from, to) {
   const radians = (value) => (value * Math.PI) / 180;
@@ -217,6 +220,40 @@ async function loadAtms() {
   return refreshAtms();
 }
 
+async function refreshOnStreetParking() {
+  if (onStreetCache.pending) return onStreetCache.pending;
+  onStreetCache.pending = (async () => {
+    try {
+      const request = (url) => fetch(url, { headers: { Accept: 'text/csv,*/*;q=0.8', 'User-Agent': 'ParkPulse HK data checker' }, signal: AbortSignal.timeout(25_000) });
+      const [meterLocations, meterStatus, nonMeterLocations, nonMeterStatus] = await Promise.all([
+        request(METER_LOCATIONS_URL), request(METER_STATUS_URL), request(NON_METER_LOCATIONS_URL), request(NON_METER_STATUS_URL),
+      ]);
+      if (![meterLocations, meterStatus, nonMeterLocations, nonMeterStatus].every((response) => response.ok)) throw new Error('Transport Department road-side service returned an error');
+      const parsed = buildOnStreetParking({
+        meterLocations: await meterLocations.text(), meterStatus: await meterStatus.text(),
+        nonMeterLocations: await nonMeterLocations.text(), nonMeterStatus: await nonMeterStatus.text(),
+      });
+      const records = [...parsed.metered, ...parsed.nonMetered];
+      if (!records.length) throw new Error('Transport Department returned no usable road-side records');
+      onStreetCache.value = { records, generatedAt: new Date().toISOString() };
+      onStreetCache.loadedAt = Date.now();
+      return onStreetCache.value;
+    } catch (error) {
+      if (onStreetCache.value) return onStreetCache.value;
+      throw error;
+    } finally { onStreetCache.pending = null; }
+  })();
+  return onStreetCache.pending;
+}
+
+async function loadOnStreetParking() {
+  if (onStreetCache.value) {
+    if (Date.now() - onStreetCache.loadedAt >= ON_STREET_CACHE_MS) void refreshOnStreetParking().catch(() => undefined);
+    return onStreetCache.value;
+  }
+  return refreshOnStreetParking();
+}
+
 app.get('/health', (_request, response) => response.status(200).json({ ok: true }));
 
 app.get('/api/ev-chargers', async (_request, response) => {
@@ -260,6 +297,35 @@ app.get('/api/atms', async (_request, response) => {
   } catch (error) {
     console.error('Unable to load HKMA ATM data', error instanceof Error ? error.message : error);
     return response.status(502).json({ error: '未能讀取金管局 ATM 資料' });
+  }
+});
+
+app.get('/api/on-street-parking', async (_request, response) => {
+  try {
+    const payload = await loadOnStreetParking();
+    response.set('Cache-Control', 'private, max-age=60');
+    return response.json({ source: '運輸署智能咪錶及路旁感應試行', ...payload });
+  } catch (error) {
+    console.error('Unable to load Transport Department on-street parking data', error instanceof Error ? error.message : error);
+    return response.status(502).json({ error: '未能讀取運輸署路邊泊位資料' });
+  }
+});
+
+app.get('/api/place-rating', async (request, response) => {
+  const name = readText(request.query.name, 180);
+  const address = readText(request.query.address, 300) || '';
+  const coordinates = readCoordinates(request.query);
+  if (!name || !coordinates) return response.status(400).json({ state: 'invalid_request' });
+  try {
+    const mapsResponse = await mapsRequest('maps/api/place/textsearch/json', { query: `${name} ${address} Hong Kong`.trim(), location: `${coordinates.lat},${coordinates.lng}`, radius: '500' });
+    const payload = await mapsResponse.json();
+    const candidate = (payload.results ?? []).filter((item) => item?.geometry?.location && Number.isFinite(Number(item.rating)) && Number(item.user_ratings_total) > 0).map((item) => ({ ...item, distanceMeters: distanceInMeters(coordinates, { lat: Number(item.geometry.location.lat), lng: Number(item.geometry.location.lng) }) })).filter((item) => Number.isFinite(item.distanceMeters) && item.distanceMeters <= 100).sort((left, right) => left.distanceMeters - right.distanceMeters)[0];
+    if (!candidate) return response.json({ state: 'not_found' });
+    const placeUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(candidate.name)}&query_place_id=${encodeURIComponent(candidate.place_id)}`;
+    return response.json({ state: 'found', placeName: candidate.name, placeUrl, distanceMeters: Math.round(candidate.distanceMeters / 10) * 10, rating: Number(candidate.rating), userRatingCount: Number(candidate.user_ratings_total) });
+  } catch (error) {
+    console.error('Unable to load a place rating', error instanceof Error ? error.message : error);
+    return response.status(502).json({ state: 'unavailable' });
   }
 });
 

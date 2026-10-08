@@ -43,6 +43,7 @@ export interface CarparkInfo {
   name: string;
   displayAddress?: string;
   photoPlaceUrl?: string;
+  googleRating?: GoogleMapsRating;
   district?: string;
   latitude: number;
   longitude: number;
@@ -126,7 +127,14 @@ export interface PublicToiletViewModel {
   distanceKm: number;
 }
 
-export type NearbyMode = 'toilets' | 'fuel' | 'atm';
+export type NearbyMode = 'toilets' | 'fuel' | 'atm' | 'onStreet';
+
+export interface GoogleMapsRating {
+  rating: number;
+  userRatingCount: number;
+  placeUrl: string;
+  generatedAt?: string;
+}
 
 export interface NearbyFacility {
   id: string;
@@ -143,6 +151,29 @@ export interface NearbyFacility {
 
 export interface NearbyFacilityViewModel {
   facility: NearbyFacility;
+  distanceKm: number;
+}
+
+export interface OnStreetParking {
+  id: string;
+  kind: 'metered' | 'nonMetered';
+  name: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  vehicleType?: string;
+  occupancy: 'vacant' | 'occupied' | 'unavailable';
+  meterStatus?: string;
+  updatedAt?: string;
+  operatingPeriod?: string;
+  timeUnit?: string;
+  paymentUnit?: string;
+  source: string;
+  snapshot: boolean;
+}
+
+export interface OnStreetParkingViewModel {
+  onStreet: OnStreetParking;
   distanceKm: number;
 }
 
