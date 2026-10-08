@@ -4,8 +4,8 @@ import path from 'node:path';
 
 const root = process.cwd();
 const manifest = JSON.parse(await readFile(path.join(root, 'public/manifest.webmanifest'), 'utf8'));
-assert.equal(manifest.name, 'ParkPulse HK｜泊邊有位');
-assert.equal(manifest.short_name, 'ParkPulse HK');
+assert.equal(manifest.name, '泊邊度｜ParkPulse HK');
+assert.equal(manifest.short_name, '泊邊度');
 assert.equal(manifest.display, 'standalone');
 assert.equal(manifest.start_url, './');
 assert.equal(manifest.scope, './');

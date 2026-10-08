@@ -7,7 +7,7 @@ type Copy = Record<string, string>;
 const COPY: Record<Language, Copy> = {
   'zh-Hant': {
     brandKicker: 'PARKPULSE HK · HONG KONG PARKING',
-    brandTitle: '泊邊有位',
+    brandTitle: '泊邊度',
     textSize: '文字',
     shrinkText: '縮小文字',
     enlargeText: '放大文字',
