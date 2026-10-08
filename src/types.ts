@@ -38,6 +38,15 @@ export interface HeightLimit {
   remark?: string;
 }
 
+export interface OperatorRate {
+  sourceUrl: string;
+  sourceLabel: { 'zh-Hant': string; en: string };
+  checkedAt: string;
+  cardSummary: { 'zh-Hant': string; en: string };
+  hourlySummary: { 'zh-Hant': string; en: string };
+  detailNotes: { 'zh-Hant': string[]; en: string[] };
+}
+
 export interface CarparkInfo {
   park_Id: string;
   name: string;
@@ -49,6 +58,7 @@ export interface CarparkInfo {
   longitude: number;
   contactNo?: string;
   website?: string;
+  operatorRates?: Partial<Record<VehicleType, OperatorRate>>;
   opening_status?: 'OPEN' | 'CLOSED' | string;
   heightLimits?: HeightLimit[];
   facilities?: string[];

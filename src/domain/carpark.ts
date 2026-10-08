@@ -23,6 +23,10 @@ const VEHICLE_NOTE_PATTERNS: Record<VehicleType, RegExp> = {
 const RATE_NOTE_PATTERN = /(?:HK\s*)?\$\s*[\d,]+(?:\.\d+)?/i;
 const RATE_CONTEXT_PATTERN = /私家車|電單車|客貨車|輕型貨車|重型貨車|旅遊巴|的士|時租|日泊|夜泊|月租|每月|每季|一般泊車/;
 
+export function getVerifiedOperatorRate(info: CarparkInfo, vehicleType: VehicleType) {
+  return info.operatorRates?.[vehicleType];
+}
+
 export function parseHongKongTime(value?: string) {
   if (!value) return undefined;
   const parsed = new Date(`${value.replace(' ', 'T')}+08:00`);

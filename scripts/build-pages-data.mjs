@@ -1,9 +1,11 @@
-import { access, mkdir, writeFile } from 'node:fs/promises';
+import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { simplifyEpdRecord } from '../lib/epd-ev-chargers.mjs';
 import { parseArcGisAtms, parseFuelStations, parseHkmaAtms } from '../lib/nearby-facilities.mjs';
+import { buildOfficialRateOverrides } from '../lib/official-rate-overrides.mjs';
 import { buildOnStreetParking, NON_METER_LOCATIONS_URL, NON_METER_STATUS_URL } from '../lib/on-street-parking.mjs';
+import { buildLinkOperatorRates, buildSinoOperatorRates } from '../lib/operator-rates.mjs';
 import { parsePublicToilets } from '../lib/public-toilets.mjs';
 
 const publicDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../public');
@@ -45,6 +47,13 @@ await refreshFileOrKeep(path.join(publicDir, 'carpark-info.json'), async () => {
   const payload = await (await request(CARPARK_INFO_URL, 'application/json')).json();
   if (!Array.isArray(payload?.results) || payload.results.length < 500) throw new Error('Transport Department returned no usable car-park records');
   return payload;
+});
+
+await refreshFileOrKeep(path.join(publicDir, 'operator-rates.json'), async () => {
+  const payload = JSON.parse(await readFile(path.join(publicDir, 'carpark-info.json'), 'utf8'));
+  const [link, sino] = await Promise.all([buildLinkOperatorRates(payload.results), buildSinoOperatorRates(payload.results)]);
+  const officialOverrides = buildOfficialRateOverrides(payload.results, link.checkedAt);
+  return { source: '營辦商官方泊車資料', generatedAt: new Date().toISOString(), checkedAt: link.checkedAt, attempted: link.attempted + sino.attempted + officialOverrides.attempted, providers: { link: link.attempted, sino: sino.attempted, officialSharedPages: officialOverrides.attempted }, records: { ...link.records, ...sino.records, ...officialOverrides.records } };
 });
 
 await refreshOrKeep('ev-chargers.json', async () => {

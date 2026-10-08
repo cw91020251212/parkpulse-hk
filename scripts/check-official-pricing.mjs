@@ -27,6 +27,7 @@ if (!xiquNotes.some((note) => note.includes('每小時$28')) || !xiquNotes.some(
   throw new Error(`Official raw rate notes were not retained: ${JSON.stringify(xiquNotes)}`);
 }
 
+
 const structured = records.find((record) => getOfficialHourlyCharges(record, 'privateCar').some((charge) => charge.source === 'structured'));
 if (!structured) throw new Error('No structured official hourly charge was found');
 const structuredCharge = getOfficialHourlyCharges(structured, 'privateCar')[0];

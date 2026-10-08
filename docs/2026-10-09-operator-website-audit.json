@@ -1,0 +1,1636 @@
+{
+  "generatedAt": "2026-10-08T23:03:58.421Z",
+  "totalOfficialWebsiteRecords": 258,
+  "linkRecordsHandledByApi": 144,
+  "auditedNonLinkRecords": 114,
+  "fetchedNonLinkRecords": 93,
+  "directPriceCandidates": 15,
+  "byDomain": [
+    {
+      "domain": "wilsonparking.com.hk",
+      "total": 11,
+      "fetched": 0,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "103",
+          "name": "One Sky Parc (威信停車場)",
+          "website": "https://www.wilsonparking.com.hk/zh/car_parks/detail/347",
+          "domain": "wilsonparking.com.hk",
+          "status": "http-404",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        },
+        {
+          "id": "128",
+          "name": "The Burrow (威信停車場)",
+          "website": "https://www.wilsonparking.com.hk/zh/car_parks/detail/424",
+          "domain": "wilsonparking.com.hk",
+          "status": "http-404",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        },
+        {
+          "id": "tdcp11",
+          "name": "天后停車場",
+          "website": "https://www.wilsonparking.com.hk/zh-hk/car_parks/detail/7",
+          "domain": "wilsonparking.com.hk",
+          "status": "http-404",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        },
+        {
+          "id": "tdcp3",
+          "name": "荃灣停車場",
+          "website": "https://www.wilsonparking.com.hk/zh-hk/car_parks/detail/8",
+          "domain": "wilsonparking.com.hk",
+          "status": "http-404",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        },
+        {
+          "id": "tdcp5",
+          "name": "大會堂停車場",
+          "website": "https://www.wilsonparking.com.hk/zh-hk/car_parks/detail/296",
+          "domain": "wilsonparking.com.hk",
+          "status": "http-404",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        },
+        {
+          "id": "tdcp6",
+          "name": "葵芳停車場",
+          "website": "https://www.wilsonparking.com.hk/zh-hk/car_parks/detail/295",
+          "domain": "wilsonparking.com.hk",
+          "status": "http-404",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        },
+        {
+          "id": "tdcp8",
+          "name": "天星停車場",
+          "website": "https://www.wilsonparking.com.hk/zh-hk/car_parks/detail/297",
+          "domain": "wilsonparking.com.hk",
+          "status": "http-404",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        },
+        {
+          "id": "tdstt17",
+          "name": "海華路",
+          "website": "https://www.wilsonparking.com.hk/zh/car_parks/detail/100",
+          "domain": "wilsonparking.com.hk",
+          "status": "http-404",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        },
+        {
+          "id": "tdc318p1",
+          "name": "百勝角路公眾停車場",
+          "website": "https://www.wilsonparking.com.hk/zh/car_parks/detail/453",
+          "domain": "wilsonparking.com.hk",
+          "status": "http-404",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        },
+        {
+          "id": "tdc335p1",
+          "name": "將軍澳政府合署公眾停車場",
+          "website": "https://www.wilsonparking.com.hk/zh/car_parks/detail/456",
+          "domain": "wilsonparking.com.hk",
+          "status": "http-404",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        },
+        {
+          "id": "tdc16p575",
+          "name": "希爾頓中心",
+          "website": "https://www.wilsonparking.com.hk/zh/car_parks/detail/174",
+          "domain": "wilsonparking.com.hk",
+          "status": "http-404",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "sino-propertyservices.com",
+      "total": 9,
+      "fetched": 9,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc25p42",
+          "name": "港利中心",
+          "website": "https://www.sino-propertyservices.com/tc/parking-services/portfolio",
+          "domain": "sino-propertyservices.com",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": true
+        },
+        {
+          "id": "tdc25p41",
+          "name": "柴灣工業城二期",
+          "website": "https://www.sino-propertyservices.com/tc/parking-services/portfolio",
+          "domain": "sino-propertyservices.com",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": true
+        },
+        {
+          "id": "tdc25p40",
+          "name": "柴灣工業城一期",
+          "website": "https://www.sino-propertyservices.com/tc/parking-services/portfolio",
+          "domain": "sino-propertyservices.com",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": true
+        },
+        {
+          "id": "tdc25p37",
+          "name": "陽光廣場",
+          "website": "https://www.sino-propertyservices.com/tc/parking-services/portfolio",
+          "domain": "sino-propertyservices.com",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": true
+        },
+        {
+          "id": "tdc25p36",
+          "name": "科技中心",
+          "website": "https://www.sino-propertyservices.com/tc/parking-services/portfolio",
+          "domain": "sino-propertyservices.com",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": true
+        },
+        {
+          "id": "tdc25p35",
+          "name": "達利廣場",
+          "website": "https://www.sino-propertyservices.com/tc/parking-services/portfolio",
+          "domain": "sino-propertyservices.com",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": true
+        },
+        {
+          "id": "tdc25p43",
+          "name": "屯門市廣場第二期",
+          "website": "https://www.sino-propertyservices.com/tc/parking-services/portfolio",
+          "domain": "sino-propertyservices.com",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": true
+        },
+        {
+          "id": "tdc25p44",
+          "name": "豐利中心",
+          "website": "https://www.sino-propertyservices.com/tc/parking-services/portfolio",
+          "domain": "sino-propertyservices.com",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": true
+        },
+        {
+          "id": "tdc25p46",
+          "name": "裕民坊",
+          "website": "https://www.sino-propertyservices.com/tc/parking-services/portfolio",
+          "domain": "sino-propertyservices.com",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": true
+        }
+      ]
+    },
+    {
+      "domain": "hongkongairport.com",
+      "total": 7,
+      "fetched": 7,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc2p8",
+          "name": "機場停車場 - 市區及大嶼山的士(時租)",
+          "website": "https://www.hongkongairport.com/tc/transport/parking/parking-charges.page#content3",
+          "domain": "hongkongairport.com",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 28,
+          "rateSignals": true
+        },
+        {
+          "id": "tdc2p1",
+          "name": "機場一號停車場(時租)",
+          "website": "https://www.hongkongairport.com/chi/transport/parking.html",
+          "domain": "hongkongairport.com",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 28,
+          "rateSignals": true
+        },
+        {
+          "id": "tdc2p11",
+          "name": "機場停車場 - 輕型貨車(長期停放)",
+          "website": "https://www.hongkongairport.com/tc/transport/parking/parking-charges.page#content3",
+          "domain": "hongkongairport.com",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 28,
+          "rateSignals": true
+        },
+        {
+          "id": "tdc2p10",
+          "name": "機場停車場 - 輕型貨車(時租)",
+          "website": "https://www.hongkongairport.com/tc/transport/parking/parking-charges.page#content3",
+          "domain": "hongkongairport.com",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 28,
+          "rateSignals": true
+        },
+        {
+          "id": "tdc2p9",
+          "name": "機場停車場 - 市區及大嶼山的士(長期停放)",
+          "website": "https://www.hongkongairport.com/tc/transport/parking/parking-charges.page#content3",
+          "domain": "hongkongairport.com",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 28,
+          "rateSignals": true
+        },
+        {
+          "id": "tdc2p4",
+          "name": "機場四號停車場",
+          "website": "https://www.hongkongairport.com/chi/transport/parking.html",
+          "domain": "hongkongairport.com",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 28,
+          "rateSignals": true
+        },
+        {
+          "id": "tdc2p16",
+          "name": "機場三號停車場",
+          "website": "https://www.hongkongairport.com/tc/transport/parking/parking-charges.page",
+          "domain": "hongkongairport.com",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 28,
+          "rateSignals": true
+        }
+      ]
+    },
+    {
+      "domain": "mtr.com.hk",
+      "total": 6,
+      "fetched": 6,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc8p3",
+          "name": "港鐵香港站停車場",
+          "website": "https://www.mtr.com.hk/ch/customer/services/aestations_carpark.html",
+          "domain": "mtr.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        },
+        {
+          "id": "tdc8p1",
+          "name": "港鐵青衣站停車場",
+          "website": "https://www.mtr.com.hk/ch/customer/services/aestations_carpark.html",
+          "domain": "mtr.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        },
+        {
+          "id": "tdc8p2",
+          "name": "港鐵九龍站停車場",
+          "website": "https://www.mtr.com.hk/ch/customer/services/aestations_carpark.html",
+          "domain": "mtr.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        },
+        {
+          "id": "tdc8p14",
+          "name": "港鐵荃灣西站停車場",
+          "website": "https://www.mtr.com.hk/ch/customer/services/aestations_carpark.html",
+          "domain": "mtr.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        },
+        {
+          "id": "tdc8p15",
+          "name": "錦上路車站停車場",
+          "website": "https://www.mtr.com.hk/ch/customer/services/aestations_carpark.html",
+          "domain": "mtr.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        },
+        {
+          "id": "tdc8p11",
+          "name": "港鐵海洋公園站停車場",
+          "website": "https://www.mtr.com.hk/ch/customer/services/aestations_carpark.html",
+          "domain": "mtr.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "hzmbparking.com.hk",
+      "total": 5,
+      "fetched": 5,
+      "nameMatched": 1,
+      "priceCandidates": 1,
+      "records": [
+        {
+          "id": "tdc15p1",
+          "name": "港珠澳大橋香港口岸1號停車場",
+          "website": "https://www.hzmbparking.com.hk/zh-hk/car-park-information",
+          "domain": "hzmbparking.com.hk",
+          "status": "fetched",
+          "nameMatched": true,
+          "priceTokens": 5,
+          "rateSignals": true
+        },
+        {
+          "id": "tdc15p2",
+          "name": "港珠澳大橋香港口岸2號停車場",
+          "website": "https://www.hzmbparking.com.hk/zh-hk/car-park-information",
+          "domain": "hzmbparking.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 5,
+          "rateSignals": true
+        },
+        {
+          "id": "tdc15p3",
+          "name": "港珠澳大橋香港口岸3號停車場",
+          "website": "https://www.hzmbparking.com.hk/zh-hk/car-park-information",
+          "domain": "hzmbparking.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 5,
+          "rateSignals": true
+        },
+        {
+          "id": "tdc15p4",
+          "name": "港珠澳大橋香港口岸4號停車場",
+          "website": "https://www.hzmbparking.com.hk/zh-hk/car-park-information",
+          "domain": "hzmbparking.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 5,
+          "rateSignals": true
+        },
+        {
+          "id": "tdc15p5",
+          "name": "港珠澳大橋香港口岸5號停車場",
+          "website": "https://www.hzmbparking.com.hk/zh-hk/car-park-information",
+          "domain": "hzmbparking.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 5,
+          "rateSignals": true
+        }
+      ]
+    },
+    {
+      "domain": "leegardens.com.hk",
+      "total": 5,
+      "fetched": 5,
+      "nameMatched": 5,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc1p5",
+          "name": "利園三期停車場",
+          "website": "https://www.leegardens.com.hk/car-park-promotion?lang=zh-HK#car-info-1",
+          "domain": "leegardens.com.hk",
+          "status": "fetched",
+          "nameMatched": true,
+          "priceTokens": 158,
+          "rateSignals": false
+        },
+        {
+          "id": "tdc1p4",
+          "name": "希慎廣場停車場",
+          "website": "https://www.leegardens.com.hk/car-park-promotion?lang=zh-HK#car-info-1",
+          "domain": "leegardens.com.hk",
+          "status": "fetched",
+          "nameMatched": true,
+          "priceTokens": 158,
+          "rateSignals": false
+        },
+        {
+          "id": "tdc1p3",
+          "name": "禮頓中心停車場",
+          "website": "https://www.leegardens.com.hk/car-park-promotion?lang=zh-HK#car-info-1",
+          "domain": "leegardens.com.hk",
+          "status": "fetched",
+          "nameMatched": true,
+          "priceTokens": 158,
+          "rateSignals": false
+        },
+        {
+          "id": "tdc1p2",
+          "name": "利園二期停車場",
+          "website": "https://www.leegardens.com.hk/car-park-promotion?lang=zh-HK#car-info-1",
+          "domain": "leegardens.com.hk",
+          "status": "fetched",
+          "nameMatched": true,
+          "priceTokens": 158,
+          "rateSignals": false
+        },
+        {
+          "id": "tdc1p1",
+          "name": "利園一期停車場",
+          "website": "https://www.leegardens.com.hk/car-park-promotion?lang=zh-HK#car-info-1",
+          "domain": "leegardens.com.hk",
+          "status": "fetched",
+          "nameMatched": true,
+          "priceTokens": 158,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "mackcarpark.com.hk",
+      "total": 5,
+      "fetched": 5,
+      "nameMatched": 5,
+      "priceCandidates": 5,
+      "records": [
+        {
+          "id": "tdcp10",
+          "name": "香港仔停車場",
+          "website": "https://www.mackcarpark.com.hk/big5/carpark_info.php?id=32",
+          "domain": "mackcarpark.com.hk",
+          "status": "fetched",
+          "nameMatched": true,
+          "priceTokens": 7,
+          "rateSignals": true
+        },
+        {
+          "id": "tdcp12",
+          "name": "雙鳳街停車場",
+          "website": "https://www.mackcarpark.com.hk/big5/carpark_info.php?id=33",
+          "domain": "mackcarpark.com.hk",
+          "status": "fetched",
+          "nameMatched": true,
+          "priceTokens": 8,
+          "rateSignals": true
+        },
+        {
+          "id": "tdcp2",
+          "name": "林士街停車場",
+          "website": "https://www.mackcarpark.com.hk/big5/carpark_info.php?id=31",
+          "domain": "mackcarpark.com.hk",
+          "status": "fetched",
+          "nameMatched": true,
+          "priceTokens": 10,
+          "rateSignals": true
+        },
+        {
+          "id": "tdcp7",
+          "name": "堅尼地城停車場",
+          "website": "https://www.mackcarpark.com.hk/big5/carpark_info.php?id=27",
+          "domain": "mackcarpark.com.hk",
+          "status": "fetched",
+          "nameMatched": true,
+          "priceTokens": 6,
+          "rateSignals": true
+        },
+        {
+          "id": "tdcp9",
+          "name": "筲箕灣停車場",
+          "website": "https://www.mackcarpark.com.hk/big5/carpark_info.php?id=21",
+          "domain": "mackcarpark.com.hk",
+          "status": "fetched",
+          "nameMatched": true,
+          "priceTokens": 8,
+          "rateSignals": true
+        }
+      ]
+    },
+    {
+      "domain": "westk.hk",
+      "total": 5,
+      "fetched": 0,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc17p1",
+          "name": "戲曲中心停車場",
+          "website": "https://www.westk.hk/tc/visit/parking",
+          "domain": "westk.hk",
+          "status": "http-403",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        },
+        {
+          "id": "tdc17p3",
+          "name": "西閘露天停車場",
+          "website": "https://www.westk.hk/tc/visit/parking",
+          "domain": "westk.hk",
+          "status": "http-403",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        },
+        {
+          "id": "tdc17p2",
+          "name": "藝術公園停車場",
+          "website": "https://www.westk.hk/tc/visit/parking",
+          "domain": "westk.hk",
+          "status": "http-403",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        },
+        {
+          "id": "tdc52p1",
+          "name": "M+ 停車場",
+          "website": "https://www.westk.hk/tc/visit/parking",
+          "domain": "westk.hk",
+          "status": "http-403",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        },
+        {
+          "id": "tdc117p1",
+          "name": "香港故宮文化博物館停車場",
+          "website": "https://www.westk.hk/tc/visit/parking",
+          "domain": "westk.hk",
+          "status": "http-403",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "hkstp.org",
+      "total": 3,
+      "fetched": 0,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc103p1",
+          "name": "科學園停車場 P1",
+          "website": "https://www.hkstp.org/zh-hk/visit/parking",
+          "domain": "hkstp.org",
+          "status": "http-403",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        },
+        {
+          "id": "tdc103p2",
+          "name": "科學園停車場 P2",
+          "website": "https://www.hkstp.org/zh-hk/visit/parking",
+          "domain": "hkstp.org",
+          "status": "http-403",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        },
+        {
+          "id": "tdc103p3",
+          "name": "科學園停車場 P3",
+          "website": "https://www.hkstp.org/zh-hk/visit/parking",
+          "domain": "hkstp.org",
+          "status": "http-403",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "housingauthority.gov.hk",
+      "total": 3,
+      "fetched": 3,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc6p15",
+          "name": "鯉魚門邨",
+          "website": "https://www.housingauthority.gov.hk/tc/global-elements/estate-locator/detail.html?propId=1&id=132134",
+          "domain": "housingauthority.gov.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        },
+        {
+          "id": "tdc6p18",
+          "name": "水泉澳停車場",
+          "website": "https://www.housingauthority.gov.hk/tc/global-elements/estate-locator/detail.html?propId=1&id=141887",
+          "domain": "housingauthority.gov.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        },
+        {
+          "id": "tdc6p19",
+          "name": "海麗邨停車場",
+          "website": "https://www.housingauthority.gov.hk/tc/global-elements/estate-locator/detail.html?propId=1&id=132134",
+          "domain": "housingauthority.gov.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "telford-plaza.com",
+      "total": 3,
+      "fetched": 3,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "30",
+          "name": "德福廣場D車場",
+          "website": "http://www.telford-plaza.com/tch/tp/about_us/parking_info.jsp",
+          "domain": "telford-plaza.com",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 4,
+          "rateSignals": true
+        },
+        {
+          "id": "31",
+          "name": "德福廣場一期停車場",
+          "website": "http://www.telford-plaza.com/tch/tp/about_us/parking_info.jsp",
+          "domain": "telford-plaza.com",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 4,
+          "rateSignals": true
+        },
+        {
+          "id": "32",
+          "name": "德福廣場二期停車場",
+          "website": "http://www.telford-plaza.com/tch/tp/about_us/parking_info.jsp",
+          "domain": "telford-plaza.com",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 4,
+          "rateSignals": true
+        }
+      ]
+    },
+    {
+      "domain": "yuexiuaptparking.com",
+      "total": 3,
+      "fetched": 3,
+      "nameMatched": 1,
+      "priceCandidates": 1,
+      "records": [
+        {
+          "id": "tdc6p20",
+          "name": "石排灣邨停車場",
+          "website": "https://www.yuexiuaptparking.com/article-find-10.html?lang=tc",
+          "domain": "yuexiuaptparking.com",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 20,
+          "rateSignals": true
+        },
+        {
+          "id": "tdc6p21",
+          "name": "漁灣邨停車場",
+          "website": "https://www.yuexiuaptparking.com/article-find-16.html?lang=tc",
+          "domain": "yuexiuaptparking.com",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 14,
+          "rateSignals": true
+        },
+        {
+          "id": "tdc32p4",
+          "name": "博康邨",
+          "website": "https://www.yuexiuaptparking.com/article-find-59.html?lang=tc",
+          "domain": "yuexiuaptparking.com",
+          "status": "fetched",
+          "nameMatched": true,
+          "priceTokens": 20,
+          "rateSignals": true
+        }
+      ]
+    },
+    {
+      "domain": "arcade.cyberport.hk",
+      "total": 2,
+      "fetched": 2,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc113p1",
+          "name": "數碼港停車場(一&二)",
+          "website": "https://arcade.cyberport.hk/parkingoffers?l=zh-tw",
+          "domain": "arcade.cyberport.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 4,
+          "rateSignals": true
+        },
+        {
+          "id": "tdc113p2",
+          "name": "數碼港停車場(三)",
+          "website": "https://arcade.cyberport.hk/parkingoffers?l=zh-tw",
+          "domain": "arcade.cyberport.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 4,
+          "rateSignals": true
+        }
+      ]
+    },
+    {
+      "domain": "hywparking.com.hk",
+      "total": 2,
+      "fetched": 2,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc28p3",
+          "name": "香園圍邊境管制站公共停車場-輕型貨車",
+          "website": "https://www.hywparking.com.hk/car-park/carParkInfo?lang=zh_TW",
+          "domain": "hywparking.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 13,
+          "rateSignals": true
+        },
+        {
+          "id": "tdc28p1",
+          "name": "香園圍口岸公眾停車場-私家車及電單車",
+          "website": "https://www.hywparking.com.hk/car-park/carParkInfo?lang=zh_TW",
+          "domain": "hywparking.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 13,
+          "rateSignals": true
+        }
+      ]
+    },
+    {
+      "domain": "kaitaksportspark.com.hk",
+      "total": 2,
+      "fetched": 2,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "124",
+          "name": "主場館停車場",
+          "website": "https://www.kaitaksportspark.com.hk/car-park/2",
+          "domain": "kaitaksportspark.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        },
+        {
+          "id": "125",
+          "name": "體藝館停車場",
+          "website": "https://www.kaitaksportspark.com.hk/car-park/1",
+          "domain": "kaitaksportspark.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "kinwinghong.weebly.com",
+      "total": 2,
+      "fetched": 2,
+      "nameMatched": 2,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdstt46",
+          "name": "荃灣海盛路利華士智能停車場",
+          "website": "https://kinwinghong.weebly.com/",
+          "domain": "kinwinghong.weebly.com",
+          "status": "fetched",
+          "nameMatched": true,
+          "priceTokens": 0,
+          "rateSignals": false
+        },
+        {
+          "id": "tdstt140",
+          "name": "保泰街利華士智能停車場",
+          "website": "https://kinwinghong.weebly.com/",
+          "domain": "kinwinghong.weebly.com",
+          "status": "fetched",
+          "nameMatched": true,
+          "priceTokens": 0,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "maritimesquare.com",
+      "total": 2,
+      "fetched": 2,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc8p7",
+          "name": "港鐵青衣城停車場",
+          "website": "https://www.maritimesquare.com/tch/ms/about_us/parking.jsp",
+          "domain": "maritimesquare.com",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 12,
+          "rateSignals": true
+        },
+        {
+          "id": "tdc8p12",
+          "name": "港鐵青衣城二期停車場",
+          "website": "https://www.maritimesquare.com/tch/ms/about_us/parking.jsp",
+          "domain": "maritimesquare.com",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 12,
+          "rateSignals": true
+        }
+      ]
+    },
+    {
+      "domain": "newtownplaza.com.hk",
+      "total": 2,
+      "fetched": 2,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc280p1",
+          "name": "新城市廣場三期停車場",
+          "website": "https://www.newtownplaza.com.hk/zh-hant/parking-tc/",
+          "domain": "newtownplaza.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 7,
+          "rateSignals": true
+        },
+        {
+          "id": "tdc279p1",
+          "name": "新城市廣場一期停車場",
+          "website": "https://www.newtownplaza.com.hk/zh-hant/parking-tc/",
+          "domain": "newtownplaza.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 7,
+          "rateSignals": true
+        }
+      ]
+    },
+    {
+      "domain": "yohomall.hk",
+      "total": 2,
+      "fetched": 2,
+      "nameMatched": 2,
+      "priceCandidates": 2,
+      "records": [
+        {
+          "id": "tdc320p1",
+          "name": "形點 I",
+          "website": "https://www.yohomall.hk/zh-hk/driving-info",
+          "domain": "yohomall.hk",
+          "status": "fetched",
+          "nameMatched": true,
+          "priceTokens": 33,
+          "rateSignals": true
+        },
+        {
+          "id": "tdc321p1",
+          "name": "形點 II",
+          "website": "https://www.yohomall.hk/zh-hk/driving-info",
+          "domain": "yohomall.hk",
+          "status": "fetched",
+          "nameMatched": true,
+          "priceTokens": 33,
+          "rateSignals": true
+        }
+      ]
+    },
+    {
+      "domain": "airside.com.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 1,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "104",
+          "name": "AIRSIDE",
+          "website": "https://www.airside.com.hk/en",
+          "domain": "airside.com.hk",
+          "status": "fetched",
+          "nameMatched": true,
+          "priceTokens": 0,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "crocodilecenter.com.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc73p1",
+          "name": "鱷魚恤中心",
+          "website": "https://www.crocodilecenter.com.hk/chi/leasing.html",
+          "domain": "crocodilecenter.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "domain-mall.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "38",
+          "name": "大本型停車場",
+          "website": "http://www.domain-mall.hk/index.php/about-domain",
+          "domain": "domain-mall.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "eastpointcity.com.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc343p1",
+          "name": "東港城商場",
+          "website": "https://www.eastpointcity.com.hk",
+          "domain": "eastpointcity.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "elementshk.com",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 1,
+      "priceCandidates": 1,
+      "records": [
+        {
+          "id": "tdc8p10",
+          "name": "圓方停車場",
+          "website": "https://www.elementshk.com/tch/elements/location/parking",
+          "domain": "elementshk.com",
+          "status": "fetched",
+          "nameMatched": true,
+          "priceTokens": 9,
+          "rateSignals": true
+        }
+      ]
+    },
+    {
+      "domain": "goparksaisha.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc367p1",
+          "name": "GO PARK 2 停車場",
+          "website": "https://www.goparksaisha.hk/tc/visit-go-park/parking/",
+          "domain": "goparksaisha.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 8,
+          "rateSignals": true
+        }
+      ]
+    },
+    {
+      "domain": "harbournorth.com.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc328p1",
+          "name": "北角匯二至三期 B2/F A 區",
+          "website": "https://www.harbournorth.com.hk/zh/valet-parking-tc/",
+          "domain": "harbournorth.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 17,
+          "rateSignals": true
+        }
+      ]
+    },
+    {
+      "domain": "hkapm.com.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc332p1",
+          "name": "apm 停車場",
+          "website": "https://www.hkapm.com.hk/index/",
+          "domain": "hkapm.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "hkneo.com.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "79",
+          "name": "綠景",
+          "website": "http://www.hkneo.com.hk/tc/",
+          "domain": "hkneo.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "homesquare.com.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 1,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc306p1",
+          "name": "新城市中央廣場",
+          "website": "https://www.homesquare.com.hk/zh-hant/parking",
+          "domain": "homesquare.com.hk",
+          "status": "fetched",
+          "nameMatched": true,
+          "priceTokens": 0,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "hongkongdisneyland.com",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc22p1",
+          "name": "香港迪士尼樂園私家車停車場",
+          "website": "https://www.hongkongdisneyland.com/zh-hk/guest-services/parking/",
+          "domain": "hongkongdisneyland.com",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "hopewellcentre.com",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 1,
+      "priceCandidates": 1,
+      "records": [
+        {
+          "id": "tdc5p1",
+          "name": "合和中心",
+          "website": "https://www.hopewellcentre.com/cht/hc_parking.htm",
+          "domain": "hopewellcentre.com",
+          "status": "fetched",
+          "nameMatched": true,
+          "priceTokens": 1,
+          "rateSignals": true
+        }
+      ]
+    },
+    {
+      "domain": "impark.com.hk",
+      "total": 1,
+      "fetched": 0,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc62p1",
+          "name": "圓州角綜合大樓",
+          "website": "https://www.impark.com.hk/carparkdetail/5d812f9b52bce44d030ef0bb",
+          "domain": "impark.com.hk",
+          "status": "http-404",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "itt-hk.com",
+      "total": 1,
+      "fetched": 0,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "81",
+          "name": "宏利廣場",
+          "website": "https://itt-hk.com/en/index.php",
+          "domain": "itt-hk.com",
+          "status": "error-TypeError",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "landmarkeast.com.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "75",
+          "name": "Landmark East 停車場",
+          "website": "http://www.landmarkeast.com.hk",
+          "domain": "landmarkeast.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "landmarknorth.com.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc325p1",
+          "name": "上水廣場停車場",
+          "website": "https://www.landmarknorth.com.hk/",
+          "domain": "landmarknorth.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "lcsd.gov.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc183p1",
+          "name": "粉錦公路以東公園停車場",
+          "website": "https://www.lcsd.gov.hk/tc/parks/fkrp/parking.html",
+          "domain": "lcsd.gov.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": true
+        }
+      ]
+    },
+    {
+      "domain": "manhattan-hk.com",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "37",
+          "name": "Manhattan Place 停車場",
+          "website": "http://www.manhattan-hk.com/manhattanplace/home/index.htm",
+          "domain": "manhattan-hk.com",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "metroplaza.com.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc312p1",
+          "name": "新都會廣場",
+          "website": "https://www.metroplaza.com.hk",
+          "domain": "metroplaza.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "mikiki-mall.com.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 1,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc316p1",
+          "name": "Mikiki",
+          "website": "https://www.mikiki-mall.com.hk/tc/home.php",
+          "domain": "mikiki-mall.com.hk",
+          "status": "fetched",
+          "nameMatched": true,
+          "priceTokens": 2,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "moko.com.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc368p1",
+          "name": "MOKO新世紀廣場停車場",
+          "website": "https://www.moko.com.hk",
+          "domain": "moko.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "pandaplace.com.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc5p4",
+          "name": "悅來坊商場",
+          "website": "https://pandaplace.com.hk/parking/",
+          "domain": "pandaplace.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 9,
+          "rateSignals": true
+        }
+      ]
+    },
+    {
+      "domain": "papillonssquare.com.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc46p1",
+          "name": "翩滙坊停車場",
+          "website": "https://www.papillonssquare.com.hk/zh-hant/mall/parking/",
+          "domain": "papillonssquare.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "paradise-mall.com.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 1,
+      "priceCandidates": 1,
+      "records": [
+        {
+          "id": "tdc8p9",
+          "name": "杏花新城停車場",
+          "website": "https://www.paradise-mall.com.hk/tch/parking",
+          "domain": "paradise-mall.com.hk",
+          "status": "fetched",
+          "nameMatched": true,
+          "priceTokens": 11,
+          "rateSignals": true
+        }
+      ]
+    },
+    {
+      "domain": "park-central.com.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc322p1",
+          "name": "將軍澳中心(商場)停車場",
+          "website": "https://www.park-central.com.hk/tc-parking-service/",
+          "domain": "park-central.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 12,
+          "rateSignals": true
+        }
+      ]
+    },
+    {
+      "domain": "pioneer-centre.com.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc26p2",
+          "name": "始創中心停車場",
+          "website": "https://www.pioneer-centre.com.hk/hk/parking",
+          "domain": "pioneer-centre.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 2,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "popcorntko.com.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc8p8",
+          "name": "Popcorn 一期停車場",
+          "website": "https://www.popcorntko.com.hk/tch/poc/about_us/parking_info.jsp",
+          "domain": "popcorntko.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 8,
+          "rateSignals": true
+        }
+      ]
+    },
+    {
+      "domain": "thecendas.com",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 1,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "129",
+          "name": "THE CENDAS",
+          "website": "https://www.thecendas.com/",
+          "domain": "thecendas.com",
+          "status": "fetched",
+          "nameMatched": true,
+          "priceTokens": 0,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "thequayside.com.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc14p8888",
+          "name": "海濱匯停車場",
+          "website": "https://www.thequayside.com.hk/tc/location/parking/",
+          "domain": "thequayside.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        }
+      ]
+    },
+    {
+      "domain": "tsuenwanplaza.com.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 1,
+      "priceCandidates": 1,
+      "records": [
+        {
+          "id": "tdc327p1",
+          "name": "荃灣廣場停車場",
+          "website": "https://www.tsuenwanplaza.com.hk/tc/parking-tc/",
+          "domain": "tsuenwanplaza.com.hk",
+          "status": "fetched",
+          "nameMatched": true,
+          "priceTokens": 10,
+          "rateSignals": true
+        }
+      ]
+    },
+    {
+      "domain": "uptownplaza.com.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 1,
+      "priceCandidates": 1,
+      "records": [
+        {
+          "id": "tdc319p1",
+          "name": "新達廣場停車場",
+          "website": "https://www.uptownplaza.com.hk/parking/",
+          "domain": "uptownplaza.com.hk",
+          "status": "fetched",
+          "nameMatched": true,
+          "priceTokens": 7,
+          "rateSignals": true
+        }
+      ]
+    },
+    {
+      "domain": "vcity.com.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc330p1",
+          "name": "Vcity 商業停車場",
+          "website": "https://www.vcity.com.hk/tch/parking/parking.jsp",
+          "domain": "vcity.com.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 14,
+          "rateSignals": true
+        }
+      ]
+    },
+    {
+      "domain": "vwalk.com.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 1,
+      "priceCandidates": 1,
+      "records": [
+        {
+          "id": "tdc317p1",
+          "name": "V Walk 停車場",
+          "website": "https://www.vwalk.com.hk/tch/access/parking",
+          "domain": "vwalk.com.hk",
+          "status": "fetched",
+          "nameMatched": true,
+          "priceTokens": 15,
+          "rateSignals": true
+        }
+      ]
+    },
+    {
+      "domain": "wetlandpark.gov.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 1,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc20p1",
+          "name": "香港濕地公園停車場",
+          "website": "https://www.wetlandpark.gov.hk/tc/information/transport-driving",
+          "domain": "wetlandpark.gov.hk",
+          "status": "fetched",
+          "nameMatched": true,
+          "priceTokens": 0,
+          "rateSignals": true
+        }
+      ]
+    },
+    {
+      "domain": "www3.ha.org.hk",
+      "total": 1,
+      "fetched": 1,
+      "nameMatched": 0,
+      "priceCandidates": 0,
+      "records": [
+        {
+          "id": "tdc410p1",
+          "name": "啟德醫院B區停車場",
+          "website": "https://www3.ha.org.hk/kth/main/location-and-transport.html?lang=hk",
+          "domain": "www3.ha.org.hk",
+          "status": "fetched",
+          "nameMatched": false,
+          "priceTokens": 0,
+          "rateSignals": false
+        }
+      ]
+    }
+  ]
+}

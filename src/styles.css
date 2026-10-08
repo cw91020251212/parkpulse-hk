@@ -650,9 +650,31 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
   padding-right: 43px;
 }
 
+/* 長的營辦商官方價目不可與車高等短資料爭同一行。 */
+.park-card-select:has(.card-pricing-summary) {
+  grid-template-rows: 36px 20px 22px auto 14px;
+  min-height: 170px;
+}
+
+.park-card-main:has(.card-pricing-summary) {
+  display: block;
+  min-height: 170px;
+}
+
+.park-card .card-pricing-summary {
+  margin: 0 0 0 16px;
+  color: #d9f6f0;
+  font-size: 11px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
 @media (max-width: 560px) {
   .park-card-rating { top: 58px; right: 11px; }
   .park-card:has(.park-card-rating) .card-heading p { padding-right: 43px; }
+  .park-card-select:has(.card-pricing-summary) { min-height: 174px; }
+  .park-card-main:has(.card-pricing-summary) { min-height: 174px; }
 }
 
 /* 最近查看的小提示點位於卡內，不改變邊框厚度或點按區域。 */

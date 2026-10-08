@@ -1,13 +1,15 @@
-import type { CarparkInfo, VacancyRecord } from '../types';
+import type { CarparkInfo, OperatorRate, VacancyRecord } from '../types';
 import { publicAsset } from './site';
 
 const API_BASE = 'https://api.data.gov.hk/v1/carpark-info-vacancy/';
-const INFO_CACHE_KEY = 'parkspot:info:v1';
+const INFO_CACHE_KEY = 'parkspot:info:v2';
 const INFO_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 const STATIC_INFO_URL = publicAsset('carpark-info.json');
+const STATIC_OPERATOR_RATES_URL = publicAsset('operator-rates.json');
 
 type ApiResponse<T> = { results: T[] };
 type CachedInfo = { savedAt: number; items: CarparkInfo[] };
+type OperatorRateSnapshot = { records?: Record<string, Partial<Record<'privateCar' | 'motorCycle' | 'LGV' | 'HGV' | 'coach', OperatorRate>>> };
 
 function buildUrl(parameters: Record<string, string>) {
   const url = new URL(API_BASE);
@@ -50,16 +52,27 @@ async function fetchStaticInfo(signal?: AbortSignal) {
   return payload.results;
 }
 
+async function attachOperatorRates(items: CarparkInfo[], signal?: AbortSignal) {
+  try {
+    const response = await fetch(STATIC_OPERATOR_RATES_URL, { signal, cache: 'force-cache', headers: { Accept: 'application/json' } });
+    if (!response.ok) return items;
+    const snapshot = await response.json() as OperatorRateSnapshot;
+    return items.map((item) => snapshot.records?.[item.park_Id] ? { ...item, operatorRates: snapshot.records[item.park_Id] } : item);
+  } catch {
+    return items;
+  }
+}
+
 export async function fetchCarparkInfo(signal?: AbortSignal) {
   const cached = readInfoCache();
   if (cached) return cached;
 
   try {
-    const items = await fetchStaticInfo(signal);
+    const items = await attachOperatorRates(await fetchStaticInfo(signal), signal);
     saveInfoCache(items);
     return items;
   } catch {
-    const items = await request<CarparkInfo>({ data: 'info', lang: 'zh_TW' }, signal);
+    const items = await attachOperatorRates(await request<CarparkInfo>({ data: 'info', lang: 'zh_TW' }, signal), signal);
     saveInfoCache(items);
     return items;
   }
