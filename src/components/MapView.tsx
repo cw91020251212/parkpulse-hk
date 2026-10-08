@@ -72,6 +72,53 @@ function ResizeMap({ expanded }: { expanded: boolean }) {
   return null;
 }
 
+function LongPressPicker({ onPick }: { onPick: (coordinates: Coordinates) => void }) {
+  const map = useMap();
+  useEffect(() => {
+    const container = map.getContainer();
+    let timer: number | undefined;
+    let start: { x: number; y: number } | undefined;
+
+    const cancel = () => {
+      if (timer !== undefined) window.clearTimeout(timer);
+      timer = undefined;
+      start = undefined;
+    };
+    const pointerDown = (event: PointerEvent) => {
+      if (event.pointerType === 'mouse' && event.button !== 0) return;
+      if (event.target instanceof Element && event.target.closest('.leaflet-marker-icon, .leaflet-control')) return;
+      start = { x: event.clientX, y: event.clientY };
+      timer = window.setTimeout(() => {
+        const point = map.mouseEventToContainerPoint(event);
+        const latLng = map.containerPointToLatLng(point);
+        onPick({ lat: latLng.lat, lng: latLng.lng });
+        window.navigator.vibrate?.(15);
+        cancel();
+      }, 900);
+    };
+    const pointerMove = (event: PointerEvent) => {
+      if (start && Math.hypot(event.clientX - start.x, event.clientY - start.y) > 12) cancel();
+    };
+
+    container.addEventListener('pointerdown', pointerDown);
+    container.addEventListener('pointermove', pointerMove);
+    container.addEventListener('pointerup', cancel);
+    container.addEventListener('pointercancel', cancel);
+    container.addEventListener('pointerleave', cancel);
+    container.addEventListener('contextmenu', cancel);
+    return () => {
+      cancel();
+      container.removeEventListener('pointerdown', pointerDown);
+      container.removeEventListener('pointermove', pointerMove);
+      container.removeEventListener('pointerup', cancel);
+      container.removeEventListener('pointercancel', cancel);
+      container.removeEventListener('pointerleave', cancel);
+      container.removeEventListener('contextmenu', cancel);
+    };
+  }, [map, onPick]);
+  return null;
+}
+
 function markerIcon(park: ParkViewModel) {
   const label = park.status.kind === 'count' ? String(park.status.count) : park.status.kind === 'available' ? '有' : park.status.kind === 'full' ? '滿' : park.status.kind === 'closed' ? '關' : '–';
   return L.divIcon({
@@ -112,6 +159,7 @@ export function MapView({ position, parks, selectedId, onSelect, onLocationSelec
         <Recenter position={position} />
         <FocusSelected park={selected} />
         <ResizeMap expanded={expanded} />
+        <LongPressPicker onPick={(coordinates) => onLocationSelect(coordinates, '地圖選取位置')} />
         <Circle center={[position.lat, position.lng]} radius={2_000} pathOptions={{ color: '#14B8A6', fillColor: '#14B8A6', fillOpacity: 0.08, weight: 1 }} />
         <Circle center={[position.lat, position.lng]} radius={22} pathOptions={{ color: '#ffffff', fillColor: '#14B8A6', fillOpacity: 1, weight: 2 }} />
         {parks.map((park) => (
@@ -129,6 +177,7 @@ export function MapView({ position, parks, selectedId, onSelect, onLocationSelec
       <button className="map-area-search-toggle" type="button" onClick={() => { setSearchOpen((current) => !current); setSearchMessage(''); }} aria-expanded={searchOpen}>
         搜尋地區
       </button>
+      {!searchOpen && <span className="map-long-press-tip">長按地圖約 1 秒：選取 2 公里範圍</span>}
       {searchOpen && (
         <form className="map-area-search" onSubmit={submitDistrict}>
           <label htmlFor="district-search">搜尋中心</label>
