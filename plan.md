@@ -77,6 +77,7 @@
 - 正式網站改由 **GitHub Pages** 直接發佈，預期網址為 `https://cw91020251212.github.io/parkpulse-hk/`，並在 repository 的 GitHub Actions 於 `main` 每次更新、手動執行及每 6 小時建置。GitHub Pages 模式使用 `/parkpulse-hk/` 資產 base path，不會呼叫 Manus 的 `/api` 路徑；建置時以官方食環署 XML、環保署 JSON、消委會油站頁面及金管局／其 ArcGIS 後備資料產出靜態 JSON，一併放進 Pages artifact，因此保留停車場、公廁、康文署場館、充電器、油站與 ATM 功能。空位仍由瀏覽器直接讀取 CORS 開放的 data.gov.hk API。純靜態 Pages 無法安全使用需要私密服務憑證的已核實 Google Maps 相片代理，因此另有受版本控制的「已核實 Google Maps 地點」靜態快照：由既有代理以官方名稱／地址和座標取得 `query_place_id` 連結；公廁必須同時符合公廁／浴室語義及 100 米內座標，場館和停車場亦只接受 100 米內候選。靜態卡只在有此快照時才顯示「已核實相片 ↗」，直接開啟確實地點的 Google Maps 相片頁；沒有快照時明示「暫無已核實相片」，不得再把單純名稱／地址搜尋當作相片頁，亦不得向 `/api/place-photo` 發出請求。伺服器版同樣排除公廁附近但名稱不符的候選，並保留相片／距離／歸屬；日後如要讓靜態版直接嵌入相片，必須接駁使用者自管後端，而非 Manus。
 - GitHub Pages 須是可安裝的 PWA：應用程式自有 `manifest.webmanifest`、192px／512px PNG 圖示及只限同源資源的 service worker；使用 Vite `BASE_URL`，令 repository 網址的 scope／start URL 固定為 `/parkpulse-hk/` 而非根目錄。Service worker 預先快取應用外殼和圖示，為 HTML／官方靜態資料採網絡優先、離線回退快取，並只快取同源 GET；不攔截 data.gov.hk 即時空位、地政總署地圖或 Google Maps 等第三方資料，避免誤把即時資料變舊。iOS 提供 `apple-mobile-web-app-capable`、touch icon、主題色；Android／Chrome 符合 manifest 加 service worker 的安裝資格。每次 `main` 更新後 GitHub Pages 同時更新 PWA 版本，使用者重開程式可收到新版本。
 - 提供繁體中文／英文介面切換，頂部以緊湊的「繁／EN」控制呈現並保存於既有瀏覽器偏好；切換時更新頁面 `lang`，並翻譯產品操作介面（篩選、車種、狀態、地圖工具、結果、卡片、詳情、錯誤、導航和來源說明）。政府原始名稱、地址、官方開放時間及資料來源文字維持原文，避免自行翻譯造成錯誤。18 區搜尋保留中英輸入，結果標題依介面語言顯示對應地區名稱。頂部另提供不佔地圖畫布的「使用教學／How to use」按鈕，開啟可鍵盤關閉的說明面板，循序解釋定位／地區搜尋／長按、空位含義、篩選、洗手間／油站／ATM、詳情／相片和資料限制；相同內容存入 repository 的中英教學文件，供 GitHub 閱讀。
+- 頁尾提供清楚可見的「使用聲明／Disclaimer」入口，開啟同樣可鍵盤關閉的雙語面板；內容只作一般產品使用說明，不冒充法律意見，涵蓋官方資料可能延遲、不可視作停車／設施／收費／開放時間保證、不提供預約、第三方 Google Maps／地圖／相片連結受其條款約束、精確位置只在取得瀏覽器授權後於裝置內使用、本站只在瀏覽器儲存語言與篩選偏好且不設帳戶／付款／伺服器端使用者位置儲存。相同中英文字存入 repository 文件，README 連結文件。
 
 ## 技術結構
 
@@ -106,6 +107,7 @@ src/
   components/NearbyFacilityCard.tsx # 油站及 ATM 結果與導航
   components/Filters.tsx   # 車種和篩選控制
   components/HelpDialog.tsx # 站內雙語使用教學面板
+  components/DisclaimerDialog.tsx # 站內雙語一般使用聲明面板
   App.tsx                  # 頁面狀態和組合
   styles.css               # 響應式視覺系統
 server.mjs                 # Express + Vite 中介層、Google Maps 相片搜尋／影像轉送、EPD／食環署／油站／ATM 快取、健康檢查
