@@ -350,3 +350,58 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 }
 .pricing-list { display: grid; gap: 6px; margin: 9px 0 0; padding: 0; list-style: none; }
 .pricing-list li { border: 1px solid #28536a; border-radius: 8px; padding: 7px 9px; color: #d8eeee; background: #102f45; font-size: 12px; font-variant-numeric: tabular-nums; }
+
+/* 2026-10-09：壓縮雙篩選列空隙，讓字級充分使用既有控制高度。 */
+.topbar,
+.brand,
+.top-actions {
+  align-items: flex-start;
+}
+
+.brand-copy { min-width: 0; }
+.brand h1 {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1;
+}
+.brand .brand-kicker {
+  margin: 5px 0 0;
+  font-size: 11px;
+  letter-spacing: .11em;
+}
+
+.text-size-control {
+  min-height: 38px;
+  font-size: 12px;
+}
+.text-size-control button {
+  min-width: 30px;
+  min-height: 30px;
+  font-size: 13px;
+}
+
+.filters {
+  margin-top: 10px;
+  gap: 1px;
+}
+.filter-row {
+  padding: 1px 1px 2px;
+}
+.filter-row + .filter-row { margin-top: -1px; }
+.chip,
+.height-select,
+.height-select select {
+  font-size: 14px;
+  font-weight: 800;
+}
+.area-search-toggle,
+.area-search button,
+.language-switcher button,
+.help-button {
+  font-size: 12px;
+}
+
+@media (max-width: 560px) {
+  .brand h1 { font-size: 28px; }
+  .brand .brand-kicker { font-size: 10px; }
+}
