@@ -2,6 +2,7 @@ import express from 'express';
 import { createServer as createViteServer } from 'vite';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { parsePublicToilets } from './lib/public-toilets.mjs';
 
 const app = express();
 const isProduction = process.env.NODE_ENV === 'production';
@@ -11,6 +12,9 @@ const hongKongBounds = { minLat: 22.13, maxLat: 22.57, minLng: 113.8, maxLng: 11
 const EPD_EV_URL = 'https://ev-charger.epd.gov.hk/resource/ev_charger_avail/ev_charger_avail.json';
 const EV_CACHE_MS = 5 * 60_000;
 let evCache = { value: null, loadedAt: 0, pending: null };
+const FEHD_TOILETS_URL = 'https://www.fehd.gov.hk/tc_chi/map/fehd_map_c.xml';
+const TOILET_CACHE_MS = 60 * 60_000;
+let toiletCache = { value: null, loadedAt: 0, pending: null };
 
 function distanceInMeters(from, to) {
   const radians = (value) => (value * Math.PI) / 180;
@@ -129,6 +133,43 @@ async function loadEpdEvChargers() {
   return refreshEpdEvChargers();
 }
 
+async function refreshPublicToilets() {
+  if (toiletCache.pending) return toiletCache.pending;
+
+  toiletCache.pending = (async () => {
+    try {
+      const response = await fetch(FEHD_TOILETS_URL, {
+        headers: { Accept: 'application/xml,text/xml;q=0.9,*/*;q=0.8' },
+        signal: AbortSignal.timeout(25_000),
+      });
+      if (!response.ok) throw new Error(`FEHD service returned ${response.status}`);
+      const records = parsePublicToilets(await response.text());
+      if (!records.length) throw new Error('FEHD service returned no usable toilet records');
+      toiletCache.value = {
+        records,
+        lastUpdatedAt: records.map((record) => record.updatedAt).filter(Boolean).sort().at(-1),
+      };
+      toiletCache.loadedAt = Date.now();
+      return toiletCache.value;
+    } catch (error) {
+      if (toiletCache.value) return toiletCache.value;
+      throw error;
+    } finally {
+      toiletCache.pending = null;
+    }
+  })();
+
+  return toiletCache.pending;
+}
+
+async function loadPublicToilets() {
+  if (toiletCache.value) {
+    if (Date.now() - toiletCache.loadedAt >= TOILET_CACHE_MS) void refreshPublicToilets().catch(() => undefined);
+    return toiletCache.value;
+  }
+  return refreshPublicToilets();
+}
+
 app.get('/health', (_request, response) => response.status(200).json({ ok: true }));
 
 app.get('/api/ev-chargers', async (_request, response) => {
@@ -139,6 +180,17 @@ app.get('/api/ev-chargers', async (_request, response) => {
   } catch (error) {
     console.error('Unable to load EPD EV charger data', error instanceof Error ? error.message : error);
     return response.status(502).json({ error: '未能讀取環保署充電器資料' });
+  }
+});
+
+app.get('/api/public-toilets', async (_request, response) => {
+  try {
+    const payload = await loadPublicToilets();
+    response.set('Cache-Control', 'private, max-age=3600');
+    return response.json({ source: '食物環境衞生署 Public Toilets', ...payload });
+  } catch (error) {
+    console.error('Unable to load FEHD public toilet data', error instanceof Error ? error.message : error);
+    return response.status(502).json({ error: '未能讀取食環署公廁資料' });
   }
 });
 

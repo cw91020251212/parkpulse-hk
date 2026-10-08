@@ -1,11 +1,13 @@
 import { useEffect } from 'react';
 import L from 'leaflet';
-import { Circle, MapContainer, Marker, TileLayer, Tooltip, useMap } from 'react-leaflet';
-import type { Coordinates, ParkViewModel } from '../types';
+import { Circle, MapContainer, Marker, Popup, TileLayer, Tooltip, useMap } from 'react-leaflet';
+import { formatDistance } from '../domain/distance';
+import type { Coordinates, ParkViewModel, PublicToiletViewModel } from '../types';
 
 type Props = {
   position: Coordinates;
   parks: ParkViewModel[];
+  toilets: PublicToiletViewModel[];
   selectedId: string | null;
   onSelect: (id: string) => void;
   onLocationSelect: (coordinates: Coordinates, label: string, behavior: { recenter: boolean }) => void;
@@ -13,6 +15,7 @@ type Props = {
   expanded: boolean;
   onToggleExpanded: () => void;
   onShowResults: () => void;
+  resultsLabel: string;
 };
 
 const LANDSD_BASEMAP_URL = 'https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/basemap/WGS84/{z}/{x}/{y}.png';
@@ -150,6 +153,13 @@ const selectedCenterIcon = L.divIcon({
   iconAnchor: [16, 36],
 });
 
+const toiletIcon = L.divIcon({
+  className: 'toilet-marker-shell',
+  html: '<span class="toilet-marker"><span aria-hidden="true">🚻</span></span>',
+  iconSize: [34, 34],
+  iconAnchor: [17, 34],
+});
+
 function MapFocusIcon({ expanded }: { expanded: boolean }) {
   return expanded ? (
     <svg className="map-focus-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 3 3 3 3-3M9 21l3-3 3 3M3 9l3 3-3 3M21 9l-3 3 3 3" /></svg>
@@ -158,14 +168,15 @@ function MapFocusIcon({ expanded }: { expanded: boolean }) {
   );
 }
 
-export function MapView({ position, parks, selectedId, onSelect, onLocationSelect, recenterRequest, expanded, onToggleExpanded, onShowResults }: Props) {
+export function MapView({ position, parks, toilets, selectedId, onSelect, onLocationSelect, recenterRequest, expanded, onToggleExpanded, onShowResults, resultsLabel }: Props) {
   const selected = parks.find((park) => park.info.park_Id === selectedId);
+  const visibleResultCount = parks.length + toilets.length;
   const selectMapPoint = (coordinates: Coordinates) => {
     onLocationSelect(coordinates, '地圖選取位置', { recenter: false });
   };
 
   return (
-    <div className={expanded ? 'map-wrap is-expanded' : 'map-wrap'} aria-label="附近停車場地圖">
+    <div className={expanded ? 'map-wrap is-expanded' : 'map-wrap'} aria-label="附近停車場及洗手間地圖">
       <MapContainer center={[position.lat, position.lng]} zoom={14} minZoom={8} maxZoom={20} scrollWheelZoom inertia={false} className="landsd-map">
         <TileLayer
           attribution='&copy; <a href="https://api.portal.hkmapservice.gov.hk/disclaimer" target="_blank" rel="noreferrer">Map information from Lands Department</a>'
@@ -188,10 +199,15 @@ export function MapView({ position, parks, selectedId, onSelect, onLocationSelec
             <Tooltip direction="top" offset={[0, -38]} opacity={0.95}>{park.info.name} · {park.status.label}</Tooltip>
           </Marker>
         ))}
+        {toilets.map(({ toilet, distanceKm }) => (
+          <Marker key={toilet.id} position={[toilet.latitude, toilet.longitude]} icon={toiletIcon} zIndexOffset={300}>
+            <Popup><div className="toilet-popup"><strong>{toilet.name}</strong><small>{formatDistance(distanceKm)} · {toilet.openingHours ?? '開放時間未提供'}</small>{toilet.address && <small>{toilet.address}</small>}<a href={`https://www.google.com/maps/dir/?api=1&destination=${toilet.latitude},${toilet.longitude}`} target="_blank" rel="noreferrer">導航</a></div></Popup>
+          </Marker>
+        ))}
       </MapContainer>
 
       <button className="map-focus-toggle" type="button" onClick={onToggleExpanded} aria-pressed={expanded} aria-label={expanded ? '縮細地圖' : '放大地圖'} title={expanded ? '縮細地圖' : '放大地圖'}><MapFocusIcon expanded={expanded} /></button>
-      {!expanded && parks.length > 0 && <button className="map-results-link" type="button" onClick={onShowResults}>查看 {parks.length} 個停車場 ↓</button>}
+      {!expanded && visibleResultCount > 0 && <button className="map-results-link" type="button" onClick={onShowResults}>查看 {resultsLabel} ↓</button>}
       <a className="landsd-credit" href="https://api.portal.hkmapservice.gov.hk/disclaimer" target="_blank" rel="noreferrer">
         <span>地圖資料：地政總署</span><img src={LANDSD_LOGO_URL} alt="地政總署標誌" />
       </a>

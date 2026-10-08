@@ -3,12 +3,14 @@ import { Filters } from './components/Filters';
 import { MapView } from './components/MapView';
 import { ParkCard } from './components/ParkCard';
 import { ParkDetail } from './components/ParkDetail';
+import { ToiletCard } from './components/ToiletCard';
 import { findEvCharger } from './domain/evChargers';
 import { getHeightLimit, getVacancyStatus, isAvailable, selectVacancyEntry, statusPriority } from './domain/carpark';
 import { distanceInKm } from './domain/distance';
 import { useCarparks } from './hooks/useCarparks';
 import { useEvChargers } from './hooks/useEvChargers';
-import type { Coordinates, ParkFilters, ParkViewModel, VehicleType } from './types';
+import { usePublicToilets } from './hooks/usePublicToilets';
+import type { Coordinates, ParkFilters, ParkViewModel, PublicToiletViewModel, VehicleType } from './types';
 
 const HONG_KONG_CENTER: Coordinates = { lat: 22.3193, lng: 114.1694 };
 const NEARBY_RADIUS_KM = 2;
@@ -45,6 +47,7 @@ const INITIAL_FILTERS: ParkFilters = {
   hasEv: false,
   hasAccessible: false,
   minHeight: 0,
+  showToilets: false,
 };
 
 const PREFERENCES_KEY = 'parkspot:preferences:v1';
@@ -62,6 +65,7 @@ function readPreferences() {
       hasEv: typeof savedFilters?.hasEv === 'boolean' ? savedFilters.hasEv : INITIAL_FILTERS.hasEv,
       hasAccessible: typeof savedFilters?.hasAccessible === 'boolean' ? savedFilters.hasAccessible : INITIAL_FILTERS.hasAccessible,
       minHeight: [0, 1.8, 2, 2.2].includes(savedFilters?.minHeight ?? -1) ? savedFilters?.minHeight ?? 0 : INITIAL_FILTERS.minHeight,
+      showToilets: typeof savedFilters?.showToilets === 'boolean' ? savedFilters.showToilets : INITIAL_FILTERS.showToilets,
     };
     const textScale = TEXT_SCALES.includes(saved.textScale ?? 0 as TextScale) ? saved.textScale as TextScale : 100;
     return { vehicleType, filters, textScale };
@@ -105,6 +109,7 @@ export default function App() {
   const [districtQuery, setDistrictQuery] = useState('');
   const [districtMessage, setDistrictMessage] = useState('');
   const detailHistoryActive = useRef(false);
+  const { toilets, loading: toiletLoading, error: toiletError, retry: retryToilets } = usePublicToilets(filters.showToilets);
 
   useEffect(() => {
     try {
@@ -168,6 +173,11 @@ export default function App() {
       });
   }, [chargers, infos, position, vacancyById, vehicleType]);
 
+  const nearbyToilets = useMemo<PublicToiletViewModel[]>(() => toilets
+    .map((toilet) => ({ toilet, distanceKm: distanceInKm(position, { lat: toilet.latitude, lng: toilet.longitude }) }))
+    .filter((toilet) => toilet.distanceKm <= NEARBY_RADIUS_KM)
+    .sort((left, right) => left.distanceKm - right.distanceKm), [position, toilets]);
+
   const resultsVerified = !loading
     && (!vacancyLoading || vacancyById.size > 0)
     && (!filters.hasEv || (!evLoading && !evError));
@@ -191,9 +201,13 @@ export default function App() {
     });
   }, [filters, nearbyParks, resultsVerified]);
 
-  const selectedPark = displayedParks.find((park) => park.info.park_Id === selectedId);
+  const showingToilets = filters.showToilets;
+  const selectedPark = !showingToilets ? displayedParks.find((park) => park.info.park_Id === selectedId) : undefined;
   const availableCount = displayedParks.filter((park) => isAvailable(park.status)).length;
   const visibleError = error || (filters.hasEv && evError ? `充電器資料提示：${evError}` : null);
+  const mapParks = showingToilets ? [] : displayedParks;
+  const mapToilets = showingToilets ? nearbyToilets : [];
+  const mapResultLabel = showingToilets ? `${nearbyToilets.length} 間洗手間` : `${displayedParks.length} 個停車場`;
   const scaleDown = () => setTextScale((current) => TEXT_SCALES[Math.max(0, TEXT_SCALES.indexOf(current) - 1)]);
   const scaleUp = () => setTextScale((current) => TEXT_SCALES[Math.min(TEXT_SCALES.length - 1, TEXT_SCALES.indexOf(current) + 1)]);
   const toggleMap = () => {
@@ -234,6 +248,10 @@ export default function App() {
     setDistrictSearchOpen(false);
     selectArea(district.coordinates, district.label, { recenter: true });
   };
+  const updateFilters = (nextFilters: ParkFilters) => {
+    if (nextFilters.showToilets !== filters.showToilets) setSelectedId(null);
+    setFilters(nextFilters);
+  };
   const showResults = () => document.getElementById('parking-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   return (
@@ -255,13 +273,13 @@ export default function App() {
         </div>
       </header>
 
-      <Filters vehicleType={vehicleType} filters={filters} evLoading={evLoading} onVehicleChange={(type) => { setVehicleType(type); setSelectedId(null); }} onFiltersChange={setFilters} />
+      <Filters vehicleType={vehicleType} filters={filters} evLoading={evLoading} toiletLoading={toiletLoading} onVehicleChange={(type) => { setVehicleType(type); setSelectedId(null); }} onFiltersChange={updateFilters} />
 
       {visibleError && <div className="error-banner" role="alert"><span>資料連線提示：{visibleError}</span><button type="button" onClick={retry}>重試</button></div>}
 
       <section className="workspace">
         <div className="map-column">
-          <MapView position={position} parks={displayedParks} selectedId={selectedId} onSelect={openDetail} onLocationSelect={selectArea} recenterRequest={recenterRequest} expanded={mapExpanded} onToggleExpanded={toggleMap} onShowResults={showResults} />
+          <MapView position={position} parks={mapParks} toilets={mapToilets} selectedId={selectedId} onSelect={openDetail} onLocationSelect={selectArea} recenterRequest={recenterRequest} expanded={mapExpanded} onToggleExpanded={toggleMap} onShowResults={showResults} resultsLabel={mapResultLabel} />
           <section className="area-tools map-bottom-tools" aria-label="地圖搜尋與操作提示">
             <div className="area-tools-row">
               <button className="area-search-toggle" type="button" onClick={() => { setDistrictSearchOpen((current) => !current); setDistrictMessage(''); }} aria-expanded={districtSearchOpen}>搜尋地區</button>
@@ -277,17 +295,21 @@ export default function App() {
             )}
           </section>
         </div>
-        <section className="results-panel" id="parking-results" aria-label="附近停車場清單">
+        <section className="results-panel" id="parking-results" aria-label={showingToilets ? '附近洗手間清單' : '附近停車場清單'}>
           <div className="results-heading">
-            <div><p className="eyebrow">{areaName} · {NEARBY_RADIUS_KM} 公里</p><h2>{resultsVerified ? `${displayedParks.length} 個結果` : '正在核實停車場…'}</h2></div>
-            <p>{resultsVerified ? `${availableCount} 個有位選項` : verificationLabel}</p>
+            <div><p className="eyebrow">{areaName} · {NEARBY_RADIUS_KM} 公里</p><h2>{showingToilets ? (toiletLoading ? '正在讀取洗手間…' : toiletError ? '洗手間資料未能讀取' : `${nearbyToilets.length} 間洗手間`) : (resultsVerified ? `${displayedParks.length} 個結果` : '正在核實停車場…')}</h2></div>
+            <p>{showingToilets ? '食環署公廁' : (resultsVerified ? `${availableCount} 個有位選項` : verificationLabel)}</p>
           </div>
           <div className="results-list">
-            {!resultsVerified && <div className="loading-state"><span className="loader" />{verificationLabel}<small>只會顯示已核實的停車場結果。</small></div>}
-            {resultsVerified && displayedParks.map((park) => (
+            {showingToilets && toiletLoading && <div className="loading-state"><span className="loader" />正在讀取食環署公廁資料…<small>只顯示目前中心 2 公里內的官方公廁。</small></div>}
+            {showingToilets && toiletError && !toiletLoading && <div className="empty-state" role="alert"><strong>暫時未能讀取洗手間資料</strong><p>{toiletError}</p><button className="toilet-retry" type="button" onClick={retryToilets}>重試</button></div>}
+            {showingToilets && !toiletLoading && !toiletError && nearbyToilets.map((toilet) => <ToiletCard key={toilet.toilet.id} toilet={toilet} />)}
+            {showingToilets && !toiletLoading && !toiletError && nearbyToilets.length === 0 && <div className="empty-state"><strong>呢個範圍暫時冇官方公廁資料</strong><p>試下選擇其他地區或在地圖長按新中心。</p></div>}
+            {!showingToilets && !resultsVerified && <div className="loading-state"><span className="loader" />{verificationLabel}<small>只會顯示已核實的停車場結果。</small></div>}
+            {!showingToilets && resultsVerified && displayedParks.map((park) => (
               <ParkCard key={park.info.park_Id} park={park} vehicleType={vehicleType} selected={park.info.park_Id === selectedId} onSelect={() => openDetail(park.info.park_Id)} />
             ))}
-            {resultsVerified && displayedParks.length === 0 && (
+            {!showingToilets && resultsVerified && displayedParks.length === 0 && (
               <div className="empty-state"><strong>呢個範圍暫時冇符合條件嘅結果</strong><p>試下取消部分篩選，或者使用定位後再刷新。</p></div>
             )}
           </div>
@@ -297,8 +319,8 @@ export default function App() {
       {selectedPark && <ParkDetail park={selectedPark} vehicleType={vehicleType} onClose={closeDetail} />}
 
       <footer>
-        <span>資料來源：香港政府 <a href="https://data.gov.hk/tc-data/dataset/hk-dpo-datagovhk1-carpark-info-vacancy" target="_blank" rel="noreferrer">data.gov.hk</a>、環境保護署</span>
-        <span>空位及充電器資料只供參考，請以現場情況為準。</span>
+        <span>資料來源：香港政府 <a href="https://data.gov.hk/tc-data/dataset/hk-dpo-datagovhk1-carpark-info-vacancy" target="_blank" rel="noreferrer">data.gov.hk</a>、環境保護署{showingToilets && '、食物環境衞生署'}</span>
+        <span>{showingToilets ? '公廁資料只供參考，請以現場情況為準。' : '空位及充電器資料只供參考，請以現場情況為準。'}</span>
       </footer>
     </main>
   );

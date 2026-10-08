@@ -4,11 +4,12 @@ type Props = {
   vehicleType: VehicleType;
   filters: ParkFilters;
   evLoading: boolean;
+  toiletLoading: boolean;
   onVehicleChange: (vehicle: VehicleType) => void;
   onFiltersChange: (filters: ParkFilters) => void;
 };
 
-export function Filters({ vehicleType, filters, evLoading, onVehicleChange, onFiltersChange }: Props) {
+export function Filters({ vehicleType, filters, evLoading, toiletLoading, onVehicleChange, onFiltersChange }: Props) {
   const update = (patch: Partial<ParkFilters>) => onFiltersChange({ ...filters, ...patch });
 
   return (
@@ -41,6 +42,7 @@ export function Filters({ vehicleType, filters, evLoading, onVehicleChange, onFi
             <option value={2.2}>≥ 2.2m</option>
           </select>
         </label>
+        <button className={filters.showToilets ? 'chip is-on' : 'chip'} type="button" aria-pressed={filters.showToilets} onClick={() => update({ showToilets: !filters.showToilets })}>{toiletLoading ? '洗手間資料更新中' : '洗手間'}</button>
       </div>
     </section>
   );

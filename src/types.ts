@@ -104,6 +104,22 @@ export interface EvChargerMatch extends EpdEvCharger {
   matchedBy: 'name-address' | 'coordinates';
 }
 
+export interface PublicToilet {
+  id: string;
+  name: string;
+  address?: string;
+  openingHours?: string;
+  remarks?: string;
+  updatedAt?: string;
+  latitude: number;
+  longitude: number;
+}
+
+export interface PublicToiletViewModel {
+  toilet: PublicToilet;
+  distanceKm: number;
+}
+
 export interface ParkViewModel {
   info: CarparkInfo;
   status: VacancyStatus;
@@ -118,4 +134,5 @@ export interface ParkFilters {
   hasEv: boolean;
   hasAccessible: boolean;
   minHeight: number;
+  showToilets: boolean;
 }

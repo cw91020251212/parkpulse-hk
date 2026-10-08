@@ -34,6 +34,7 @@
 - 地圖另支援在非 marker 或控制區的位置長按約 0.7 秒以選取任意中心點；以原生 `touchstart/touchmove/touchend` 及滑鼠事件處理，並阻止行動瀏覽器長按的 context menu 取消計時。長按移動超過 12 px、放開或取消則不會選取。長按開始時會記下地圖視野，確認選點時停掉 Leaflet 的拖曳慣性並還原該視野，避免手指微移或放開後令選點自己走位；地圖全域亦關閉拖曳慣性。長按座標會按應用程式文字縮放與 Leaflet 內部尺寸換算，確保釘尖精確留在手指位置。`📍` 是整個產品唯一的「目前搜尋中心」符號：初始香港中心、使用我的位置、地區輸入和長按選點都固定顯示同一符號在目前中心，並以 2 公里圓形範圍配合說明；長按只是不自動重新置中，其他明確選區操作可置中地圖。右上展開／縮細圖示使用米白半透明圓形底和深青色筆畫，避免黑色大型控制塊。一般手機版地圖另增加高度上限與最小高度，但仍保留「查看停車場」入口。
 - 停車場 marker 採用使用者提供參考圖的標準水滴定位針外形，尖端精確指向停車場座標；針面沿用本網站的空位狀態色，中央只顯示「空位數／有／滿／關／–」。移除佔用版面的定位／讀取時間狀態列；頂部只保留小型刷新圖示按鈕，按下更新時圖示會旋轉，並以無障礙標籤交代狀態。刷新箭咀以 viewBox 幾何置中；位置控制直接採用使用者上傳並明確授權可用的 `439902.png`，複製為 `public/location-control.png`，只顯示圖示、不顯示文字。
 - 停車場詳情浮層必須高於 Leaflet marker、地政總署標誌／版權及地圖展開控制，避免官方署名或控制掩蓋內容。開啟詳情時以同 URL 加入一筆本頁歷史狀態；使用者按瀏覽器／手機返回時先只關閉詳情，仍留在停車位地圖。按 X 關閉時回退這筆狀態，避免下一次返回意外離開網站。
+- 在條件篩選列最後加入獨立的「洗手間」切換。啟用後才懶載入食物環境衞生署繁體 XML `https://www.fehd.gov.hk/tc_chi/map/fehd_map_c.xml`，只取 `map_type=toilet` 的有效香港座標記錄；既有 Express 端點以記憶體快取和背景更新同源轉送，因原始 XML 不提供瀏覽器 CORS。洗手間模式沿用目前 `📍` 搜尋中心及 2 公里半徑、以距離排序，改顯示食環署公廁標記與清單，不混入停車場結果或在未啟用時增加地圖雜訊。每項顯示名稱、距離、地址、開放時間／備註及 Google Maps 座標導航，並清楚標示食環署來源；端點失敗只顯示洗手間資料提示，不影響停車場結果。
 
 ## 介面與品牌設計
 
@@ -77,18 +78,21 @@
 src/
   api/carparks.ts          # 官方 API、快取、回應型別與 AbortController
   api/evChargers.ts        # EPD 充電器 API 回應型別與同源讀取
+  api/publicToilets.ts     # 食環署公廁同源資料讀取
   domain/carpark.ts        # API 資料轉換、A/B/C/-1 狀態判讀、收費／設施格式化
   domain/evChargers.ts     # 官方充電器與停車場的保守名稱／地址／座標匹配
   domain/distance.ts       # Haversine 距離與附近排序
   hooks/useCarparks.ts     # 載入、刷新、篩選及資料狀態
   hooks/useEvChargers.ts   # EPD 充電器資料載入與五分鐘刷新
+  hooks/usePublicToilets.ts # 啟用「洗手間」後才載入的食環署資料狀態
   components/MapView.tsx   # Leaflet 地圖、使用者位置、marker
   components/ParkCard.tsx  # 清單條目
   components/ParkDetail.tsx # 選中停車場的詳情面板
+  components/ToiletCard.tsx # 公廁結果與座標導航
   components/Filters.tsx   # 車種和篩選控制
   App.tsx                  # 頁面狀態和組合
   styles.css               # 響應式視覺系統
-server.mjs                 # Express + Vite 中介層、Google Maps 相片搜尋／影像轉送、健康檢查
+server.mjs                 # Express + Vite 中介層、Google Maps 相片搜尋／影像轉送、EPD／食環署快取、健康檢查
 scripts/check-photo-proxy.mjs # 實景相片位置核實與影像路由檢查
 scripts/check-fast-start.mjs # 靜態停車場基本資料完整性檢查
 public/
@@ -101,6 +105,7 @@ public/
 - `react`、`react-dom`、`typescript`、`vite`：單頁前端與開發中介層。
 - `leaflet`、`react-leaflet`：地圖與 marker。
 - `express`：相片代理、EPD 官方充電器資料快取／轉送、健康檢查及生產環境靜態資產服務。
+- 食物環境衞生署繁體公廁 XML：由既有 Express 同源快取端點轉送；不需帳戶、資料庫或使用者 API key。
 - Manus 受管 Google Maps Places 代理：伺服器端相片搜尋及轉送，無需使用者 API key。
 - 無資料庫、無使用者帳戶；啟動於 `0.0.0.0:3000`，以 `Dockerfile` 部署並服務 `dist/`。
 
