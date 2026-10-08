@@ -43,6 +43,7 @@ const DISTRICTS: District[] = [
 ];
 
 const normalizeDistrict = (value: string) => value.trim().toLocaleLowerCase().replace(/[\s-]+/g, '');
+const shortBankName = (bank: string) => bank.replace(/\(香港\)\s*/g, '').replace(/\s*有限公司$/, '');
 
 const INITIAL_FILTERS: ParkFilters = {
   availableOnly: true,
@@ -56,7 +57,7 @@ const PREFERENCES_KEY = 'parkspot:preferences:v1';
 
 function readPreferences() {
   try {
-    const saved = JSON.parse(window.localStorage.getItem(PREFERENCES_KEY) ?? '{}') as Partial<{ vehicleType: VehicleType; filters: ParkFilters & { showToilets?: boolean }; textScale: TextScale; facilityMode: NearbyMode }>;
+    const saved = JSON.parse(window.localStorage.getItem(PREFERENCES_KEY) ?? '{}') as Partial<{ vehicleType: VehicleType; filters: ParkFilters & { showToilets?: boolean }; textScale: TextScale; facilityMode: NearbyMode; atmBank: string }>;
     const vehicleType = saved.vehicleType && ['privateCar', 'motorCycle', 'LGV', 'HGV', 'coach'].includes(saved.vehicleType)
       ? saved.vehicleType
       : 'privateCar';
@@ -70,9 +71,9 @@ function readPreferences() {
     };
     const textScale = TEXT_SCALES.includes(saved.textScale ?? 0 as TextScale) ? saved.textScale as TextScale : 100;
     const facilityMode = ['toilets', 'fuel', 'atm'].includes(saved.facilityMode ?? '') ? saved.facilityMode : savedFilters?.showToilets ? 'toilets' : null;
-    return { vehicleType, filters, textScale, facilityMode };
+    return { vehicleType, filters, textScale, facilityMode, atmBank: typeof saved.atmBank === 'string' ? saved.atmBank : '' };
   } catch {
-    return { vehicleType: 'privateCar' as VehicleType, filters: INITIAL_FILTERS, textScale: 100 as TextScale, facilityMode: null };
+    return { vehicleType: 'privateCar' as VehicleType, filters: INITIAL_FILTERS, textScale: 100 as TextScale, facilityMode: null, atmBank: '' };
   }
 }
 
@@ -105,6 +106,7 @@ export default function App() {
   const [filters, setFilters] = useState<ParkFilters>(() => readPreferences().filters);
   const [textScale, setTextScale] = useState<TextScale>(() => readPreferences().textScale);
   const [facilityMode, setFacilityMode] = useState<NearbyMode | null>(() => readPreferences().facilityMode ?? null);
+  const [atmBank, setAtmBank] = useState(() => readPreferences().atmBank);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [mapExpanded, setMapExpanded] = useState(false);
   const [recenterRequest, setRecenterRequest] = useState(0);
@@ -118,11 +120,11 @@ export default function App() {
 
   useEffect(() => {
     try {
-      window.localStorage.setItem(PREFERENCES_KEY, JSON.stringify({ vehicleType, filters, textScale, facilityMode }));
+      window.localStorage.setItem(PREFERENCES_KEY, JSON.stringify({ vehicleType, filters, textScale, facilityMode, atmBank }));
     } catch {
       // 私隱模式或儲存空間不足時仍可正常使用。
     }
-  }, [vehicleType, filters, textScale, facilityMode]);
+  }, [vehicleType, filters, textScale, facilityMode, atmBank]);
 
   useEffect(() => {
     if (!mapExpanded) return;
@@ -185,12 +187,13 @@ export default function App() {
   const nearbyFacilities = useMemo<NearbyFacilityViewModel[]>(() => {
     if (facilityMode !== 'fuel' && facilityMode !== 'atm') return [];
     return nearbyFacilityData
-      .filter((facility) => facility.kind === facilityMode)
+      .filter((facility) => facility.kind === facilityMode && (facilityMode !== 'atm' || !atmBank || facility.brand === atmBank))
       .map((facility) => ({ facility, distanceKm: distanceInKm(position, { lat: facility.latitude, lng: facility.longitude }) }))
       .filter((facility) => facility.distanceKm <= NEARBY_RADIUS_KM)
       .sort((left, right) => left.distanceKm - right.distanceKm)
       .slice(0, facilityMode === 'atm' ? 50 : undefined);
-  }, [facilityMode, nearbyFacilityData, position]);
+  }, [atmBank, facilityMode, nearbyFacilityData, position]);
+  const atmBanks = useMemo(() => [...new Set(nearbyFacilityData.filter((facility) => facility.kind === 'atm').map((facility) => facility.brand).filter((bank): bank is string => Boolean(bank)))].sort((left, right) => left.localeCompare(right, 'zh-Hant')), [nearbyFacilityData]);
 
   const resultsVerified = !loading
     && (!vacancyLoading || vacancyById.size > 0)
@@ -221,13 +224,14 @@ export default function App() {
   const facilityLoading = showingToilets ? washroomLoading : nearbyFacilityLoading;
   const facilityError = showingToilets ? toiletError : nearbyFacilityError;
   const facilityLabel = facilityMode === 'toilets' ? '洗手間' : facilityMode === 'fuel' ? '油站' : facilityMode === 'atm' ? 'ATM' : null;
+  const facilityResultLabel = facilityMode === 'atm' && atmBank ? `${shortBankName(atmBank)} ATM` : facilityLabel;
   const activeNearbyResults = showingToilets ? nearbyToilets : nearbyFacilities;
   const selectedPark = !facilityMode ? displayedParks.find((park) => park.info.park_Id === selectedId) : undefined;
   const availableCount = displayedParks.filter((park) => isAvailable(park.status)).length;
   const visibleError = error || (filters.hasEv && evError ? `充電器資料提示：${evError}` : null);
   const mapParks = facilityMode ? [] : displayedParks;
   const mapNearbyItems = facilityMode ? activeNearbyResults : [];
-  const mapResultLabel = facilityMode ? `${activeNearbyResults.length} 個${facilityLabel}` : `${displayedParks.length} 個停車場`;
+  const mapResultLabel = facilityMode ? `${activeNearbyResults.length} 個${facilityResultLabel}` : `${displayedParks.length} 個停車場`;
   const scaleDown = () => setTextScale((current) => TEXT_SCALES[Math.max(0, TEXT_SCALES.indexOf(current) - 1)]);
   const scaleUp = () => setTextScale((current) => TEXT_SCALES[Math.min(TEXT_SCALES.length - 1, TEXT_SCALES.indexOf(current) + 1)]);
   const toggleMap = () => {
@@ -295,6 +299,8 @@ export default function App() {
 
       <Filters vehicleType={vehicleType} filters={filters} evLoading={evLoading} facilityMode={facilityMode} facilityLoading={facilityLoading} onVehicleChange={(type) => { setVehicleType(type); setSelectedId(null); }} onFiltersChange={updateFilters} onFacilityModeChange={updateFacilityMode} />
 
+      {facilityMode === 'atm' && <section className="atm-bank-filter" aria-label="ATM 銀行篩選"><label htmlFor="atm-bank">ATM 銀行</label><select id="atm-bank" value={atmBank} onChange={(event) => setAtmBank(event.target.value)}><option value="">全部銀行</option>{atmBanks.map((bank) => <option key={bank} value={bank}>{shortBankName(bank)}</option>)}</select><p>{atmBank ? `地圖只顯示${shortBankName(atmBank)}的 ATM` : '揀返你用嘅銀行，毋須逐個 ATM 打開睇。'}</p></section>}
+
       {visibleError && <div className="error-banner" role="alert"><span>資料連線提示：{visibleError}</span><button type="button" onClick={retry}>重試</button></div>}
 
       <section className="workspace">
@@ -316,9 +322,9 @@ export default function App() {
             )}
           </section>
         </div>
-        <section className="results-panel" id="parking-results" aria-label={facilityMode ? `附近${facilityLabel}清單` : '附近停車場清單'}>
+        <section className="results-panel" id="parking-results" aria-label={facilityMode ? `附近${facilityResultLabel}清單` : '附近停車場清單'}>
           <div className="results-heading">
-            <div><p className="eyebrow">{areaName} · {NEARBY_RADIUS_KM} 公里</p><h2>{facilityMode ? (facilityLoading && activeNearbyResults.length === 0 ? `正在讀取${facilityLabel}…` : facilityError && activeNearbyResults.length === 0 ? `${facilityLabel}資料未能讀取` : `${activeNearbyResults.length} 個${facilityLabel}`) : (resultsVerified ? `${displayedParks.length} 個結果` : '正在核實停車場…')}</h2></div>
+            <div><p className="eyebrow">{areaName} · {NEARBY_RADIUS_KM} 公里</p><h2>{facilityMode ? (facilityLoading && activeNearbyResults.length === 0 ? `正在讀取${facilityLabel}…` : facilityError && activeNearbyResults.length === 0 ? `${facilityLabel}資料未能讀取` : `${activeNearbyResults.length} 個${facilityResultLabel}`) : (resultsVerified ? `${displayedParks.length} 個結果` : '正在核實停車場…')}</h2></div>
             <p>{showingToilets ? '食環署 · 康文署' : facilityMode === 'fuel' ? '消委會油價資訊通' : facilityMode === 'atm' ? (nearbyFacilitySource ?? '香港金融管理局') : (resultsVerified ? `${availableCount} 個有位選項` : verificationLabel)}</p>
           </div>
           <div className="results-list">
@@ -331,7 +337,7 @@ export default function App() {
             {facilityMode && !showingToilets && facilityError && nearbyFacilities.length === 0 && !facilityLoading && <div className="empty-state" role="alert"><strong>暫時未能讀取{facilityLabel}資料</strong><p>{facilityError}</p><button className="toilet-retry" type="button" onClick={retryNearbyFacilities}>重試</button></div>}
             {facilityMode && !showingToilets && nearbyFacilities.map((item) => <NearbyFacilityCard key={item.facility.id} item={item} />)}
             {facilityMode === 'atm' && nearbyFacilities.length === 50 && <p className="loading-note">ATM 選項較多，現只顯示最近 50 個。</p>}
-            {facilityMode && !showingToilets && !facilityLoading && !facilityError && nearbyFacilities.length === 0 && <div className="empty-state"><strong>呢個範圍暫時冇{facilityLabel}資料</strong><p>試下選擇其他地區或在地圖長按新中心。</p></div>}
+            {facilityMode && !showingToilets && !facilityLoading && !facilityError && nearbyFacilities.length === 0 && <div className="empty-state"><strong>呢個範圍暫時冇{facilityResultLabel}資料</strong><p>試下選擇其他地區或在地圖長按新中心。</p></div>}
             {!facilityMode && !resultsVerified && <div className="loading-state"><span className="loader" />{verificationLabel}<small>只會顯示已核實的停車場結果。</small></div>}
             {!facilityMode && resultsVerified && displayedParks.map((park) => (
               <ParkCard key={park.info.park_Id} park={park} vehicleType={vehicleType} selected={park.info.park_Id === selectedId} onSelect={() => openDetail(park.info.park_Id)} />

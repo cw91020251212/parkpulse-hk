@@ -46,6 +46,7 @@ h1 { margin: 1px 0 0; font-size: 26px; line-height: 1.08; letter-spacing: .02em;
 .height-select { display: inline-flex; align-items: center; gap: 7px; padding-right: 8px; }
 .height-select select { color: #d9edef; background: transparent; border: 0; outline: 0; font-size: 12px; font-weight: 800; }
 .height-select option { background: #0c2940; }
+.atm-bank-filter { display: flex; align-items: center; gap: 9px; margin: 8px 0 2px; padding: 8px 10px; border: 1px solid #2b7561; border-radius: 11px; color: #c7eee0; background: #0d3b35; font-size: 12px; }.atm-bank-filter label { flex: 0 0 auto; font-weight: 900; }.atm-bank-filter select { min-width: 0; max-width: min(340px, 48vw); border: 1px solid #4a9480; border-radius: 8px; padding: 7px 26px 7px 8px; color: #e8fff6; background: #0a2928; font: inherit; font-size: 12px; font-weight: 800; }.atm-bank-filter option { background: #0a2928; }.atm-bank-filter p { margin: 0; color: #9ecabe; font-size: 11px; line-height: 1.35; }
 
 .error-banner { max-width: 1440px; margin: 12px auto 0; display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 9px 12px; border-radius: 11px; border: 1px solid #a96145; background: #47251fe8; color: #ffd7c7; font-size: 13px; }
 .error-banner button { color: #fff1eb; border: 0; background: transparent; font-weight: 800; text-decoration: underline; }
@@ -125,7 +126,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .charging-detail p { margin: 7px 0 0; color: #ddf8f4; font-size: 13px; line-height: 1.5; }
 .charging-detail small { display: block; margin-top: 5px; color: #8ab6bd; font-size: 10px; line-height: 1.45; }
 .map-focus { padding-top: 12px; }
-.map-focus .topbar, .map-focus .status-strip, .map-focus .error-banner, .map-focus .map-bottom-tools, .map-focus .results-panel, .map-focus footer { display: none; }
+.map-focus .topbar, .map-focus .status-strip, .map-focus .error-banner, .map-focus .atm-bank-filter, .map-focus .map-bottom-tools, .map-focus .results-panel, .map-focus footer { display: none; }
 .map-focus .filters { margin-top: 0; }
 .map-focus .workspace { grid-template-columns: minmax(0, 1fr); height: calc(100vh - 99px); min-height: 420px; }
 .map-focus .map-column, .map-focus .map-wrap, .map-focus .landsd-map { height: 100%; min-height: 0; }
@@ -136,4 +137,5 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
   .text-size-control span { display: none; }
   .text-size-control { gap: 1px; }
   .map-focus .workspace { height: calc(100vh - 94px); min-height: 380px; }
+  .atm-bank-filter { flex-wrap: wrap; gap: 7px; }.atm-bank-filter select { flex: 1; max-width: none; }.atm-bank-filter p { width: 100%; }
 }
