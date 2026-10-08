@@ -147,6 +147,13 @@ function markerIcon(park: ParkViewModel) {
   });
 }
 
+const selectedCenterIcon = L.divIcon({
+  className: 'selected-center-marker-shell',
+  html: '<span class="selected-center-marker" aria-hidden="true"></span>',
+  iconSize: [50, 50],
+  iconAnchor: [25, 50],
+});
+
 export function MapView({ position, parks, selectedId, onSelect, onLocationSelect, expanded, onToggleExpanded, onShowResults }: Props) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -184,8 +191,8 @@ export function MapView({ position, parks, selectedId, onSelect, onLocationSelec
         <FocusSelected park={selected} />
         <ResizeMap expanded={expanded} />
         <LongPressPicker onPick={selectMapPoint} />
-        <Circle center={[position.lat, position.lng]} radius={2_000} pathOptions={{ color: '#14B8A6', fillColor: '#14B8A6', fillOpacity: 0.08, weight: 1 }} />
-        <Circle center={[position.lat, position.lng]} radius={22} pathOptions={{ color: '#ffffff', fillColor: '#14B8A6', fillOpacity: 1, weight: 2 }} />
+        <Circle center={[position.lat, position.lng]} radius={2_000} pathOptions={{ color: '#14B8A6', fillColor: '#14B8A6', fillOpacity: 0.1, weight: 2, dashArray: '6 6' }} />
+        <Marker position={[position.lat, position.lng]} icon={selectedCenterIcon} zIndexOffset={1_000} keyboard={false} />
         {parks.map((park) => (
           <Marker
             key={park.info.park_Id}

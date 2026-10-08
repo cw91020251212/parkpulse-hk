@@ -26,7 +26,7 @@ a { color: inherit; }
 .brand-mark { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 16px 16px 16px 4px; background: #14b8a6; color: #062134; font-size: 23px; font-weight: 900; box-shadow: 0 8px 24px #14b8a64d; transform: rotate(-45deg); }
 .brand-mark > span { transform: rotate(45deg); }
 .brand-kicker, .eyebrow { margin: 0; color: #7c9bab; font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
-h1 { margin: 1px 0 0; font-size: 21px; letter-spacing: .02em; }
+h1 { margin: 1px 0 0; font-size: 30px; line-height: 1.08; letter-spacing: .02em; }
 .top-actions { display: flex; gap: 12px; align-items: center; }
 .refresh-button, .locate-button { display: grid; place-items: center; width: 38px; height: 38px; padding: 0; border: 1px solid #2f556b; border-radius: 50%; color: #d7f5f0; background: #0d2b43; transition: .2s ease; }
 .refresh-button:hover { border-color: #14b8a6; background: #12364f; }
@@ -61,6 +61,9 @@ h1 { margin: 1px 0 0; font-size: 21px; letter-spacing: .02em; }
 .parking-marker { display: grid; place-items: center; width: 38px; height: 38px; border: 2px solid #fff; border-radius: 50% 50% 50% 0; color: #fff; font-size: 11px; font-weight: 900; box-shadow: 0 4px 12px #0000004f; transform: rotate(-45deg); }
 .parking-marker b { display: block; transform: rotate(45deg); }.parking-marker { text-indent: 0; }.marker-count, .marker-available { background: #069b8d; }.marker-full { background: #d55b45; }.marker-closed { background: #677c87; }.marker-unknown { background: #9a6f39; }
 .parking-marker { line-height: 1; }
+.selected-center-marker-shell { background: transparent !important; border: 0 !important; }
+.selected-center-marker { position: relative; display: block; width: 50px; height: 50px; border: 3px solid #ffffff; border-radius: 50% 50% 50% 0; background: #14b8a6; box-shadow: 0 0 0 4px #0a21349e, 0 8px 18px #00000070; transform: rotate(-45deg); }
+.selected-center-marker::after { content: ''; position: absolute; inset: 12px; border: 3px solid #14b8a6; border-radius: 50%; background: #f5fffe; }
 
 .results-panel { padding: 20px 14px 14px; background: #0b263d; min-width: 0; display: flex; flex-direction: column; }
 .results-heading { display: flex; align-items: end; justify-content: space-between; gap: 12px; padding: 0 6px 12px; }.results-heading h2 { margin: 4px 0 0; font-size: 24px; }.results-heading > p { color: #64d9cb; font-size: 12px; font-weight: 800; margin: 0 0 2px; white-space: nowrap; }
@@ -73,7 +76,7 @@ h1 { margin: 1px 0 0; font-size: 21px; letter-spacing: .02em; }
 footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px 3px 2px; color: #7e9da9; font-size: 11px; } footer a { color: #8ddfd3; }
 @keyframes rotate { to { transform: rotate(360deg); } } @keyframes detail-in { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
 @media (max-width: 900px) { .app-shell { padding: 14px 12px 9px; }.workspace { grid-template-columns: 1fr; height: auto; border-radius: 17px; }.map-wrap { border-radius: 0 0 17px 17px; }.map-wrap, .landsd-map { min-height: 390px; height: 390px; }.results-panel { min-height: 360px; }.results-list { max-height: none; }.detail-panel { right: 12px; bottom: 12px; } }
-@media (max-width: 560px) { .topbar { align-items: flex-start; }.top-actions { gap: 6px; }.refresh-button, .locate-button { width: 36px; height: 36px; }.map-wrap, .landsd-map { min-height: 430px; height: clamp(430px, calc((100dvh - 220px) / var(--ui-zoom, 1)), 580px); }.landsd-credit { right: 7px; bottom: 48px; font-size: 10px; }.map-results-link { bottom: 9px; left: 9px; }.results-panel { padding: 16px 10px 10px; }.results-heading h2 { font-size: 21px; }.park-card-main { padding-left: 10px; }.availability-line, .card-facts, .updated { margin-left: 14px; }.card-heading h3 { font-size: 13px; }.nav-link { margin-right: 8px; }.detail-panel { padding: 20px; }.detail-grid { grid-template-columns: 1fr 1fr; }.brand-mark { width: 36px; height: 36px; }.brand-kicker { font-size: 8px; } h1 { font-size: 19px; } footer { flex-direction: column; gap: 4px; } }
+@media (max-width: 560px) { .topbar { align-items: flex-start; }.top-actions { gap: 6px; }.refresh-button, .locate-button { width: 36px; height: 36px; }.map-wrap, .landsd-map { min-height: 430px; height: clamp(430px, calc((100dvh - 220px) / var(--ui-zoom, 1)), 580px); }.landsd-credit { right: 7px; bottom: 48px; font-size: 10px; }.map-results-link { bottom: 9px; left: 9px; }.results-panel { padding: 16px 10px 10px; }.results-heading h2 { font-size: 21px; }.park-card-main { padding-left: 10px; }.availability-line, .card-facts, .updated { margin-left: 14px; }.card-heading h3 { font-size: 13px; }.nav-link { margin-right: 8px; }.detail-panel { padding: 20px; }.detail-grid { grid-template-columns: 1fr 1fr; }.brand-mark { width: 40px; height: 40px; }.brand-kicker { font-size: 8px; } h1 { font-size: 27px; } footer { flex-direction: column; gap: 4px; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
 
 .detail-photo-section { border-top: 1px solid #285067; margin-top: 18px; padding-top: 13px; }
