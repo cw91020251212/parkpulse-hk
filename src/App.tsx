@@ -62,14 +62,7 @@ function RefreshIcon() {
 }
 
 function LocateIcon() {
-  return (
-    <svg className="locate-icon" viewBox="0 0 32 32" aria-hidden="true">
-      <path d="m3 9 9-4 9 4 8-4v18l-8 4-9-4-9 4z" fill="#d9e7eb" />
-      <path d="m3 9 9 4 9-4 8 4M12 13v14M21 9v18" fill="none" stroke="#5f7c8d" strokeLinejoin="round" strokeWidth="1.5" />
-      <path d="M16 5.5a5.4 5.4 0 0 0-5.4 5.4c0 4.1 5.4 9.6 5.4 9.6s5.4-5.5 5.4-9.6A5.4 5.4 0 0 0 16 5.5Z" fill="#14b8a6" stroke="#eafffb" strokeWidth="1.2" />
-      <circle cx="16" cy="10.9" r="2" fill="#0b263d" />
-    </svg>
-  );
+  return <img className="locate-icon" src="/location-control.png" alt="" />;
 }
 
 export default function App() {
