@@ -1,9 +1,10 @@
 import type { CarparkInfo, VacancyRecord } from '../types';
+import { publicAsset } from './site';
 
 const API_BASE = 'https://api.data.gov.hk/v1/carpark-info-vacancy/';
 const INFO_CACHE_KEY = 'parkspot:info:v1';
 const INFO_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
-const STATIC_INFO_URL = '/carpark-info.json';
+const STATIC_INFO_URL = publicAsset('carpark-info.json');
 
 type ApiResponse<T> = { results: T[] };
 type CachedInfo = { savedAt: number; items: CarparkInfo[] };

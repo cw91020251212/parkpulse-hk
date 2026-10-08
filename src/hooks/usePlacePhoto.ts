@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { isStaticPages } from '../api/site';
 
 export type PlacePhoto = {
   photoUrl: string;
@@ -32,6 +33,10 @@ export function usePlacePhoto(target: PlaceTarget, enabled = true) {
     const fallbackUrl = mapsPhotoSearchUrl(target);
     if (!enabled) {
       setState({ kind: 'idle' });
+      return;
+    }
+    if (isStaticPages) {
+      setState({ kind: 'unavailable', placeUrl: fallbackUrl });
       return;
     }
 

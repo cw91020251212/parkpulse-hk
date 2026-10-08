@@ -74,6 +74,7 @@
 - 個性：**冷靜、精準、在地**。
 - 文案語氣：短句、直接、避免過度承諾。例如「附近有位，先看更新時間。」與「資料慢咗，去之前再睇一眼。」
 - 英文品牌名稱定為 **ParkPulse HK**，GitHub repository 建議使用 `parkpulse-hk`；中文產品名稱「泊邊有位」保留作主要面向香港使用者的標題。主圖示採用已選定的 A 版：深墨藍圓角方形底、青綠定位釘、暖黃車身及珊瑚紅即時訊號，帶克制立體光澤，能在 GitHub 頭像、網站 favicon 和 32px 小尺寸中辨認。提交 1024px PNG 到 `public/parkpulse-hk-icon.png`，網站標題／favicon／品牌圖示改用它；`app.config.ts` 使用已上傳的公開 HTTPS 圖示 URL，供專案平台與 GitHub 相關展示使用。
+- 正式網站改由 **GitHub Pages** 直接發佈，預期網址為 `https://cw91020251212.github.io/parkpulse-hk/`，並在 repository 的 GitHub Actions 於 `main` 每次更新、手動執行及每 6 小時建置。GitHub Pages 模式使用 `/parkpulse-hk/` 資產 base path，不會呼叫 Manus 的 `/api` 路徑；建置時以官方食環署 XML、環保署 JSON、消委會油站頁面及金管局／其 ArcGIS 後備資料產出靜態 JSON，一併放進 Pages artifact，因此保留停車場、公廁、康文署場館、充電器、油站與 ATM 功能。空位仍由瀏覽器直接讀取 CORS 開放的 data.gov.hk API。純靜態 Pages 無法安全使用需要私密服務憑證的已核實 Google Maps 相片代理，故靜態模式只保留 Google Maps 地點連結並清楚顯示相片暫不可用；日後如要恢復相片，必須接駁使用者自管後端，而非 Manus。
 
 ## 技術結構
 

@@ -1,0 +1,27 @@
+# ParkPulse HK｜泊邊有位
+
+香港即時停車位地圖，顯示政府停車場空位、充電器、洗手間、油站及 ATM。
+
+## GitHub Pages
+
+GitHub Actions 會在每次推送 `main`、每 6 小時或手動執行時，重新取得公開資料並發佈靜態網站：
+
+- Website: `https://cw91020251212.github.io/parkpulse-hk/`
+- Source: `https://github.com/cw91020251212/parkpulse-hk`
+
+GitHub Pages 版本保留停車位（data.gov.hk 即時讀取）、公廁、康文署場館、充電器、油站、ATM 和銀行篩選。公廁／油站／ATM／充電器資料於 GitHub Actions 建置時更新；已核實 Google Maps 相片需要私密後端憑證，因此靜態版本只保留 Google Maps 連結。
+
+## Local development
+
+```bash
+pnpm install
+pnpm dev
+```
+
+Production container is defined in `Dockerfile`. To build the GitHub Pages artifact locally:
+
+```bash
+pnpm build:pages
+```
+
+The GitHub Pages build uses the `/parkpulse-hk/` path and writes its output to `dist/`.

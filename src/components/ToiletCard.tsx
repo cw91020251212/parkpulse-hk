@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { isStaticPages } from '../api/site';
 import { formatDistance } from '../domain/distance';
 import { usePlacePhoto } from '../hooks/usePlacePhoto';
 import type { PublicToiletViewModel } from '../types';
@@ -28,7 +29,7 @@ export function ToiletCard({ toilet: { toilet, distanceKm } }: Props) {
           {photoState.kind === 'loading' && <p className="photo-state">正在尋找可核實的公開相片…</p>}
           {photoState.kind === 'found' && <figure className="toilet-photo"><img src={photoState.photo.photoUrl} alt={`${toilet.name}附近實景相片`} loading="lazy" onError={() => setPhotoState({ kind: 'unavailable', placeUrl: photoState.photo.placeUrl })} /><figcaption>相距約 {photoState.photo.distanceMeters} 米 · {photoState.photo.attribution} 提供</figcaption></figure>}
           {photoState.kind === 'not_found' && <p className="photo-state">暫未找到可核實的公開相片。</p>}
-          {photoState.kind === 'unavailable' && <p className="photo-state">相片暫時未能載入，請到地圖查看。</p>}
+          {photoState.kind === 'unavailable' && <p className="photo-state">{isStaticPages ? 'GitHub Pages 版本未提供已核實相片，請到地圖查看。' : '相片暫時未能載入，請到地圖查看。'}</p>}
           {photoState.kind === 'found' && <a className="photo-link" href={photoState.photo.placeUrl} target="_blank" rel="noreferrer">在 Google Maps 查看更多相片</a>}
           {(photoState.kind === 'not_found' || photoState.kind === 'unavailable') && <a className="photo-link" href={photoState.placeUrl} target="_blank" rel="noreferrer">在 Google Maps 查看更多相片</a>}
         </section>}

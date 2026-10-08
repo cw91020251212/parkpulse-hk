@@ -13,6 +13,7 @@ import { useEvChargers } from './hooks/useEvChargers';
 import { useLcsdVenues } from './hooks/useLcsdVenues';
 import { useNearbyFacilities } from './hooks/useNearbyFacilities';
 import { usePublicToilets } from './hooks/usePublicToilets';
+import { publicAsset } from './api/site';
 import type { Coordinates, NearbyFacilityViewModel, NearbyMode, ParkFilters, ParkViewModel, PublicToiletViewModel, VehicleType } from './types';
 
 const HONG_KONG_CENTER: Coordinates = { lat: 22.3193, lng: 114.1694 };
@@ -80,7 +81,7 @@ function readPreferences() {
 type LocationState = 'default' | 'locating' | 'ready' | 'denied' | 'unavailable';
 
 function Logo() {
-  return <img className="brand-mark" src="/parkpulse-hk-icon.png" alt="" aria-hidden="true" />;
+  return <img className="brand-mark" src={publicAsset('parkpulse-hk-icon.png')} alt="" aria-hidden="true" />;
 }
 
 function RefreshIcon() {
@@ -93,7 +94,7 @@ function RefreshIcon() {
 }
 
 function LocateIcon() {
-  return <img className="locate-icon" src="/location-control.png" alt="" />;
+  return <img className="locate-icon" src={publicAsset('location-control.png')} alt="" />;
 }
 
 export default function App() {
