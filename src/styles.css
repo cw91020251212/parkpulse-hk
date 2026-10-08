@@ -597,19 +597,19 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .on-street-status.is-occupied { background: #5a2e28; color: #ffe1d7; }
 .on-street-status.is-unavailable { background: #344851; color: #dce7e9; }
 
-/* 評分放在名稱行右端，讓評價先於次要資料被看見。 */
+/* 評分連結獨立於卡片按鈕，固定對齊灰色次要資料列。 */
 .park-card-main { position: relative; min-height: 148px; padding: 0; }
 .park-card-select { display: grid; grid-template-rows: 36px 20px 22px 14px; align-content: center; gap: 7px; width: 100%; min-height: 148px; border: 0; padding: 13px 11px 13px 13px; color: inherit; background: transparent; font: inherit; text-align: left; cursor: pointer; }
 .park-card-select:focus-visible { outline: 2px solid #67e9d9; outline-offset: -3px; }
-.park-card-rating { position: absolute; top: 35px; right: 43px; z-index: 1; border-radius: 6px; padding: 3px 5px; color: #ffe39a; background: #594920; font-size: 11px; font-weight: 900; line-height: 1; text-decoration: none; }
+.park-card-rating { position: absolute; top: 58px; right: 11px; z-index: 1; border-radius: 6px; padding: 3px 5px; color: #ffe39a; background: #594920; font-size: 11px; font-weight: 900; line-height: 1; text-decoration: none; }
 .park-card-rating:hover { background: #79622b; }
-.park-card:has(.park-card-rating) .card-heading > div { padding-right: 38px; }
+.park-card:has(.park-card-rating) .card-heading p { padding-right: 43px; }
 
 @media (max-width: 560px) {
   .on-street-card,
   .on-street-card-main { min-height: 136px !important; }
   .park-card-select { min-height: 152px; }
-  .park-card-rating { top: 34px; right: 40px; }
+  .park-card-rating { top: 58px; right: 11px; }
 }
 
 /* 手機結果標題不可被來源文字壓成逐字直排。 */
@@ -631,23 +631,23 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 
 .parking-marker.is-last-viewed,
 .toilet-marker.is-last-viewed {
-  border-color: #ffe17a;
-  box-shadow: 0 4px 12px #00000050, inset 0 0 0 1px #fff0a9;
+  border-color: #ff3b78;
+  box-shadow: 0 4px 12px #00000050, inset 0 0 0 1px #ffd0df;
 }
 
-/* 評分固定留在距離左側；名稱只在自己的欄位省略。 */
+/* 名稱列不再為評分留位；只有灰色次要資料列避開評分連結。 */
 .park-card-rating {
-  top: 16px;
-  right: 86px;
+  top: 58px;
+  right: 11px;
 }
 
-.park-card:has(.park-card-rating) .card-heading > div {
-  padding-right: 84px;
+.park-card:has(.park-card-rating) .card-heading p {
+  padding-right: 43px;
 }
 
 @media (max-width: 560px) {
-  .park-card-rating { top: 16px; right: 78px; }
-  .park-card:has(.park-card-rating) .card-heading > div { padding-right: 76px; }
+  .park-card-rating { top: 58px; right: 11px; }
+  .park-card:has(.park-card-rating) .card-heading p { padding-right: 43px; }
 }
 
 /* 最近查看的小提示點位於卡內，不改變邊框厚度或點按區域。 */
