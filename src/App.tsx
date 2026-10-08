@@ -227,13 +227,9 @@ export default function App() {
       {visibleError && <div className="error-banner" role="alert"><span>資料連線提示：{visibleError}</span><button type="button" onClick={retry}>重試</button></div>}
 
       <section className="workspace">
-        <MapView position={position} parks={displayedParks} selectedId={selectedId} onSelect={setSelectedId} onLocationSelect={selectArea} recenterRequest={recenterRequest} expanded={mapExpanded} onToggleExpanded={toggleMap} onShowResults={showResults} />
-        <section className="results-panel" id="parking-results" aria-label="附近停車場清單">
-          <div className="results-heading">
-            <div><p className="eyebrow">{areaName} · {NEARBY_RADIUS_KM} 公里</p><h2>{loading ? '正在整理停車場…' : `${displayedParks.length} 個結果`}</h2></div>
-            <p>{loading ? '資料載入中' : vacancyLoading ? '更新空位資料' : filters.hasEv && evLoading ? '更新充電器資料' : `${availableCount} 個有位選項`}</p>
-          </div>
-          <section className="area-tools" aria-label="地圖搜尋與操作提示">
+        <div className="map-column">
+          <MapView position={position} parks={displayedParks} selectedId={selectedId} onSelect={setSelectedId} onLocationSelect={selectArea} recenterRequest={recenterRequest} expanded={mapExpanded} onToggleExpanded={toggleMap} onShowResults={showResults} />
+          <section className="area-tools map-bottom-tools" aria-label="地圖搜尋與操作提示">
             <div className="area-tools-row">
               <button className="area-search-toggle" type="button" onClick={() => { setDistrictSearchOpen((current) => !current); setDistrictMessage(''); }} aria-expanded={districtSearchOpen}>搜尋地區</button>
               <p className="map-gesture-note">長按地圖約 1 秒：選取 2 公里範圍</p>
@@ -247,6 +243,12 @@ export default function App() {
               </form>
             )}
           </section>
+        </div>
+        <section className="results-panel" id="parking-results" aria-label="附近停車場清單">
+          <div className="results-heading">
+            <div><p className="eyebrow">{areaName} · {NEARBY_RADIUS_KM} 公里</p><h2>{loading ? '正在整理停車場…' : `${displayedParks.length} 個結果`}</h2></div>
+            <p>{loading ? '資料載入中' : vacancyLoading ? '更新空位資料' : filters.hasEv && evLoading ? '更新充電器資料' : `${availableCount} 個有位選項`}</p>
+          </div>
           <div className="results-list">
             {loading && <div className="loading-state"><span className="loader" />讀取停車場及即時空位…</div>}
             {!loading && filters.hasEv && evLoading && <div className="loading-note"><span className="loader" />正在補充官方充電器資料，暫時顯示附近停車場…</div>}
