@@ -340,3 +340,11 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
   .toilet-card-main { min-height: 152px; }
   .toilet-card-actions { padding-right: 8px; }
 }
+
+
+/* 官方提供的總容量優先留在卡片的一行摘要，避免與即時空位混淆。 */
+.park-card .card-facts .total-spaces {
+  flex: 0 0 auto;
+  color: #d2fff8;
+  background: #13584f;
+}
