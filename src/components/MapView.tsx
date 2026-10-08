@@ -46,8 +46,8 @@ function markerIcon(park: ParkViewModel) {
   return L.divIcon({
     className: 'parking-marker-shell',
     html: `<span class="parking-marker marker-${park.status.kind}"><b>${label}</b></span>`,
-    iconSize: [38, 38],
-    iconAnchor: [19, 19],
+    iconSize: [44, 36],
+    iconAnchor: [22, 18],
   });
 }
 

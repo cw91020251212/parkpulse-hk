@@ -53,7 +53,7 @@ function Logo() {
 }
 
 export default function App() {
-  const { infos, vacancyById, loading, refreshing, error, lastFetchedAt, refresh, retry } = useCarparks();
+  const { infos, vacancyById, loading, refreshing, error, refresh, retry } = useCarparks();
   const { chargers, loading: evLoading, error: evError } = useEvChargers();
   const [position, setPosition] = useState<Coordinates>(HONG_KONG_CENTER);
   const [locationState, setLocationState] = useState<LocationState>('default');
@@ -130,13 +130,6 @@ export default function App() {
 
   const selectedPark = displayedParks.find((park) => park.info.park_Id === selectedId);
   const availableCount = displayedParks.filter((park) => isAvailable(park.status)).length;
-  const locationMessage = {
-    default: '未使用定位 · 以香港中心顯示',
-    locating: '正在定位…',
-    ready: '已使用你的目前位置',
-    denied: '未能取得定位 · 以香港中心顯示',
-    unavailable: '此裝置不支援定位 · 以香港中心顯示',
-  }[locationState];
   const visibleError = error || (filters.hasEv && evError ? `充電器資料提示：${evError}` : null);
   const scaleDown = () => setTextScale((current) => TEXT_SCALES[Math.max(0, TEXT_SCALES.indexOf(current) - 1)]);
   const scaleUp = () => setTextScale((current) => TEXT_SCALES[Math.min(TEXT_SCALES.length - 1, TEXT_SCALES.indexOf(current) + 1)]);
@@ -155,18 +148,14 @@ export default function App() {
             <span>文字 {textScale}%</span>
             <button type="button" onClick={scaleUp} disabled={textScale === 130} aria-label="放大文字">A+</button>
           </div>
-          <span className="live-state"><i />即時資料</span>
+          <button className={refreshing ? 'refresh-button is-refreshing' : 'refresh-button'} type="button" onClick={refresh} disabled={refreshing || loading} aria-label={refreshing ? '正在更新停車位資料' : '立即更新停車位資料'} title={refreshing ? '正在更新' : '立即更新'}>
+            <span aria-hidden="true">↻</span>
+          </button>
           <button className="locate-button" type="button" onClick={requestLocation} disabled={locationState === 'locating'}>
             <span aria-hidden="true">⌖</span>{locationState === 'locating' ? '定位中' : '使用我的位置'}
           </button>
         </div>
       </header>
-
-      <section className="status-strip" aria-live="polite">
-        <span><i className="location-pulse" />{locationMessage}</span>
-        <span>{lastFetchedAt ? `空位資料剛於 ${lastFetchedAt.toLocaleTimeString('zh-HK', { hour: '2-digit', minute: '2-digit' })} 讀取` : '正在連接政府資料服務…'}</span>
-        <button type="button" onClick={refresh} disabled={refreshing || loading}>{refreshing ? '更新中…' : '立即更新'}</button>
-      </section>
 
       <Filters vehicleType={vehicleType} filters={filters} evLoading={evLoading} onVehicleChange={(type) => { setVehicleType(type); setSelectedId(null); }} onFiltersChange={setFilters} />
 
