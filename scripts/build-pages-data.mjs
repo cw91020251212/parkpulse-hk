@@ -5,7 +5,9 @@ import { simplifyEpdRecord } from '../lib/epd-ev-chargers.mjs';
 import { parseArcGisAtms, parseFuelStations, parseHkmaAtms } from '../lib/nearby-facilities.mjs';
 import { parsePublicToilets } from '../lib/public-toilets.mjs';
 
-const dataDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../public/pages-data');
+const publicDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../public');
+const dataDir = path.join(publicDir, 'pages-data');
+const CARPARK_INFO_URL = 'https://api.data.gov.hk/v1/carpark-info-vacancy/?data=info&lang=zh_TW';
 const EPD_EV_URL = 'https://ev-charger.epd.gov.hk/resource/ev_charger_avail/ev_charger_avail.json';
 const FEHD_TOILETS_URL = 'https://www.fehd.gov.hk/tc_chi/map/fehd_map_c.xml';
 const FUEL_STATIONS_URL = 'https://oil-price.consumer.org.hk/tc/station';
@@ -18,25 +20,31 @@ async function request(url, accept) {
   return response;
 }
 
-async function writeData(filename, value) {
-  await mkdir(dataDir, { recursive: true });
-  await writeFile(path.join(dataDir, filename), JSON.stringify(value), 'utf8');
-}
-
-async function refreshOrKeep(filename, loader) {
+async function refreshFileOrKeep(filePath, loader) {
   try {
     const value = await loader();
-    await writeData(filename, value);
-    console.log(`Updated ${filename}`);
+    await mkdir(path.dirname(filePath), { recursive: true });
+    await writeFile(filePath, JSON.stringify(value), 'utf8');
+    console.log(`Updated ${path.basename(filePath)}`);
   } catch (error) {
     try {
-      await access(path.join(dataDir, filename));
-      console.warn(`Keeping existing ${filename}: ${error instanceof Error ? error.message : error}`);
+      await access(filePath);
+      console.warn(`Keeping existing ${path.basename(filePath)}: ${error instanceof Error ? error.message : error}`);
     } catch {
       throw error;
     }
   }
 }
+
+function refreshOrKeep(filename, loader) {
+  return refreshFileOrKeep(path.join(dataDir, filename), loader);
+}
+
+await refreshFileOrKeep(path.join(publicDir, 'carpark-info.json'), async () => {
+  const payload = await (await request(CARPARK_INFO_URL, 'application/json')).json();
+  if (!Array.isArray(payload?.results) || payload.results.length < 500) throw new Error('Transport Department returned no usable car-park records');
+  return payload;
+});
 
 await refreshOrKeep('ev-chargers.json', async () => {
   const payload = await (await request(EPD_EV_URL, 'application/json')).json();

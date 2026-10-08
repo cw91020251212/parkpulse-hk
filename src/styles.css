@@ -348,3 +348,5 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
   color: #d2fff8;
   background: #13584f;
 }
+.pricing-list { display: grid; gap: 6px; margin: 9px 0 0; padding: 0; list-style: none; }
+.pricing-list li { border: 1px solid #28536a; border-radius: 8px; padding: 7px 9px; color: #d8eeee; background: #102f45; font-size: 12px; font-variant-numeric: tabular-nums; }

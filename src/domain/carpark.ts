@@ -1,12 +1,24 @@
 import type {
   CarparkInfo,
+  ChargeRule,
   VacancyEntry,
   VacancyStatus,
   VehicleParkingInfo,
   VehicleType,
 } from '../types';
+import type { Language } from '../i18n';
 
 const STALE_AFTER_MS = 5 * 60 * 1000;
+
+export type OfficialHourlyCharge = ChargeRule & { source: 'structured' | 'remark' };
+
+const VEHICLE_NOTE_PATTERNS: Record<VehicleType, RegExp> = {
+  privateCar: /私家車(?:\s*[／/]\s*客貨車)?/,
+  motorCycle: /電單車/,
+  LGV: /(?:客貨車|輕型貨車)/,
+  HGV: /(?:重型貨車|5\.5\s*公噸以上)/,
+  coach: /旅遊巴/,
+};
 
 export function parseHongKongTime(value?: string) {
   if (!value) return undefined;
@@ -83,13 +95,58 @@ export function formatHeight(height?: number) {
   return height ? `${height.toFixed(height % 1 === 0 ? 0 : 1)} m` : '未提供';
 }
 
-export function formatPrice(info: CarparkInfo, vehicleType: VehicleType) {
-  const firstCharge = getVehicleInfo(info, vehicleType)?.hourlyCharges?.[0];
-  if (!firstCharge || typeof firstCharge.price !== 'number') return '未提供';
-  const period = firstCharge.periodStart && firstCharge.periodEnd
-    ? `（${firstCharge.periodStart}–${firstCharge.periodEnd}）`
-    : '';
-  return `HK$${firstCharge.price}${period}`;
+function noteLines(info: CarparkInfo) {
+  return (info.heightLimits ?? [])
+    .flatMap((limit) => (limit.remark ?? '').replace(/<br\s*\/?\s*>/gi, '\n').split(/\r?\n/))
+    .map((line) => line.replace(/&nbsp;/gi, ' ').trim())
+    .filter(Boolean);
+}
+
+function extractHourlyChargesFromNotes(info: CarparkInfo, vehicleType: VehicleType): OfficialHourlyCharge[] {
+  const vehiclePattern = VEHICLE_NOTE_PATTERNS[vehicleType];
+  const hourlyPattern = /(\d{1,2}:\d{2})\s*[-–]\s*(\d{1,2}:\d{2})\s*每(半)?小時\s*\$\s*(\d+(?:\.\d+)?)/g;
+  const seen = new Set<string>();
+  const charges: OfficialHourlyCharge[] = [];
+
+  for (const line of noteLines(info)) {
+    if (!vehiclePattern.test(line)) continue;
+    for (const match of line.matchAll(hourlyPattern)) {
+      const [, periodStart, periodEnd, halfHour, price] = match;
+      const key = `${periodStart}|${periodEnd}|${halfHour}|${price}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      charges.push({
+        periodStart,
+        periodEnd,
+        price: Number(price),
+        usageMinimum: halfHour ? 0.5 : 1,
+        type: halfHour ? 'half-hour' : 'hourly',
+        source: 'remark',
+      });
+    }
+  }
+
+  return charges;
+}
+
+export function getOfficialHourlyCharges(info: CarparkInfo, vehicleType: VehicleType): OfficialHourlyCharge[] {
+  const structured = (getVehicleInfo(info, vehicleType)?.hourlyCharges ?? [])
+    .filter((charge): charge is ChargeRule & { price: number } => typeof charge.price === 'number')
+    .map((charge) => ({ ...charge, source: 'structured' as const }));
+  return structured.length ? structured : extractHourlyChargesFromNotes(info, vehicleType);
+}
+
+export function formatOfficialHourlyCharge(charge: OfficialHourlyCharge, language: Language) {
+  const unit = charge.type === 'half-hour'
+    ? (language === 'en' ? '30 min' : '半小時')
+    : (language === 'en' ? 'hour' : '小時');
+  const period = charge.periodStart && charge.periodEnd ? ` · ${charge.periodStart}–${charge.periodEnd}` : '';
+  return language === 'en' ? `HK$${charge.price} / ${unit}${period}` : `每${unit} HK$${charge.price}${period}`;
+}
+
+export function formatPrice(info: CarparkInfo, vehicleType: VehicleType, language: Language) {
+  const firstCharge = getOfficialHourlyCharges(info, vehicleType)[0];
+  return firstCharge ? formatOfficialHourlyCharge(firstCharge, language) : undefined;
 }
 
 export function formatAge(updatedAt?: Date) {
