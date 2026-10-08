@@ -350,6 +350,9 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 }
 .pricing-list { display: grid; gap: 6px; margin: 9px 0 0; padding: 0; list-style: none; }
 .pricing-list li { border: 1px solid #28536a; border-radius: 8px; padding: 7px 9px; color: #d8eeee; background: #102f45; font-size: 12px; font-variant-numeric: tabular-nums; }
+.official-pricing-source { color: #60dcca; font-size: 10px; font-weight: 800; text-align: right; }
+.official-pricing-notes { margin-top: 9px; }
+.official-pricing-notes summary { cursor: pointer; color: #7ce7d8; font-size: 12px; font-weight: 800; }
 
 /* 2026-10-09：壓縮雙篩選列空隙，讓字級充分使用既有控制高度。 */
 .topbar,

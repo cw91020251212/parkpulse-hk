@@ -13,12 +13,15 @@ const STALE_AFTER_MS = 5 * 60 * 1000;
 export type OfficialHourlyCharge = ChargeRule & { source: 'structured' | 'remark' };
 
 const VEHICLE_NOTE_PATTERNS: Record<VehicleType, RegExp> = {
-  privateCar: /私家車(?:\s*[／/]\s*客貨車)?/,
+  privateCar: /私家車/,
   motorCycle: /電單車/,
   LGV: /(?:客貨車|輕型貨車)/,
   HGV: /(?:重型貨車|5\.5\s*公噸以上)/,
   coach: /旅遊巴/,
 };
+
+const RATE_NOTE_PATTERN = /(?:HK\s*)?\$\s*[\d,]+(?:\.\d+)?/i;
+const RATE_CONTEXT_PATTERN = /私家車|電單車|客貨車|輕型貨車|重型貨車|旅遊巴|的士|時租|日泊|夜泊|月租|每月|每季|一般泊車/;
 
 export function parseHongKongTime(value?: string) {
   if (!value) return undefined;
@@ -95,38 +98,83 @@ export function formatHeight(height?: number) {
   return height ? `${height.toFixed(height % 1 === 0 ? 0 : 1)} m` : '未提供';
 }
 
-function noteLines(info: CarparkInfo) {
+function noteLineGroups(info: CarparkInfo) {
   return (info.heightLimits ?? [])
-    .flatMap((limit) => (limit.remark ?? '').replace(/<br\s*\/?\s*>/gi, '\n').split(/\r?\n/))
-    .map((line) => line.replace(/&nbsp;/gi, ' ').trim())
-    .filter(Boolean);
+    .map((limit) => (limit.remark ?? '')
+      .replace(/<br\s*\/?\s*>/gi, '\n')
+      .split(/\r?\n/)
+      .map((line) => line.replace(/&nbsp;/gi, ' ').trim())
+      .filter(Boolean));
+}
+
+function namedVehicleTypes(line: string) {
+  return (Object.entries(VEHICLE_NOTE_PATTERNS) as [VehicleType, RegExp][])
+    .filter(([, pattern]) => pattern.test(line))
+    .map(([vehicleType]) => vehicleType);
+}
+
+function parseHourlyCharge(line: string) {
+  const priceAfterUnit = line.match(/(?:(\d{1,2}:\d{2})\s*[-–]\s*(\d{1,2}:\d{2})\s*)?(?:時租\s*)?每\s*(半)?小時\s*\$\s*([\d,]+(?:\.\d+)?)/);
+  if (priceAfterUnit) {
+    const [, periodStart, periodEnd, halfHour, rawPrice] = priceAfterUnit;
+    return { periodStart, periodEnd, halfHour: Boolean(halfHour), price: Number(rawPrice.replaceAll(',', '')) };
+  }
+
+  const priceBeforeUnit = line.match(/\$\s*([\d,]+(?:\.\d+)?)\s*(?:時租\s*)?每\s*(半)?小時/);
+  if (priceBeforeUnit) {
+    const [, rawPrice, halfHour] = priceBeforeUnit;
+    return { halfHour: Boolean(halfHour), price: Number(rawPrice.replaceAll(',', '')) };
+  }
+
+  return undefined;
 }
 
 function extractHourlyChargesFromNotes(info: CarparkInfo, vehicleType: VehicleType): OfficialHourlyCharge[] {
-  const vehiclePattern = VEHICLE_NOTE_PATTERNS[vehicleType];
-  const hourlyPattern = /(\d{1,2}:\d{2})\s*[-–]\s*(\d{1,2}:\d{2})\s*每(半)?小時\s*\$\s*(\d+(?:\.\d+)?)/g;
   const seen = new Set<string>();
   const charges: OfficialHourlyCharge[] = [];
 
-  for (const line of noteLines(info)) {
-    if (!vehiclePattern.test(line)) continue;
-    for (const match of line.matchAll(hourlyPattern)) {
-      const [, periodStart, periodEnd, halfHour, price] = match;
-      const key = `${periodStart}|${periodEnd}|${halfHour}|${price}`;
+  for (const lines of noteLineGroups(info)) {
+    let contextVehicles: VehicleType[] = [];
+    for (const line of lines) {
+      const namedVehicles = namedVehicleTypes(line);
+      if (namedVehicles.length) contextVehicles = namedVehicles;
+      const parsed = parseHourlyCharge(line);
+      if (!parsed || !contextVehicles.includes(vehicleType)) continue;
+
+      const key = `${parsed.periodStart}|${parsed.periodEnd}|${parsed.halfHour}|${parsed.price}`;
       if (seen.has(key)) continue;
       seen.add(key);
       charges.push({
-        periodStart,
-        periodEnd,
-        price: Number(price),
-        usageMinimum: halfHour ? 0.5 : 1,
-        type: halfHour ? 'half-hour' : 'hourly',
+        periodStart: parsed.periodStart,
+        periodEnd: parsed.periodEnd,
+        price: parsed.price,
+        usageMinimum: parsed.halfHour ? 0.5 : 1,
+        type: parsed.halfHour ? 'half-hour' : 'hourly',
         source: 'remark',
       });
     }
   }
 
   return charges;
+}
+
+export function getOfficialPricingNotes(info: CarparkInfo) {
+  const seen = new Set<string>();
+  const notes: string[] = [];
+
+  for (const lines of noteLineGroups(info)) {
+    let context = '';
+    for (const line of lines) {
+      if (!RATE_NOTE_PATTERN.test(line) && RATE_CONTEXT_PATTERN.test(line)) context = line.replace(/^[-*：:\s]+/, '');
+      if (!RATE_NOTE_PATTERN.test(line)) continue;
+      const note = context && !line.includes(context) ? `${context}：${line}` : line;
+      if (seen.has(note)) continue;
+      seen.add(note);
+      notes.push(note);
+    }
+  }
+
+  return notes;
 }
 
 export function getOfficialHourlyCharges(info: CarparkInfo, vehicleType: VehicleType): OfficialHourlyCharge[] {
