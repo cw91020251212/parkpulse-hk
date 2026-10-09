@@ -5,6 +5,7 @@ import { simplifyEpdRecord } from '../lib/epd-ev-chargers.mjs';
 import { parseArcGisAtms, parseFuelStations, parseHkmaAtms } from '../lib/nearby-facilities.mjs';
 import { buildOfficialRateOverrides } from '../lib/official-rate-overrides.mjs';
 import { buildOnStreetParking, NON_METER_LOCATIONS_URL, NON_METER_STATUS_URL } from '../lib/on-street-parking.mjs';
+import { buildMotorcycleRoadside, MOTORCYCLE_ROADSIDE_WFS_URL } from '../lib/motorcycle-roadside.mjs';
 import { buildLinkOperatorRates, buildSinoOperatorRates } from '../lib/operator-rates.mjs';
 import { parsePublicToilets } from '../lib/public-toilets.mjs';
 import { refreshBrandIcons } from './refresh-brand-icons.mjs';
@@ -101,4 +102,13 @@ await refreshOrKeep('on-street-parking.json', async () => {
   const { nonMetered } = buildOnStreetParking({ nonMeterLocations: await locations.text(), nonMeterStatus: await status.text(), meterLocations: '', meterStatus: '', nonMeterSnapshot: true });
   if (!nonMetered.length) throw new Error('Transport Department returned no usable non-metered records');
   return { source: '運輸署路旁感應試行（GitHub Pages 建置快照）', generatedAt: new Date().toISOString(), nonMetered };
+});
+
+await refreshOrKeep('motorcycle-roadside.json', async () => {
+  const response = await fetch(MOTORCYCLE_ROADSIDE_WFS_URL, {
+    headers: { Accept: 'application/json', Referer: 'https://www.hkemobility.gov.hk/', 'User-Agent': 'ParkPulse HK official-data snapshot' },
+    signal: AbortSignal.timeout(60_000),
+  });
+  if (!response.ok) throw new Error(`HKeMobility motorcycle roadside layer returned ${response.status}`);
+  return buildMotorcycleRoadside(await response.json());
 });

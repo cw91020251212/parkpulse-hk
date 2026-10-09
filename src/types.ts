@@ -166,9 +166,11 @@ export interface NearbyFacilityViewModel {
 
 export interface OnStreetParking {
   id: string;
-  kind: 'metered' | 'nonMetered';
+  kind: 'metered' | 'nonMetered' | 'motorcycle';
   name: string;
+  nameEn?: string;
   address: string;
+  addressEn?: string;
   latitude: number;
   longitude: number;
   vehicleType?: string;
@@ -179,14 +181,19 @@ export interface OnStreetParking {
   timeUnit?: string;
   paymentUnit?: string;
   source: string;
+  sourceUrl?: string;
   snapshot: boolean;
+  static?: boolean;
+  metered?: boolean;
 }
 
 export interface OnStreetParkingGroup {
   id: string;
   kind: OnStreetParking['kind'];
   name: string;
+  nameEn?: string;
   address: string;
+  addressEn?: string;
   sections: string[];
   latitude: number;
   longitude: number;
@@ -196,11 +203,15 @@ export interface OnStreetParkingGroup {
   unavailable: number;
   occupancy: OnStreetParking['occupancy'];
   operatingPeriod?: string;
+  operatingPeriodEn?: string;
   timeUnit?: string;
   paymentUnit?: string;
   vehicleType?: string;
   source: string;
+  sourceUrl?: string;
   snapshot: boolean;
+  static?: boolean;
+  metered?: boolean;
 }
 
 export interface OnStreetParkingRecordViewModel {

@@ -27,6 +27,7 @@
     "test:on-street": "node scripts/check-on-street-parking.mjs",
     "test:on-street-limit": "node --experimental-strip-types scripts/check-on-street-render-limit.mjs",
     "test:motorcycle": "node --experimental-strip-types --experimental-specifier-resolution=node scripts/check-motorcycle-support.mjs",
+    "test:motorcycle-roadside": "node scripts/check-motorcycle-roadside.mjs",
     "test:pages": "node scripts/check-pages-build.mjs",
     "test:pwa": "node scripts/check-pwa.mjs",
     "preview": "vite preview --host 0.0.0.0",
