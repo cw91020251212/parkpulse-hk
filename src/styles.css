@@ -61,7 +61,7 @@ h1 { margin: 1px 0 0; font-size: 26px; line-height: 1.08; letter-spacing: .02em;
 .landsd-credit img { width: 26px; height: 26px; object-fit: contain; }
 .parking-marker-shell { background: transparent !important; border: 0 !important; }
 .parking-marker { display: grid; place-items: center; width: 38px; height: 38px; border: 2px solid #fff; border-radius: 50% 50% 50% 0; color: #fff; font-size: 11px; font-weight: 900; box-shadow: 0 4px 12px #0000004f; transform: rotate(-45deg); }
-.parking-marker b { display: block; transform: rotate(45deg); }.parking-marker { text-indent: 0; }.marker-count, .marker-available { background: #069b8d; }.marker-full { background: #d55b45; }.marker-closed { background: #677c87; }.marker-unknown { background: #9a6f39; }
+.parking-marker b { display: block; transform: rotate(45deg); text-shadow: 0 1px 2px rgb(0 42 45 / 72%), 0 0 1px rgb(0 42 45 / 60%); }.parking-marker { text-indent: 0; }.marker-count, .marker-available { background: linear-gradient(to right, #05766f, #19cbb9); }.marker-full { background: linear-gradient(to right, #a94136, #ed8169); }.marker-closed { background: linear-gradient(to right, #4f626d, #8da2aa); }.marker-unknown { background: linear-gradient(to right, #765126, #bc9146); }
 .parking-marker { line-height: 1; }
 .selected-center-marker-shell { background: transparent !important; border: 0 !important; }
 .selected-center-marker { display: block; width: 32px; height: 36px; padding-top: 2px; color: initial; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; font-size: 28px; font-style: normal; line-height: 1; text-align: center; filter: drop-shadow(0 3px 4px #0000007a); }
