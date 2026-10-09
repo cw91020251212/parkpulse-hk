@@ -56,6 +56,8 @@ h1 { margin: 1px 0 0; font-size: 26px; line-height: 1.08; letter-spacing: .02em;
 .map-column { display: flex; min-width: 0; min-height: 0; height: 100%; flex-direction: column; }
 .map-column > .map-wrap { flex: 1 1 auto; }
 .map-wrap { min-height: 0; height: 100%; overflow: hidden; position: relative; background: #0a2134; }
+.map-startup-location-state { position: absolute; z-index: 1000; top: 50%; left: 50%; display: inline-flex; align-items: center; gap: 8px; transform: translate(-50%, -50%); border: 1px solid rgb(167 238 230 / 72%); border-radius: 999px; padding: 8px 12px; color: #e4f8f6; background: rgb(7 35 53 / 82%); box-shadow: 0 4px 18px rgb(0 25 39 / 36%); font-size: 12px; font-weight: 800; pointer-events: none; white-space: nowrap; }
+.map-startup-location-state .loader { width: 15px; height: 15px; margin: 0; border-width: 2px; }
 .landsd-map { height: 100%; min-height: 0; width: 100%; }
 .landsd-map.leaflet-container { font-family: inherit; background: #d8e5e7; }
 .leaflet-control-zoom a { color: #0a2134 !important; }
