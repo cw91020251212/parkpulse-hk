@@ -401,3 +401,10 @@ Pages 建置會產生 `public/pages-data/motorcycle-roadside.json`：以中英�
 - 以共同的 Leaflet marker shell `::before` 產生灰色半透明地面投影，放在水滴尖端的左下方；投影不使用 blur 或 `box-shadow`，以保留較硬邊並讓底圖透出。
 - 停車場及設施水滴本體統一移除 `box-shadow`，改為 1px 深青灰色外框；保留既有漸變底色、文字／品牌圖示和 Leaflet 座標錨點。
 - 不變更中心 `📍`、資料、篩選或 marker 互動；以手機窄螢幕實測確認深輪廓、半透明投影及內容可讀。
+
+
+## 138. Marker 色階輪廓、平面投影及原生圖磚縮放
+
+- 水滴外框改為狀態／設施底色各自深一級的 1px 色階：綠、紅、灰、琥珀、藍、紫、橙、ATM 綠與路邊位均不使用黑色；白色品牌 marker 使用中性灰色。
+- 投影改為 marker 尖端下方的水平半透明橢圓，不使用 transform、模糊、filter 或 box-shadow；marker 本體繼續沒有陰影。
+- 地政署 Topographic Map API 官方只提供 10–20 級底圖圖磚。Leaflet 地圖可放大至 22 級，但兩個 LandsD TileLayer 均以 `minNativeZoom=10`、`maxNativeZoom=20` 重用原生圖磚縮放，避免 8–9 或 21–22 級向官方請求空白圖磚。22 級只為精確選點／看 marker，不聲稱多出官方地圖細節。
