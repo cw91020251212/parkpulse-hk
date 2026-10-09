@@ -57,7 +57,7 @@ h1 { margin: 1px 0 0; font-size: 26px; line-height: 1.08; letter-spacing: .02em;
 .landsd-map { height: 100%; min-height: 0; width: 100%; }
 .landsd-map.leaflet-container { font-family: inherit; background: #d8e5e7; }
 .leaflet-control-zoom a { color: #0a2134 !important; }
-.landsd-credit { position: absolute; z-index: 1001; right: 10px; bottom: 42px; display: inline-flex; align-items: center; gap: 6px; padding: 4px 6px; color: #182d35; background: #fffffff0; border-radius: 5px; font-size: 11px; font-weight: 700; text-decoration: none; box-shadow: 0 1px 4px #0003; }
+.landsd-credit { position: absolute; z-index: 1001; right: 10px; bottom: 42px; display: inline-flex; align-items: center; gap: 6px; padding: 4px 6px; color: #182d35; background: rgb(255 255 255 / 25%); border: 1px solid rgb(255 255 255 / 48%); border-radius: 5px; font-size: 11px; font-weight: 700; text-decoration: none; text-shadow: 0 1px 1px rgb(255 255 255 / 72%); box-shadow: 0 1px 4px #0002; }
 .landsd-credit img { width: 26px; height: 26px; object-fit: contain; }
 .parking-marker-shell { background: transparent !important; border: 0 !important; }
 .parking-marker { display: grid; place-items: center; width: 38px; height: 38px; border: 2px solid #fff; border-radius: 50% 50% 50% 0; color: #fff; font-size: 11px; font-weight: 900; box-shadow: 0 4px 12px #0000004f; transform: rotate(-45deg); }
