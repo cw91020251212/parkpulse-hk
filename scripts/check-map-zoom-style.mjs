@@ -18,14 +18,18 @@ for (const layer of tileLayers) {
   assert.match(layer, /maxZoom=\{MAP_MAX_ZOOM\}/);
 }
 
-const projectionRule = styles.match(/\.parking-marker-shell::before, \.toilet-marker-shell::before \{([^}]*)\}/)?.[1] ?? '';
-assert.match(projectionRule, /width: 31px; height: 7px;/);
-assert.match(projectionRule, /background: rgb\(48 64 71 \/ 34%\);/);
-assert.doesNotMatch(projectionRule, /transform:/);
+const parkingProjectionRule = styles.match(/\.parking-marker-shell::before \{([^}]*)\}/)?.[1] ?? '';
+const facilityProjectionRule = styles.match(/\.toilet-marker-shell::before \{([^}]*)\}/)?.[1] ?? '';
+assert.match(parkingProjectionRule, /left: 4px; bottom: -16px; width: 30px; height: 7px;/);
+assert.match(facilityProjectionRule, /left: 3px; bottom: -14px; width: 28px; height: 6px;/);
+for (const projectionRule of [parkingProjectionRule, facilityProjectionRule]) {
+  assert.match(projectionRule, /background: rgb\(48 64 71 \/ 34%\);/);
+  assert.doesNotMatch(projectionRule, /transform:/);
+  assert.doesNotMatch(projectionRule, /rotate\(/);
+}
 assert.match(styles, /\.parking-marker[\s\S]*?border: 1px solid var\(--marker-outline\);[\s\S]*?box-shadow: none;/);
 assert.match(styles, /\.toilet-marker[\s\S]*?border: 1px solid var\(--marker-outline\);[\s\S]*?box-shadow: none;/);
 assert.match(styles, /\.toilet-marker\.is-brand \{ --marker-outline: #7b8790;/);
 assert.doesNotMatch(styles, /border: 1px solid #0a3341/);
-assert.doesNotMatch(projectionRule, /rotate\(/);
 
-console.log('LandsD tiles remain native from zoom 10 to 20, scale cleanly to zoom 22, and waterdrop markers use colour-matched outlines with a flat translucent ground projection.');
+console.log('LandsD tiles remain native from zoom 10 to 20, scale cleanly to zoom 22, and parking/facility waterdrop markers use independently aligned flat ground projections below their tips.');
