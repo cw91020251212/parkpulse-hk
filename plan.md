@@ -422,3 +422,10 @@ Pages 建置會產生 `public/pages-data/motorcycle-roadside.json`：以中英�
 - 中心 `📍` 的 32×36px shell 与针图案的底边量度结果均为同一地图锚点；它是刺进地图的搜索中心，不采用水滴 marker 的悬浮间隙。
 - 删除 pin 本体的 `drop-shadow`，在 shell 上增加独立 16×4px 灰色半透明硬边椭圆，`left: 8px`、`bottom: -4px`。投影上边正好位于 shell／针尖底边，形成接地接触。
 - 保持现有 `iconAnchor: [16, 36]`、原生 `📍`、2 公里圆和中心选择逻辑；回归检查须锁定无 pin `drop-shadow` 与贴地投影几何。
+
+
+## 141. 两种洗手间图标统一为线条系统
+
+- 以一个可重复使用的 `WashroomSymbol` 提供 React 卡片图标及 Leaflet HTML marker 字符串；不增加图像文件或依赖。
+- 食环署公厕采用白色双厕格门线条，场馆洗手间采用白色洗手盆线条。两者保持 2px 圆角线条、相同视觉重量，并借原有蓝色／紫色 marker 底色区别来源。
+- marker 内图标随现有水滴旋转反向校正，卡片则直接直立显示；保留两种 marker 的大小、anchor、投影和点击逻辑。
