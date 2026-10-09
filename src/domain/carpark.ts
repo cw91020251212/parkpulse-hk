@@ -6,6 +6,7 @@ import type {
   VehicleParkingInfo,
   VehicleType,
 } from '../types';
+import { VEHICLE_TYPES } from '../types';
 import type { Language } from '../i18n';
 
 const STALE_AFTER_MS = 5 * 60 * 1000;
@@ -89,6 +90,10 @@ export function getVacancyStatus(
 
 export function getVehicleInfo(info: CarparkInfo, vehicleType: VehicleType) {
   return info[vehicleType] as VehicleParkingInfo | undefined;
+}
+
+export function hasAccessibleParking(info: CarparkInfo) {
+  return Boolean(info.facilities?.includes('disabilities')) || VEHICLE_TYPES.some((vehicleType) => (getVehicleInfo(info, vehicleType)?.spaceDIS ?? 0) > 0);
 }
 
 export function getHeightLimit(info: CarparkInfo) {
