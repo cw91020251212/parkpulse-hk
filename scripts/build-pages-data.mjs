@@ -4,6 +4,7 @@ import path from 'node:path';
 import { simplifyEpdRecord } from '../lib/epd-ev-chargers.mjs';
 import { parseArcGisAtms, parseFuelStations, parseHkmaAtms } from '../lib/nearby-facilities.mjs';
 import { buildOfficialRateOverrides } from '../lib/official-rate-overrides.mjs';
+import { buildOfficialStaticCarparks } from '../lib/official-static-carparks.mjs';
 import { buildOnStreetParking, NON_METER_LOCATIONS_URL, NON_METER_STATUS_URL } from '../lib/on-street-parking.mjs';
 import { buildMotorcycleRoadside, MOTORCYCLE_ROADSIDE_WFS_URL } from '../lib/motorcycle-roadside.mjs';
 import { buildLinkOperatorRates, buildSinoOperatorRates } from '../lib/operator-rates.mjs';
@@ -50,6 +51,8 @@ await refreshFileOrKeep(path.join(publicDir, 'carpark-info.json'), async () => {
   if (!Array.isArray(payload?.results) || payload.results.length < 500) throw new Error('Transport Department returned no usable car-park records');
   return payload;
 });
+
+await refreshOrKeep('official-static-carparks.json', () => buildOfficialStaticCarparks());
 
 await refreshFileOrKeep(path.join(publicDir, 'operator-rates.json'), async () => {
   const payload = JSON.parse(await readFile(path.join(publicDir, 'carpark-info.json'), 'utf8'));

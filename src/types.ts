@@ -47,6 +47,12 @@ export interface OperatorRate {
   detailNotes: { 'zh-Hant': string[]; en: string[] };
 }
 
+export interface OfficialCarparkSource {
+  availability: 'not-provided' | 'snapshot';
+  sourceUrl: string;
+  sourceLabel: { 'zh-Hant': string; en: string };
+}
+
 export interface CarparkInfo {
   park_Id: string;
   name: string;
@@ -59,7 +65,9 @@ export interface CarparkInfo {
   contactNo?: string;
   website?: string;
   operatorRates?: Partial<Record<VehicleType, OperatorRate>>;
+  officialSource?: OfficialCarparkSource;
   opening_status?: 'OPEN' | 'CLOSED' | string;
+  openingHours?: string;
   heightLimits?: HeightLimit[];
   facilities?: string[];
   paymentMethods?: string[];
@@ -94,6 +102,7 @@ export interface VacancyStatus {
   kind: VacancyKind;
   label: string;
   count?: number;
+  noLiveData?: boolean;
   updatedAt?: Date;
   stale: boolean;
   sourceCategory?: string;
@@ -234,6 +243,7 @@ export interface ParkViewModel {
 
 export interface ParkFilters {
   availableOnly: boolean;
+  includeNoLiveData: boolean;
   openOnly: boolean;
   hasEv: boolean;
   hasAccessible: boolean;

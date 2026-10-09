@@ -23,6 +23,8 @@ const COPY: Record<Language, Copy> = {
     vehicleType: '車種',
     filterConditions: '條件篩選',
     availableOnly: '只看有位',
+    includeNoLiveData: '包括無即時數據',
+    includeNoLiveDataHelp: '顯示有官方基本資料、但未提供即時空位的停車場',
     openOnly: '只看開放',
     openOnlyHelp: '只看官方資料標示開放的停車場，不代表有空位',
     evFacilities: '充電設施',
@@ -136,6 +138,10 @@ const COPY: Record<Language, Copy> = {
     unavailable: '未提供',
     monthly: '月租',
     liveData: '即時資料',
+    noLiveData: '未提供即時空位',
+    officialAvailabilitySnapshot: '官方空位快照',
+    includedNoLiveData: '已包括 {count} 個無即時空位停車場',
+    officialStaticCarparks: '政府產業署官方基本資料（無即時空位）',
     stale: '資料可能延遲',
     operatorNoVacancy: '營辦商未提供空位資料',
     totalSpaces: '總車位',
@@ -190,7 +196,7 @@ const COPY: Record<Language, Copy> = {
     helpStep2Title: '2. 睇清空位狀態',
     helpStep2: '綠色代表有位／有空位數；紅色代表已滿；灰色代表關閉；琥珀代表沒有資料。空位資料以政府更新為準，到場前請再核實。',
     helpStep3Title: '3. 用車種及篩選縮窄結果',
-    helpStep3: '選擇車種，再按需要開啟「只看有位」、只看開放、充電、無障礙或車高。按停車場卡可看收費、設施和更新時間。',
+    helpStep3: '選擇車種，再按需要開啟「只看有位」、只看開放、充電、無障礙或車高；想連有官方基本資料但未提供即時空位的車場一齊睇，可按「包括無即時數據」。按停車場卡可看收費、設施和更新時間。',
     helpStep4Title: '4. 泊好後搵周邊設施',
     helpStep4: '最右端可切換洗手間、油站、ATM 或路邊位；四種模式會分開顯示，ATM 可再揀指定銀行。私家車、貨車及旅遊巴的路邊位只顯示有官方狀態的智能咪錶及感應試行位；電單車則顯示運輸署香港出行易提供的官方位置及數量，沒有即時空位。',
     helpStep5Title: '5. 相片和導航',
@@ -229,6 +235,8 @@ const COPY: Record<Language, Copy> = {
     vehicleType: 'Vehicle type',
     filterConditions: 'Parking filters',
     availableOnly: 'Available only',
+    includeNoLiveData: 'Include non-live car parks',
+    includeNoLiveDataHelp: 'Show car parks with official basic data but no live availability feed',
     openOnly: 'Open only',
     openOnlyHelp: 'Only car parks marked open in official data; this does not mean spaces are available.',
     evFacilities: 'EV charging',
@@ -342,6 +350,10 @@ const COPY: Record<Language, Copy> = {
     unavailable: 'Not provided',
     monthly: 'Monthly',
     liveData: 'Live data',
+    noLiveData: 'No live availability',
+    officialAvailabilitySnapshot: 'Official availability snapshot',
+    includedNoLiveData: '{count} car parks without live availability included',
+    officialStaticCarparks: 'Government Property Agency official basic data (no live availability)',
     stale: 'Data may be delayed',
     operatorNoVacancy: 'The operator did not provide availability data',
     totalSpaces: 'Total spaces',
@@ -396,7 +408,7 @@ const COPY: Record<Language, Copy> = {
     helpStep2Title: '2. Read availability clearly',
     helpStep2: 'Green means available or a space count; red means full; grey means closed; amber means no data. Government data can change, so check again before arriving.',
     helpStep3Title: '3. Narrow results with filters',
-    helpStep3: 'Choose a vehicle, then use Available only, Open only, EV charging, accessibility or height filters. Open a car-park card for prices, facilities and update time.',
+    helpStep3: 'Choose a vehicle, then use Available only, Open only, EV charging, accessibility or height filters. To also browse car parks with official basic data but no live availability, select Include non-live car parks. Open a car-park card for prices, facilities and update time.',
     helpStep4Title: '4. Find facilities after parking',
     helpStep4: 'Use the last controls to switch between Washrooms, Fuel, ATM and On-street. Only one category is shown at a time and ATM can be narrowed to a bank. Private cars, goods vehicles and coaches only see smart-meter or sensor-trial spaces with official status; motorcycles see official HKeMobility locations and counts, not live availability.',
     helpStep5Title: '5. Photos and directions',
@@ -435,6 +447,7 @@ export function vehicleLabel(language: Language, vehicle: VehicleType) {
 
 export function vacancyLabel(language: Language, status: VacancyStatus) {
   if (language === 'zh-Hant') return status.label;
+  if (status.noLiveData) return COPY.en.noLiveData;
   if (status.kind === 'count') return `${status.count ?? 0} spaces`;
   return { available: 'Available', full: 'Full', closed: 'Closed', unknown: 'No data' }[status.kind];
 }

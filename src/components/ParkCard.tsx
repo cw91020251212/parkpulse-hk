@@ -39,6 +39,6 @@ export function ParkCard({ language, park, vehicleType, selected, lastViewed, on
       {info.googleRating && <a className="park-card-rating" href={info.googleRating.placeUrl} target="_blank" rel="noreferrer" title={`${text(language, 'googleUserRating')} · ${text(language, 'ratingCount', { count: info.googleRating.userRatingCount })}`}>★ {info.googleRating.rating.toFixed(1)}</a>}
     </div>
     <a className="nav-link" href={navigateUrl} target="_blank" rel="noreferrer" aria-label={`${text(language, 'navigation')}: ${info.name}`}>{text(language, 'navigation')}</a>
-    {!isAvailable(status) && status.kind === 'unknown' && <span className="card-note">{text(language, 'operatorNoVacancy')}</span>}
+    {info.officialSource && (status.noLiveData || info.officialSource.availability === 'snapshot') ? <span className="card-note">{info.officialSource.sourceLabel[language]} · {info.officialSource.availability === 'snapshot' ? text(language, 'officialAvailabilitySnapshot') : text(language, 'noLiveData')}</span> : !isAvailable(status) && status.kind === 'unknown' && <span className="card-note">{text(language, 'operatorNoVacancy')}</span>}
   </article>;
 }

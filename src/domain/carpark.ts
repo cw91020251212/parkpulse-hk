@@ -61,6 +61,9 @@ export function getVacancyStatus(
   }
 
   if (!entry || entry.vacancy === undefined || entry.vacancy === -1) {
+    if (hasNoLiveAvailability(info)) {
+      return { kind: 'unknown', label: '未提供即時空位', noLiveData: true, stale: false };
+    }
     return { kind: 'unknown', label: '暫無資料', updatedAt, stale: stale(updatedAt), sourceCategory };
   }
 
@@ -86,6 +89,10 @@ export function getVacancyStatus(
   }
 
   return { kind: 'unknown', label: '暫無資料', updatedAt, stale: stale(updatedAt), sourceCategory };
+}
+
+export function hasNoLiveAvailability(info: CarparkInfo) {
+  return info.officialSource?.availability === 'not-provided';
 }
 
 export function getVehicleInfo(info: CarparkInfo, vehicleType: VehicleType) {

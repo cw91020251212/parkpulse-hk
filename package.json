@@ -15,6 +15,7 @@
     "test:startup": "node scripts/check-fast-start.mjs",
     "test:startup-location": "node scripts/check-startup-location.mjs",
     "test:total-spaces": "node scripts/check-total-spaces.mjs",
+    "test:official-static-carparks": "node scripts/check-official-static-carparks.mjs",
     "test:official-pricing": "node --experimental-strip-types --experimental-specifier-resolution=node scripts/check-official-pricing.mjs",
     "test:operator-rates": "node scripts/check-operator-rates.mjs",
     "refresh:brand-icons": "node scripts/refresh-brand-icons.mjs",
