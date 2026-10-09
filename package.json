@@ -29,7 +29,8 @@
     "test:pages": "node scripts/check-pages-build.mjs",
     "test:pwa": "node scripts/check-pwa.mjs",
     "preview": "vite preview --host 0.0.0.0",
-    "start": "NODE_ENV=production node server.mjs"
+    "start": "NODE_ENV=production node server.mjs",
+    "test:atm-marker-overlap": "node scripts/check-atm-marker-overlap.mjs"
   },
   "dependencies": {
     "express": "^5.2.1",
