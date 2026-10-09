@@ -221,7 +221,7 @@ export default function App() {
   const nonLiveCount = displayedParks.filter((park) => park.status.noLiveData || park.info.officialSource?.availability === 'snapshot').length;
   const visibleError = error || (filters.hasEv && evError ? `${language === 'en' ? 'EV data notice' : '充電器資料提示'}：${evError}` : null);
   const mapParks = startupLocationPending || facilityMode ? [] : displayedParks;
-  const mapNearbyItems = startupLocationPending || facilityMode ? [] : activeNearbyResults;
+  const mapNearbyItems = startupLocationPending || !facilityMode ? [] : activeNearbyResults;
   const mapResultLabel = facilityMode ? (showingOnStreet ? onStreetResultLabel : countLabel(activeNearbyResults.length, facilityResultLabel ?? '')) : text(language, 'carparks', { count: displayedParks.length });
   const showParkCards = resultsVerified || startupLocationFallbackActive;
   const displayedAreaName = useMemo(() => { if (language !== 'en') return areaName; if (areaName === '香港中心') return 'Hong Kong centre'; if (areaName === '我的位置') return 'My location'; if (areaName === '地圖選取位置') return text(language, 'mapSelected'); return DISTRICTS.find((district) => district.label === areaName)?.englishLabel ?? areaName; }, [areaName, language]);
