@@ -395,3 +395,9 @@ Pages 建置會產生 `public/pages-data/motorcycle-roadside.json`：以中英�
 - 根因：`mapNearbyItems` 把所有 `facilityMode` 都視為不應在地圖繪製，令洗手間、油站、ATM 及路邊位的結果卡有資料但 Leaflet 收到空陣列。
 - 最小修正：只在開機定位仍未回復、或沒有任何設施模式時傳入空陣列；已選設施模式必須把既有 `activeNearbyResults` 原封不動交給 `MapView`。停車場的 `mapParks` 判斷維持不變。
 - 以小型可執行檢查鎖定 App 的資料閘門，並以正式站瀏覽器確認「結果卡數量 > 0」時存在相對應 Leaflet marker；保留 LandsD WGS84 圖層、📍、2 公里範圍和詳情互動。
+
+## 137. 水滴 Marker 的實色投影與幼深輪廓
+
+- 以共同的 Leaflet marker shell `::before` 產生灰色半透明地面投影，放在水滴尖端的左下方；投影不使用 blur 或 `box-shadow`，以保留較硬邊並讓底圖透出。
+- 停車場及設施水滴本體統一移除 `box-shadow`，改為 1px 深青灰色外框；保留既有漸變底色、文字／品牌圖示和 Leaflet 座標錨點。
+- 不變更中心 `📍`、資料、篩選或 marker 互動；以手機窄螢幕實測確認深輪廓、半透明投影及內容可讀。
