@@ -13,6 +13,7 @@
     "test:charging": "node --experimental-strip-types scripts/check-ev-charging.mjs",
     "test:photos": "node scripts/check-photo-proxy.mjs",
     "test:startup": "node scripts/check-fast-start.mjs",
+    "test:startup-location": "node scripts/check-startup-location.mjs",
     "test:total-spaces": "node scripts/check-total-spaces.mjs",
     "test:official-pricing": "node --experimental-strip-types --experimental-specifier-resolution=node scripts/check-official-pricing.mjs",
     "test:operator-rates": "node scripts/check-operator-rates.mjs",
