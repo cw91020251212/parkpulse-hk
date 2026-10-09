@@ -148,7 +148,8 @@ function extractHourlyChargesFromNotes(info: CarparkInfo, vehicleType: VehicleTy
       const namedVehicles = namedVehicleTypes(line);
       if (namedVehicles.length) contextVehicles = namedVehicles;
       const parsed = parseHourlyCharge(line);
-      if (!parsed || !contextVehicles.includes(vehicleType)) continue;
+      const applicableVehicle = namedVehicles.length ? namedVehicles : contextVehicles;
+      if (!parsed || !applicableVehicle.includes(vehicleType)) continue;
 
       const key = `${parsed.periodStart}|${parsed.periodEnd}|${parsed.halfHour}|${parsed.price}`;
       if (seen.has(key)) continue;
@@ -167,15 +168,25 @@ function extractHourlyChargesFromNotes(info: CarparkInfo, vehicleType: VehicleTy
   return charges;
 }
 
-export function getOfficialPricingNotes(info: CarparkInfo) {
+export function getOfficialPricingNotes(info: CarparkInfo, vehicleType: VehicleType) {
   const seen = new Set<string>();
   const notes: string[] = [];
 
   for (const lines of noteLineGroups(info)) {
     let context = '';
+    let contextVehicles: VehicleType[] = [];
     for (const line of lines) {
-      if (!RATE_NOTE_PATTERN.test(line) && RATE_CONTEXT_PATTERN.test(line)) context = line.replace(/^[-*：:\s]+/, '');
+      const namedVehicles = namedVehicleTypes(line);
+      if (namedVehicles.length) {
+        context = line.replace(/^[-*：:\s]+/, '');
+        contextVehicles = namedVehicles;
+      } else if (!RATE_NOTE_PATTERN.test(line) && RATE_CONTEXT_PATTERN.test(line)) {
+        context = line.replace(/^[-*：:\s]+/, '');
+        contextVehicles = [];
+      }
       if (!RATE_NOTE_PATTERN.test(line)) continue;
+      const applicableVehicle = namedVehicles.length ? namedVehicles : contextVehicles;
+      if (!applicableVehicle.includes(vehicleType)) continue;
       const note = context && !line.includes(context) ? `${context}：${line}` : line;
       if (seen.has(note)) continue;
       seen.add(note);

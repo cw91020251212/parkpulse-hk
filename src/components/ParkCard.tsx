@@ -14,13 +14,14 @@ function chargingSummary(park: ParkViewModel, language: Language) {
 
 export function ParkCard({ language, park, vehicleType, selected, lastViewed, onSelect }: Props) {
   const { info, status, distanceKm, heightLimit } = park;
+  const isMotorcycle = vehicleType === 'motorCycle';
   const facilities = info.facilities ?? [];
-  const charging = chargingSummary(park, language);
+  const charging = isMotorcycle ? null : chargingSummary(park, language);
   const paymentSummary = (info.paymentMethods ?? []).map((method) => paymentLabel(language, method)).slice(0, 2).join('／');
   const navigateUrl = `https://www.google.com/maps/dir/?api=1&destination=${info.latitude},${info.longitude}`;
   const operatorRate = getVerifiedOperatorRate(info, vehicleType);
   const price = operatorRate ? undefined : formatPrice(info, vehicleType, language);
-  const pricingReference = price ? undefined : getOfficialPricingNotes(info)[0];
+  const pricingReference = price ? undefined : getOfficialPricingNotes(info, vehicleType)[0];
   const cardPricing = operatorRate ? operatorRate.cardSummary[language] : pricingReference ? `${text(language, 'officialRateReference')} ${pricingReference}` : undefined;
   const totalSpaces = info[vehicleType]?.space;
   const cardClass = `park-card${selected ? ' is-selected' : ''}${lastViewed ? ' is-last-viewed' : ''}`;
@@ -30,8 +31,8 @@ export function ParkCard({ language, park, vehicleType, selected, lastViewed, on
     <div className="park-card-main">
       <button className="park-card-select" type="button" onClick={onSelect} aria-current={lastViewed ? 'true' : undefined} aria-label={detailLabel}>
         <div className="card-heading"><span className={`status-dot status-${status.kind}`} aria-hidden="true" /><div><div className="park-title-row"><h3>{info.name}</h3></div><p>{info.district || info.displayAddress || 'Hong Kong'}</p></div><strong className="distance">{formatDistance(distanceKm)}</strong></div>
-        <div className="availability-line"><strong className={`availability status-${status.kind}`}>{vacancyLabel(language, status)}</strong><span>{status.sourceCategory === 'MONTHLY' ? text(language, 'monthly') : vehicleType === 'privateCar' ? vehicleLabel(language, vehicleType) : text(language, 'liveData')}</span>{status.stale && <span className="stale-badge">{text(language, 'stale')}</span>}</div>
-        <div className="card-facts">{typeof totalSpaces === 'number' && <span className="total-spaces">{text(language, 'totalSpaces')} {totalSpaces}</span>}<span>{text(language, 'height')} {heightLabel(language, heightLimit)}</span>{price ? <span>{text(language, 'hourlyRate')} {price}</span> : !cardPricing && <span>{text(language, 'hourlyRate')} {text(language, 'officialRateNotProvided')}</span>}{paymentSummary && <span>{paymentSummary}</span>}{charging && <span className="charging-fact">{charging}</span>}{facilities.includes('disabilities') && <span>{text(language, 'accessible')}</span>}</div>
+        <div className="availability-line"><strong className={`availability status-${status.kind}`}>{vacancyLabel(language, status)}</strong><span>{status.sourceCategory === 'MONTHLY' ? text(language, 'monthly') : vehicleLabel(language, vehicleType)}</span>{status.stale && <span className="stale-badge">{text(language, 'stale')}</span>}</div>
+        <div className="card-facts">{typeof totalSpaces === 'number' && <span className="total-spaces">{text(language, 'totalSpaces')} {totalSpaces}</span>}{!isMotorcycle && <span>{text(language, 'height')} {heightLabel(language, heightLimit)}</span>}{price ? <span>{text(language, 'hourlyRate')} {price}</span> : !cardPricing && <span>{isMotorcycle ? text(language, 'motorcycleRateNotVerified') : `${text(language, 'hourlyRate')} ${text(language, 'officialRateNotProvided')}`}</span>}{paymentSummary && <span>{paymentSummary}</span>}{charging && <span className="charging-fact">{charging}</span>}{!isMotorcycle && facilities.includes('disabilities') && <span>{text(language, 'accessible')}</span>}</div>
         {cardPricing && <p className="card-pricing-summary">{cardPricing}</p>}
         <p className="updated">{updatedLabel(language, status.updatedAt)}</p>
       </button>

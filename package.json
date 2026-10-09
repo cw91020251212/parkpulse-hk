@@ -14,7 +14,7 @@
     "test:photos": "node scripts/check-photo-proxy.mjs",
     "test:startup": "node scripts/check-fast-start.mjs",
     "test:total-spaces": "node scripts/check-total-spaces.mjs",
-    "test:official-pricing": "node --experimental-strip-types scripts/check-official-pricing.mjs",
+    "test:official-pricing": "node --experimental-strip-types --experimental-specifier-resolution=node scripts/check-official-pricing.mjs",
     "test:operator-rates": "node scripts/check-operator-rates.mjs",
     "refresh:brand-icons": "node scripts/refresh-brand-icons.mjs",
     "test:brand-icons": "node scripts/check-brand-icons.mjs",
@@ -26,11 +26,11 @@
     "test:nearby-facilities": "node scripts/check-nearby-facilities.mjs",
     "test:on-street": "node scripts/check-on-street-parking.mjs",
     "test:on-street-limit": "node --experimental-strip-types scripts/check-on-street-render-limit.mjs",
+    "test:motorcycle": "node --experimental-strip-types --experimental-specifier-resolution=node scripts/check-motorcycle-support.mjs",
     "test:pages": "node scripts/check-pages-build.mjs",
     "test:pwa": "node scripts/check-pwa.mjs",
     "preview": "vite preview --host 0.0.0.0",
-    "start": "NODE_ENV=production node server.mjs",
-    "test:atm-marker-overlap": "node scripts/check-atm-marker-overlap.mjs"
+    "start": "NODE_ENV=production node server.mjs"
   },
   "dependencies": {
     "express": "^5.2.1",

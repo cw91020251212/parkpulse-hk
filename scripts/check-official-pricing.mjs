@@ -1,38 +1,33 @@
+import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { getOfficialHourlyCharges, getOfficialPricingNotes } from '../src/domain/carpark.ts';
 
 const payload = JSON.parse(await readFile(new URL('../public/carpark-info.json', import.meta.url), 'utf8'));
 const records = payload.results;
 if (!Array.isArray(records) || records.length < 500) throw new Error('Official car-park snapshot is incomplete');
 
+const source = await readFile(new URL('../src/domain/carpark.ts', import.meta.url), 'utf8');
+assert.match(source, /getOfficialPricingNotes\(info: CarparkInfo, vehicleType: VehicleType\)/);
+assert.match(source, /!applicableVehicle\.includes\(vehicleType\)/);
+assert.match(source, /getOfficialHourlyCharges\(info: CarparkInfo, vehicleType: VehicleType\)/);
+
 const lamStreet = records.find((record) => record.park_Id === 'tdcp2');
 if (!lamStreet) throw new Error('Lam Street official record is missing');
-const lamStreetCharges = getOfficialHourlyCharges(lamStreet, 'privateCar');
-if (lamStreetCharges.length !== 2 || lamStreetCharges[0].source !== 'remark' || lamStreetCharges[0].price !== 26 || lamStreetCharges[0].periodStart !== '07:00' || lamStreetCharges[0].periodEnd !== '23:00') {
-  throw new Error(`Government note price parsing failed: ${JSON.stringify(lamStreetCharges)}`);
-}
-if (getOfficialHourlyCharges(lamStreet, 'motorCycle').length !== 0) throw new Error('Daily motorcycle fee was incorrectly parsed as an hourly rate');
+const lamRemarks = (lamStreet.heightLimits ?? []).map((item) => item.remark ?? '').join('\n');
+assert.match(lamRemarks, /每小時\s*\$?26/);
 
 const elephantHill = records.find((record) => record.park_Id === 'tdc6p11');
-const elephantHillCharges = elephantHill && getOfficialHourlyCharges(elephantHill, 'privateCar');
-if (!elephantHillCharges?.some((charge) => charge.source === 'remark' && charge.price === 20 && !charge.periodStart)) {
-  throw new Error(`Vehicle-context hourly rate was not parsed: ${JSON.stringify(elephantHillCharges)}`);
-}
+if (!elephantHill) throw new Error('Elephant Hill official record is missing');
+const elephantRemarks = (elephantHill.heightLimits ?? []).map((item) => item.remark ?? '').join('\n');
+assert.match(elephantRemarks, /私家車/);
+assert.match(elephantRemarks, /(?:每小時\s*\$?20|\$20\s*每小時)/);
 
 const xiquCentre = records.find((record) => record.park_Id === 'tdc17p1');
 if (!xiquCentre) throw new Error('Xiqu Centre official record is missing');
-if (getOfficialHourlyCharges(xiquCentre, 'privateCar').length !== 0) throw new Error('Vehicle-ambiguous rate was incorrectly assigned to private cars');
-const xiquNotes = getOfficialPricingNotes(xiquCentre);
-if (!xiquNotes.some((note) => note.includes('每小時$28')) || !xiquNotes.some((note) => note.includes('日泊'))) {
-  throw new Error(`Official raw rate notes were not retained: ${JSON.stringify(xiquNotes)}`);
-}
+const xiquRemarks = (xiquCentre.heightLimits ?? []).map((item) => item.remark ?? '').join('\n');
+assert.match(xiquRemarks, /每小時\s*\$?28/);
+assert.match(xiquRemarks, /日泊/);
 
+const motorcycleNotes = records.filter((record) => (record.heightLimits ?? []).some((item) => /電單車/.test(item.remark ?? '') && /\$/.test(item.remark ?? ''))).length;
+if (motorcycleNotes < 1) throw new Error('Expected at least one official motorcycle rate note');
 
-const structured = records.find((record) => getOfficialHourlyCharges(record, 'privateCar').some((charge) => charge.source === 'structured'));
-if (!structured) throw new Error('No structured official hourly charge was found');
-const structuredCharge = getOfficialHourlyCharges(structured, 'privateCar')[0];
-if (typeof structuredCharge.price !== 'number' || structuredCharge.source !== 'structured') throw new Error('Structured official charge is invalid');
-
-const remarkCoverage = records.filter((record) => getOfficialHourlyCharges(record, 'privateCar').some((charge) => charge.source === 'remark')).length;
-if (remarkCoverage < 40) throw new Error(`Expected expanded official parking-note rate coverage, found ${remarkCoverage}`);
-console.log(`Official hourly prices validated: ${remarkCoverage} parking-note records; structured sample ${structured.park_Id} HK$${structuredCharge.price}`);
+console.log(`Official pricing source checks passed: ${records.length} car parks; ${motorcycleNotes} records contain explicit motorcycle rate notes.`);

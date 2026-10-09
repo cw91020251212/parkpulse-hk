@@ -1,6 +1,18 @@
-import type { OnStreetParkingGroup, OnStreetParkingRecordViewModel, OnStreetParkingViewModel } from '../types';
+import type { OnStreetParking, OnStreetParkingGroup, OnStreetParkingRecordViewModel, OnStreetParkingViewModel, VehicleType } from '../types';
 
 export const MAX_ON_STREET_RENDER = 120;
+
+const ON_STREET_VEHICLE_CODES: Record<VehicleType, string[]> = {
+  privateCar: ['A'],
+  motorCycle: [],
+  LGV: ['A', 'G'],
+  HGV: ['G'],
+  coach: ['C'],
+};
+
+export function supportsOnStreetVehicle(onStreet: OnStreetParking, vehicleType: VehicleType) {
+  return ON_STREET_VEHICLE_CODES[vehicleType].includes(onStreet.vehicleType?.toUpperCase() ?? '');
+}
 
 function streetName(name: string) {
   return name.replace(/^(咪錶位|路旁感應試行)\s*·\s*/, '');
@@ -14,7 +26,7 @@ function oneValue(values: Array<string | undefined>) {
 export function groupOnStreetResults(items: OnStreetParkingRecordViewModel[]) {
   const groups = new Map<string, OnStreetParkingRecordViewModel[]>();
   for (const item of items) {
-    const key = `${item.onStreet.kind}:${streetName(item.onStreet.name)}`;
+    const key = `${item.onStreet.kind}:${item.onStreet.vehicleType ?? 'unknown'}:${streetName(item.onStreet.name)}`;
     groups.set(key, [...(groups.get(key) ?? []), item]);
   }
 
@@ -40,6 +52,7 @@ export function groupOnStreetResults(items: OnStreetParkingRecordViewModel[]) {
       operatingPeriod: oneValue(members.map(({ onStreet }) => onStreet.operatingPeriod)),
       timeUnit: oneValue(members.map(({ onStreet }) => onStreet.timeUnit)),
       paymentUnit: oneValue(members.map(({ onStreet }) => onStreet.paymentUnit)),
+      vehicleType: oneValue(members.map(({ onStreet }) => onStreet.vehicleType)),
       source: first.source,
       snapshot: members.some(({ onStreet }) => onStreet.snapshot),
     };

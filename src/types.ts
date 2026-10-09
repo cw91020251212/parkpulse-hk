@@ -198,6 +198,7 @@ export interface OnStreetParkingGroup {
   operatingPeriod?: string;
   timeUnit?: string;
   paymentUnit?: string;
+  vehicleType?: string;
   source: string;
   snapshot: boolean;
 }
