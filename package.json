@@ -24,6 +24,7 @@
     "test:verified-place-links": "node scripts/check-verified-place-links.mjs",
     "test:lcsd-venues": "node scripts/check-lcsd-venues.mjs",
     "test:nearby-facilities": "node scripts/check-nearby-facilities.mjs",
+    "test:atm-crosscheck": "node scripts/check-atm-crosscheck.mjs",
     "test:on-street": "node scripts/check-on-street-parking.mjs",
     "test:on-street-limit": "node --experimental-strip-types scripts/check-on-street-render-limit.mjs",
     "test:motorcycle": "node --experimental-strip-types --experimental-specifier-resolution=node scripts/check-motorcycle-support.mjs",
