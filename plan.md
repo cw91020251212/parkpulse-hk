@@ -415,3 +415,10 @@ Pages 建置會產生 `public/pages-data/motorcycle-roadside.json`：以中英�
 - 量度 Leaflet 实际渲染边界后，38px 停车场水滴旋转后的尖端比 shell 底部低约 8px；34px 设施水滴低约 7px。原本共同 `::before` 的 `bottom: -5px` 仍在两种尖端之上。
 - 停车场投影改为 30×7px、水平中心 19px，`bottom: -16px`；设施投影改为 28×6px、水平中心 17px，`bottom: -14px`。投影最上边分别在尖端下方约 1px，不复用几何尺寸。
 - 保持无 transform、无 blur、无 filter／box-shadow；只改 marker shell 伪元素，不改 icon anchor 或数据／交互逻辑。
+
+
+## 140. 中心大头针的接地投影
+
+- 中心 `📍` 的 32×36px shell 与针图案的底边量度结果均为同一地图锚点；它是刺进地图的搜索中心，不采用水滴 marker 的悬浮间隙。
+- 删除 pin 本体的 `drop-shadow`，在 shell 上增加独立 16×4px 灰色半透明硬边椭圆，`left: 8px`、`bottom: -4px`。投影上边正好位于 shell／针尖底边，形成接地接触。
+- 保持现有 `iconAnchor: [16, 36]`、原生 `📍`、2 公里圆和中心选择逻辑；回归检查须锁定无 pin `drop-shadow` 与贴地投影几何。
