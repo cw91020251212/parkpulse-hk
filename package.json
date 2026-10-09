@@ -16,6 +16,8 @@
     "test:total-spaces": "node scripts/check-total-spaces.mjs",
     "test:official-pricing": "node --experimental-strip-types scripts/check-official-pricing.mjs",
     "test:operator-rates": "node scripts/check-operator-rates.mjs",
+    "refresh:brand-icons": "node scripts/refresh-brand-icons.mjs",
+    "test:brand-icons": "node scripts/check-brand-icons.mjs",
     "test:toilets": "node scripts/check-public-toilets.mjs",
     "test:toilet-photos": "node scripts/check-toilet-photos.mjs",
     "test:verified-place-links": "node scripts/check-verified-place-links.mjs",

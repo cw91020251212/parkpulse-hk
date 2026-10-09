@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const root = process.cwd();
@@ -16,6 +16,10 @@ assert.ok(placeLinks.records.length >= 1_000, 'GitHub Pages should contain verif
 assert.ok(placeLinks.records.some((record) => record.kind === 'carpark' && Number.isFinite(record.rating)), 'GitHub Pages should contain verified car-park ratings');
 assert.ok(onStreet.nonMetered?.length >= 100, 'GitHub Pages should contain the Transport Department sensor-trial snapshot');
 assert.ok(Object.keys(operatorRates.records ?? {}).length >= 80, 'GitHub Pages should contain Link official rate snapshots');
+const brandManifest = JSON.parse(await readFile(path.join(root, 'public/brand-icons/manifest.json'), 'utf8'));
+const brandFiles = Object.values(brandManifest.records).map((record) => record.file);
+assert.equal(brandFiles.length, 25, 'GitHub Pages should contain all current fuel and ATM brand icons');
+await Promise.all(brandFiles.map((file) => access(path.join(root, 'dist/brand-icons', file))));
 const html = await readFile(path.join(root, 'dist/index.html'), 'utf8');
 assert.match(html, /\/parkpulse-hk\//, 'GitHub Pages build must use the repository base path');
 console.log(`Verified static Pages data: ${ev.records.length} EV, ${toilets.records.length} toilets, ${fuel.records.length} fuel stations, ${atms.records.length} ATMs, ${onStreet.nonMetered.length} trial road-side spaces, ${placeLinks.records.length} verified place links, ${Object.keys(operatorRates.records).length} operator rate snapshots`);

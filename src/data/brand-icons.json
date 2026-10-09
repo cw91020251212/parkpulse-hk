@@ -1,0 +1,31 @@
+{
+  "fuel": {
+    "香港蜆殼有限公司": { "id": "shell", "site": "https://www.shell.com.hk" },
+    "加德士": { "id": "caltex", "site": "https://www.caltex.com/hk" },
+    "埃克森美孚香港有限公司": { "id": "esso", "site": "https://www.esso.com.hk" },
+    "中國石油化工股份有限公司": { "id": "sinopec", "site": "https://www.sinopechongkong.com" },
+    "中國石油國際事業（香港）有限公司": { "id": "petrochina", "site": "https://www.petrochina.com.cn" }
+  },
+  "atm": {
+    "上海商業銀行有限公司": { "id": "shanghai-commercial", "site": "https://www.shacombank.com.hk" },
+    "大眾銀行(香港) 有限公司": { "id": "public-bank", "site": "https://www.publicbank.com.hk" },
+    "大新銀行有限公司": { "id": "dah-sing", "site": "https://www.dahsing.com" },
+    "中信銀行(國際)有限公司": { "id": "cncbi", "site": "https://www.cncbinternational.com" },
+    "中國工商銀行(亞洲)有限公司": { "id": "icbc", "site": "https://www.icbcasia.com" },
+    "中國建設銀行(亞洲)股份有限公司": { "id": "ccb", "site": "https://www.asia.ccb.com/hongkong" },
+    "中國銀行(香港) 有限公司": { "id": "boc", "site": "https://www.bochk.com" },
+    "交通銀行股份有限公司": { "id": "bank-of-communications", "site": "https://www.bankcomm.com/hk" },
+    "招商永隆銀行有限公司": { "id": "cmb-wing-lung", "site": "https://www.cmbwinglungbank.com" },
+    "東亞銀行有限公司": { "id": "bea", "site": "https://www.hkbea.com" },
+    "花旗銀行(香港)有限公司": { "id": "citi", "site": "https://www.citibank.com.hk" },
+    "南洋商業銀行有限公司": { "id": "nanyang", "site": "https://www.ncb.com.hk" },
+    "恒生銀行有限公司": { "id": "hangseng", "site": "https://www.hangseng.com" },
+    "星展銀行(香港)有限公司": { "id": "dbs", "site": "https://www.dbs.com.hk" },
+    "香港上海滙豐銀行有限公司": { "id": "hsbc", "site": "https://www.hsbc.com.hk" },
+    "創興銀行有限公司": { "id": "chong-hing", "site": "https://www.chbank.com" },
+    "富邦銀行(香港)有限公司": { "id": "fubon", "site": "https://www.fubonbank.com.hk" },
+    "渣打銀行(香港) 有限公司": { "id": "standard-chartered", "site": "https://www.sc.com/hk" },
+    "華僑銀行(香港)有限公司": { "id": "ocbc", "site": "https://www.ocbc.com.hk" },
+    "集友銀行有限公司": { "id": "chiyu", "site": "https://www.chiyubank.com", "asset": "https://www.chiyubank.com/cyb/imageDir/2023/02/img_pc_site/2023022311513348356.jpg" }
+  }
+}
