@@ -8,7 +8,7 @@ import { text, vacancyLabel, type Language } from '../i18n';
 import type { Coordinates, NearbyFacility, NearbyFacilityViewModel, OnStreetParkingGroup, OnStreetParkingViewModel, ParkViewModel, PublicToilet, PublicToiletViewModel } from '../types';
 import { washroomSymbolMarkup } from './WashroomSymbol';
 
-type Props = { language: Language; position: Coordinates; parks: ParkViewModel[]; nearbyItems: Array<PublicToiletViewModel | NearbyFacilityViewModel | OnStreetParkingViewModel>; selectedId: string | null; lastViewedParkId: string | null; lastViewedOnStreetId: string | null; onSelect: (id: string) => void; onSelectOnStreet: (id: string) => void; onLocationSelect: (coordinates: Coordinates, behavior: { recenter: boolean }) => void; recenterRequest: number; startupLocating: boolean; startupRecenter: boolean; expanded: boolean; onToggleExpanded: () => void; onShowResults: () => void; resultsLabel: string };
+type Props = { language: Language; position: Coordinates; parks: ParkViewModel[]; nearbyItems: Array<PublicToiletViewModel | NearbyFacilityViewModel | OnStreetParkingViewModel>; selectedId: string | null; lastViewedParkId: string | null; lastViewedOnStreetId: string | null; lastViewedToiletId: string | null; onSelect: (id: string) => void; onSelectOnStreet: (id: string) => void; onSelectToilet: (id: string) => void; onLocationSelect: (coordinates: Coordinates, behavior: { recenter: boolean }) => void; recenterRequest: number; startupLocating: boolean; startupRecenter: boolean; expanded: boolean; onToggleExpanded: () => void; onShowResults: () => void; resultsLabel: string };
 
 const LANDSD_BASEMAP_URL = 'https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/basemap/WGS84/{z}/{x}/{y}.png';
 const LANDSD_LABEL_URL = 'https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/label/hk/tc/WGS84/{z}/{x}/{y}.png';
@@ -43,7 +43,7 @@ function nearbyIcon(kind?: PublicToilet['kind'] | NearbyFacility['kind'] | OnStr
 }
 function MapFocusIcon({ expanded }: { expanded: boolean }) { return expanded ? <svg className="map-focus-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 3 3 3 3-3M9 21l3-3 3 3M3 9l3 3-3 3M21 9l-3 3 3 3" /></svg> : <svg className="map-focus-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3H3v6m0-6 7 7M15 3h6v6m0-6-7 7M9 21H3v-6m0 6 7-7m5 7h6v-6m0 6-7-7" /></svg>; }
 
-export function MapView({ language, position, parks, nearbyItems, selectedId, lastViewedParkId, lastViewedOnStreetId, onSelect, onSelectOnStreet, onLocationSelect, recenterRequest, startupLocating, startupRecenter, expanded, onToggleExpanded, onShowResults, resultsLabel }: Props) {
+export function MapView({ language, position, parks, nearbyItems, selectedId, lastViewedParkId, lastViewedOnStreetId, lastViewedToiletId, onSelect, onSelectOnStreet, onSelectToilet, onLocationSelect, recenterRequest, startupLocating, startupRecenter, expanded, onToggleExpanded, onShowResults, resultsLabel }: Props) {
   const selected = parks.find((park) => park.info.park_Id === selectedId); const visibleResultCount = parks.length + nearbyItems.length;
   const label = (kind?: PublicToilet['kind'] | NearbyFacility['kind'] | OnStreetParkingGroup['kind']) => kind === 'hadCommunityToilet' ? text(language, 'hadCommunityWashroom') : kind === 'afcdLongValleyTemporaryToilets' ? text(language, 'afcdLongValleyTemporaryWashrooms') : kind === 'afcdNatureCentreToilet' ? text(language, 'afcdNatureCentreWashroom') : kind === 'lcsdVenue' ? text(language, 'venueWashroom') : kind === 'lcsdParkToilet' ? text(language, 'lcsdParkWashroom') : kind === 'afcdCountryParkToilet' ? text(language, 'afcdCountryParkWashroom') : kind === 'fuel' ? (language === 'en' ? 'Consumer Council fuel station' : '消委會油站') : kind === 'atm' ? (language === 'en' ? 'HKMA ATM' : '金管局 ATM') : kind === 'metered' ? text(language, 'meteredParking') : kind === 'nonMetered' ? text(language, 'nonMeteredTrial') : kind === 'motorcycle' ? text(language, 'motorcycleOnStreet') : text(language, 'publicToilet');
 
@@ -65,16 +65,19 @@ export function MapView({ language, position, parks, nearbyItems, selectedId, la
         const travel = place.kind === 'fuel' || onStreet ? '&travelmode=driving' : place.kind === 'atm' ? '&travelmode=walking' : '';
         const directions = place.kind === 'fuel' || onStreet ? text(language, 'drivingNavigation') : place.kind === 'atm' ? text(language, 'walkingNavigation') : venueLocation ? text(language, 'navigateToVenue') : text(language, 'navigation');
         const extra = onStreet ? (onStreet.static ? text(language, 'motorcycleOnStreetNoLive') : text(language, 'onStreetSpaceSummary', { vacant: onStreet.vacant, total: onStreet.total, occupied: onStreet.occupied, unavailable: onStreet.unavailable })) : 'openingHours' in place ? place.openingHours ?? text(language, 'openingUnavailable') : text(language, 'openingUnavailable');
-        const isLastViewed = onStreet?.id === lastViewedOnStreetId; const brand = 'brand' in place ? place.brand : undefined;
+        const isLastViewed = onStreet?.id === lastViewedOnStreetId || ('toilet' in item && item.toilet.id === lastViewedToiletId); const brand = 'brand' in place ? place.brand : undefined;
         const placeUrl = googleMapsPlaceUrl(place.name, place.address, place.latitude, place.longitude);
         const selectFacility = 'facility' in item ? item.onSelect : undefined;
+        const selectToilet = 'toilet' in item ? () => onSelectToilet(item.toilet.id) : undefined;
         return <Marker key={place.id} position={[place.latitude, place.longitude]} icon={nearbyIcon(place.kind, onStreet?.occupancy, onStreet?.vacant, brand, isLastViewed, onStreet?.static, onStreet?.total, venueLocation, locationUnconfirmed)} zIndexOffset={isLastViewed ? 600 : 300} eventHandlers={onStreet ? { click: () => onSelectOnStreet(onStreet.id) } : undefined}>
           {!onStreet && <Popup><div className="toilet-popup">
-            <strong>{place.name}</strong>
-            <small>{label(place.kind)}</small>
-            <small>{venueLocation ? text(language, 'distanceToVenue', { value: formatDistance(item.distanceKm) }) : formatDistance(item.distanceKm)} · {extra}</small>
-            {venueLocation && <small>{place.kind === 'hadCommunityToilet' ? text(language, 'hadVenuePrecision') : place.kind === 'afcdLongValleyTemporaryToilets' ? text(language, 'afcdLongValleyTemporaryPrecision') : text(language, 'venueLocationPrecision')}</small>}
-            {'remarks' in place && place.remarks && <small>{place.remarks}</small>}
+            {selectToilet ? <button className="toilet-popup-detail-trigger" type="button" aria-haspopup="dialog" aria-label={`${text(language, 'viewFacilityDetails')}: ${place.name}`} onClick={selectToilet}>
+              <strong>{place.name}</strong>
+              <small>{label(place.kind)}</small>
+              <small>{venueLocation ? text(language, 'distanceToVenue', { value: formatDistance(item.distanceKm) }) : formatDistance(item.distanceKm)} · {extra}</small>
+              {venueLocation && <small>{place.kind === 'hadCommunityToilet' ? text(language, 'hadVenuePrecision') : place.kind === 'afcdLongValleyTemporaryToilets' ? text(language, 'afcdLongValleyTemporaryPrecision') : text(language, 'venueLocationPrecision')}</small>}
+              {'remarks' in place && place.remarks && <small>{place.remarks}</small>}
+            </button> : <><strong>{place.name}</strong><small>{label(place.kind)}</small><small>{formatDistance(item.distanceKm)} · {extra}</small></>}
             <a className="map-popup-address" href={placeUrl} target="_blank" rel="noreferrer">{place.address || text(language, 'addressUnavailable')}</a>
             {selectFacility && <button className="map-popup-detail-button" type="button" onClick={selectFacility}>{text(language, 'viewFacilityDetails')}</button>}
             <a className="map-popup-directions" href={`https://www.google.com/maps/dir/?api=1&destination=${place.latitude},${place.longitude}${travel}`} target="_blank" rel="noreferrer">{directions}</a>

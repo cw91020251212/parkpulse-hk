@@ -649,8 +649,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
   background: #12384d;
 }
 
-.parking-marker.is-last-viewed,
-.toilet-marker.is-last-viewed {
+.parking-marker.is-last-viewed {
   outline: 1px solid #ff3b78;
   outline-offset: 1px;
   box-shadow: none;
@@ -739,6 +738,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .legend-venue-unconfirmed { background: linear-gradient(to top right, #65717a, #c5cbd0); border-style: dashed; }
 .legend-fuel { background: linear-gradient(to top right, #c87835, #f8d8ac); }
 .legend-atm { background: linear-gradient(to top right, #4b9e7c, #c3ebd7); }
+.toilet-marker.is-last-viewed { --marker-outline: #ff3b78; }
 
 .csdi-attribution { font-size: 12px; font-weight: 700; }
 
@@ -753,6 +753,10 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .facility-details-button { border: 1px solid #397088; border-radius: 8px; padding: 7px 8px; color: #d8f3f5; background: #16465d; font-size: 11px; font-weight: 900; text-align: center; }
 .facility-details-button:hover { border-color: #51c8b8; background: #1a5661; }
 .toilet-popup .map-popup-address { display: block; max-width: 230px; margin-top: 4px; overflow-wrap: anywhere; white-space: normal; }
+.toilet-popup-detail-trigger { display: block; width: 100%; margin: 0; border: 0; padding: 0; color: inherit; background: transparent; font: inherit; text-align: left; cursor: pointer; }
+.toilet-popup-detail-trigger:hover strong { text-decoration: underline; text-underline-offset: 2px; }
+.toilet-popup-detail-trigger:focus-visible { outline: 2px solid #137e79; outline-offset: 2px; border-radius: 3px; }
+.washroom-detail-panel { padding-top: 52px; }
 .map-popup-detail-button { display: block; width: 100%; min-height: 34px; margin-top: 8px; border: 1px solid #137e79; border-radius: 8px; padding: 6px 9px; color: #073a46; background: #b9f5ea; font-size: 12px; font-weight: 900; }
 .map-popup-detail-button:hover { background: #d9fff8; }
 .detail-address { overflow-wrap: anywhere; }
