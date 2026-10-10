@@ -284,17 +284,21 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 }
 
 .toilet-facts {
-  grid-template-rows: repeat(3, minmax(0, 1fr));
-  align-content: center;
+  grid-template-rows: none;
+  align-content: start;
   gap: 5px;
-  min-height: 62px;
-  max-height: 62px;
+  min-height: 0;
+  max-height: none;
   margin: 0 0 0 30px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .toilet-facts span {
   max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  white-space: normal;
 }
 
 .toilet-card-actions {

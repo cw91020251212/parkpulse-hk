@@ -52,5 +52,7 @@ assert.match(styles, /\.toilet-card-icon\.is-atm:not\(\.is-brand\) \{ background
 assert.match(styles, /\.toilet-marker\.is-atm\.is-brand \{[^}]*linear-gradient\(to top right,/);
 assert.match(styles, /\.legend-toilet \{ background: linear-gradient\(to top right,/);
 assert.match(styles, /\.legend-venue-unconfirmed/);
+assert.match(styles, /\.toilet-facts \{\s*grid-template-rows: none;[\s\S]*?max-height: none;[\s\S]*?overflow: visible;/);
+assert.match(styles, /\.toilet-facts span \{\s*max-width: 100%;\s*overflow: visible;[\s\S]*?white-space: normal;/);
 
 console.log('User-specified venue and public-toilet symbols are used in cards and Leaflet markers; all facility colours run deep bottom-left to light top-right.');
