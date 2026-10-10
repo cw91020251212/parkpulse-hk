@@ -442,3 +442,9 @@ Pages 建置會產生 `public/pages-data/motorcycle-roadside.json`：以中英�
 
 - 洗手間圖案資源路徑以前端建置的 `import.meta.env.BASE_URL` 為前綴；本機 `/` 和 GitHub Pages `/parkpulse-hk/` 都能正確載入。
 - 在洗手間圖標回歸檢查中鎖定 base path 用法，避免根目錄絕對路徑在 GitHub Pages 子路徑發布後變成 404。
+
+
+## 144. 調淺設施圖標漸層底色
+
+- 公廁、場館洗手間、油站、ATM 的水滴 marker、結果卡圖標和圖例使用更明亮的柔和色系，避免深灰藍的重暗感。
+- 保留四類色相差異和 `to top right`（左下較深、右上較淺）方向，不變更圖案、品牌圖、輪廓或投影。
