@@ -30,6 +30,8 @@
     "test:verified-place-links": "node scripts/check-verified-place-links.mjs",
     "test:lcsd-venues": "node scripts/check-lcsd-venues.mjs",
     "test:lcsd-park-washrooms": "node scripts/check-lcsd-park-washrooms.mjs",
+    "audit:lcsd-named-toilets": "python3 scripts/audit-lcsd-named-toilets.py",
+    "test:toilet-dedupe": "node --experimental-strip-types scripts/check-toilet-dedupe.mjs",
     "test:afcd-country-park-toilets": "node scripts/check-afcd-country-park-toilets.mjs",
     "test:had-community-toilets": "node scripts/check-had-community-toilets.mjs",
     "test:afcd-nature-centre-toilets": "node scripts/check-afcd-nature-centre-toilets.mjs",

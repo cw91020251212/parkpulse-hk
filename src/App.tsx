@@ -13,6 +13,7 @@ import { ToiletCard } from './components/ToiletCard';
 import { publicAsset } from './api/site';
 import { getHeightLimit, getVacancyStatus, hasAccessibleParking, isAvailable, selectVacancyEntry, statusPriority } from './domain/carpark';
 import { distanceInKm, formatDistance } from './domain/distance';
+import { removeCrossSourceLcsdToiletDuplicates, sameToiletAtSamePlace } from './domain/toiletDedupe';
 import { findEvCharger, hasEvFacility } from './domain/evChargers';
 import { groupOnStreetResults, limitOnStreetResults, supportsOnStreetVehicle } from './domain/onStreet';
 import { text, type Language } from './i18n';
@@ -33,20 +34,6 @@ const TEXT_SCALES = [100, 115, 130] as const;
 type TextScale = typeof TEXT_SCALES[number];
 type District = { label: string; englishLabel: string; aliases: string[]; coordinates: Coordinates };
 const STARTUP_LOCATION_FALLBACK_MS = 3_500;
-
-function comparableToiletName(name: string) {
-  return name.normalize('NFKC').toLowerCase()
-    .replace(/(?:public\s*)?(?:toilets?|washrooms?|restrooms?|latrines?|公共廁所|公眾廁所|公廁|洗手間|廁所)/gu, '')
-    .replace(/[^\p{L}\p{N}]+/gu, '');
-}
-
-function sameToiletAtSamePlace(left: { name: string; latitude: number; longitude: number }, right: { name: string; latitude: number; longitude: number }) {
-  const leftName = comparableToiletName(left.name);
-  const rightName = comparableToiletName(right.name);
-  return leftName.length >= 4 && rightName.length >= 4
-    && (leftName === rightName || leftName.includes(rightName) || rightName.includes(leftName))
-    && distanceInKm({ lat: left.latitude, lng: left.longitude }, { lat: right.latitude, lng: right.longitude }) <= 0.15;
-}
 
 const DISTRICTS: District[] = [
   { label: '中西區', englishLabel: 'Central and Western', aliases: ['中西區', '中西', 'central and western'], coordinates: { lat: 22.2855, lng: 114.1546 } },
@@ -220,7 +207,7 @@ export default function App() {
   const nearestAccessiblePark = useMemo(() => infos.filter(hasAccessibleParking).map((info) => ({ info, distanceKm: distanceInKm(position, { lat: info.latitude, lng: info.longitude }) })).sort((left, right) => left.distanceKm - right.distanceKm)[0], [infos, position]);
 
   const nearbyToilets = useMemo<PublicToiletViewModel[]>(() => {
-    const allToilets = [...toilets, ...lcsdVenues, ...additionalWashrooms];
+    const allToilets = removeCrossSourceLcsdToiletDuplicates([...toilets, ...lcsdVenues, ...additionalWashrooms]);
     const otherSources = allToilets.filter((toilet) => toilet.kind !== 'afcdCountryParkToilet');
     const afcdToilets = allToilets.filter((toilet) => toilet.kind === 'afcdCountryParkToilet')
       .filter((toilet) => !otherSources.some((existing) => sameToiletAtSamePlace(toilet, existing)));
@@ -231,7 +218,7 @@ export default function App() {
       })
       .filter((toilet) => toilet.distanceKm <= NEARBY_RADIUS_KM)
       .sort((left, right) => left.distanceKm - right.distanceKm);
-  }, [lcsdVenues, position, toilets, verifiedPlaceLinks]);
+  }, [additionalWashrooms, lcsdVenues, position, toilets, verifiedPlaceLinks]);
   const nearbyFacilities = useMemo<NearbyFacilityViewModel[]>(() => (facilityMode !== 'fuel' && facilityMode !== 'atm' ? [] : nearbyFacilityData
     .filter((facility) => facility.kind === facilityMode && (facilityMode !== 'atm' || !atmBank || facility.brand === atmBank))
     .map((facility) => ({

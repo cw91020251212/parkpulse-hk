@@ -93,20 +93,22 @@ assert.ok(Math.abs(leadMine[0].latitude - 22.4120975474) < 1e-9);
 assert.ok(Math.abs(leadMine[0].longitude - 114.1582168747) < 1e-9);
 assert.equal(leadMine[0].barrierFree, true);
 
-const [buildScript, lcsdApi, app, mapView, toiletCard, i18n] = await Promise.all([
+const [buildScript, lcsdApi, app, mapView, toiletCard, i18n, toiletDedupe] = await Promise.all([
   readFile(new URL('../scripts/build-pages-data.mjs', import.meta.url), 'utf8'),
   readFile(new URL('../src/api/lcsdVenues.ts', import.meta.url), 'utf8'),
   readFile(new URL('../src/App.tsx', import.meta.url), 'utf8'),
   readFile(new URL('../src/components/MapView.tsx', import.meta.url), 'utf8'),
   readFile(new URL('../src/components/ToiletCard.tsx', import.meta.url), 'utf8'),
   readFile(new URL('../src/i18n.ts', import.meta.url), 'utf8'),
+  readFile(new URL('../src/domain/toiletDedupe.ts', import.meta.url), 'utf8'),
 ]);
 assert.match(buildScript, /buildAfcdCountryParkToilets/);
 assert.match(buildScript, /afcd-country-park-toilets\.json/);
 assert.match(lcsdApi, /pages-data\/afcd-country-park-toilets\.json/);
 assert.match(app, /afcdCountryParkToilet/);
 assert.match(app, /sameToiletAtSamePlace/);
-assert.match(app, /distanceInKm[\s\S]*<= 0\.15/);
+assert.match(app, /removeCrossSourceLcsdToiletDuplicates/);
+assert.match(toiletDedupe, /distanceInKm[\s\S]*<= 0\.15/);
 assert.match(app, /toilet\.distanceKm <= NEARBY_RADIUS_KM/);
 assert.match(mapView, /afcdCountryParkWashroom/);
 assert.match(toiletCard, /afcdCountryParkWashroom/);

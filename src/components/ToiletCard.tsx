@@ -13,7 +13,7 @@ export function ToiletCard({ language, toilet: { toilet, distanceKm } }: Props) 
   const navigationUrl = `https://www.google.com/maps/dir/?api=1&destination=${toilet.latitude},${toilet.longitude}`;
   const isLcsdVenue = toilet.kind === 'lcsdVenue';
   const isLongValleyTemporaryVenue = toilet.kind === 'afcdLongValleyTemporaryToilets';
-  const isUnconfirmedVenue = toilet.kind === 'hadCommunityToilet' || isLongValleyTemporaryVenue;
+  const isUnconfirmedVenue = toilet.kind === 'hadCommunityToilet' || isLongValleyTemporaryVenue || toilet.locationPrecision === 'venue-uncertain';
   const isVenueLocation = toilet.locationPrecision === 'venue' || toilet.locationPrecision === 'venue-uncertain' || isLcsdVenue;
   const isLcsdParkWashroom = toilet.kind === 'lcsdParkToilet';
   const isAfcdCountryParkToilet = toilet.kind === 'afcdCountryParkToilet';
@@ -37,7 +37,7 @@ export function ToiletCard({ language, toilet: { toilet, distanceKm } }: Props) 
       </div>
       <div className="toilet-facts">
         <span className={isLcsdVenue ? 'washroom-source is-venue' : 'washroom-source'}>{source}</span>
-        {isVenueLocation && <span className={`washroom-precision is-venue${isUnconfirmedVenue ? ' is-location-unconfirmed' : ''}`}>{text(language, isLongValleyTemporaryVenue ? 'afcdLongValleyTemporaryPrecision' : isUnconfirmedVenue ? 'hadVenuePrecision' : 'venueLocationPrecision')}</span>}
+        {isVenueLocation && <span className={`washroom-precision is-venue${isUnconfirmedVenue ? ' is-location-unconfirmed' : ''}`}>{text(language, isLongValleyTemporaryVenue ? 'afcdLongValleyTemporaryPrecision' : toilet.kind === 'hadCommunityToilet' ? 'hadVenuePrecision' : 'venueLocationPrecision')}</span>}
         <span>{displayOpeningHours ? text(language, 'opening', { value: displayOpeningHours }) : text(language, 'openingUnavailable')}</span>
         {displayRemarks && <span>{displayRemarks}</span>}
       </div>
