@@ -28,6 +28,7 @@
     "test:toilet-photos": "node scripts/check-toilet-photos.mjs",
     "test:verified-place-links": "node scripts/check-verified-place-links.mjs",
     "test:lcsd-venues": "node scripts/check-lcsd-venues.mjs",
+    "test:lcsd-park-washrooms": "node scripts/check-lcsd-park-washrooms.mjs",
     "test:nearby-facilities": "node scripts/check-nearby-facilities.mjs",
     "test:atm-crosscheck": "node scripts/check-atm-crosscheck.mjs",
     "test:on-street": "node scripts/check-on-street-parking.mjs",

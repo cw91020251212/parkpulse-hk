@@ -128,14 +128,19 @@ export interface EvChargerMatch extends EpdEvCharger {
 export interface PublicToilet {
   id: string;
   name: string;
+  nameEn?: string;
   address?: string;
+  addressEn?: string;
+  district?: string;
   photoPlaceUrl?: string;
   openingHours?: string;
+  openingHoursEn?: string;
   remarks?: string;
+  remarksEn?: string;
   updatedAt?: string;
   latitude: number;
   longitude: number;
-  kind?: 'publicToilet' | 'lcsdVenue';
+  kind?: 'publicToilet' | 'lcsdVenue' | 'lcsdParkToilet';
   source?: string;
   sourceUrl?: string;
   category?: string;
