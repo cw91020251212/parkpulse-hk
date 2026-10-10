@@ -706,8 +706,8 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 
 
 /* 2026-10-10：使用指定洗手間圖案；設施採明亮漸層，左下較深、右上較淺。 */
-.toilet-marker:not(.is-onstreet) { background: linear-gradient(to top right, #4d9bbf, #b8e3f2); }
-.toilet-marker.is-venue { --marker-outline: #725c90; background: linear-gradient(to top right, #8f74b8, #e0d2f6); }
+.toilet-marker:not(.is-onstreet) { background: linear-gradient(to top right, #a8d6e8, #eef9fd); }
+.toilet-marker.is-venue { --marker-outline: #725c90; background: linear-gradient(to top right, #cbbbe2, #f5f0fb); }
 .toilet-marker.is-fuel { --marker-outline: #9a602c; background: linear-gradient(to top right, #c87835, #f8d8ac); }
 .toilet-marker.is-atm { --marker-outline: #397d64; background: linear-gradient(to top right, #4b9e7c, #c3ebd7); }
 .toilet-marker.is-fuel.is-brand { --marker-outline: #9a602c; background: linear-gradient(to top right, #c87835, #f8d8ac); }
@@ -718,13 +718,13 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .washroom-symbol.is-public { width: 22px; height: 20px; }
 .toilet-card-icon .washroom-symbol.is-venue { width: 17px; height: 17px; }
 .toilet-card-icon .washroom-symbol.is-public { width: 19px; height: 17px; }
-.toilet-card-icon:not(.is-onstreet) { background: linear-gradient(to top right, #4d9bbf, #b8e3f2); }
-.toilet-card-icon.is-venue { background: linear-gradient(to top right, #8f74b8, #e0d2f6); }
+.toilet-card-icon:not(.is-onstreet) { background: linear-gradient(to top right, #a8d6e8, #eef9fd); }
+.toilet-card-icon.is-venue { background: linear-gradient(to top right, #cbbbe2, #f5f0fb); }
 .toilet-card-icon.is-fuel:not(.is-brand) { background: linear-gradient(to top right, #c87835, #f8d8ac); }
 .toilet-card-icon.is-atm:not(.is-brand) { background: linear-gradient(to top right, #4b9e7c, #c3ebd7); }
 .toilet-card-icon.is-fuel.is-brand { background: linear-gradient(to top right, #c87835, #f8d8ac); }
 .toilet-card-icon.is-atm.is-brand { background: linear-gradient(to top right, #4b9e7c, #c3ebd7); }
-.legend-toilet { background: linear-gradient(to top right, #4d9bbf, #b8e3f2); }
-.legend-venue { background: linear-gradient(to top right, #8f74b8, #e0d2f6); }
+.legend-toilet { background: linear-gradient(to top right, #a8d6e8, #eef9fd); }
+.legend-venue { background: linear-gradient(to top right, #cbbbe2, #f5f0fb); }
 .legend-fuel { background: linear-gradient(to top right, #c87835, #f8d8ac); }
 .legend-atm { background: linear-gradient(to top right, #4b9e7c, #c3ebd7); }

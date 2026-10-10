@@ -184,3 +184,5 @@
 - [x] **修正指定洗手间图案在 GitHub Pages 子路径失效：** 兩個圖片網址必須以前端 `BASE_URL` 作為前綴，本機 `/` 及正式 `/parkpulse-hk/` 都須正確顯示。不得使用 `/facility-icons/...` 根目錄路徑造成正式站 404。**證據：** 修正前正式站兩張圖片 `naturalWidth=0` 且根路徑 HTTP 404；修正後正式站 16 個場館圖案及 46 個公廁圖案全部載入（`failed=0`，圖片寬度 1200／508），子路徑資源 HTTP 200。漸變計算樣式維持左下深、右上淺。`pnpm test:washroom-icons`、`pnpm test:map-markers`、`pnpm test:map-zoom-style`、`pnpm test:startup-location`、`pnpm check`、一般／Pages 建置、Pages／PWA 檢查及 `git diff --check` 皆通過。
 
 - [x] **調淺洗手間、油站與 ATM 圖標底色：** 水滴 marker、結果卡圖標及圖例採更明亮、不帶深灰藍感的柔和底色，同時保留類型色相及「左下較深、右上較淺」方向；銀行／油站品牌標誌、指定洗手間圖案、輪廓和投影不變。**證據：** 正式站瀏覽器核實 marker、卡片與圖例四類計算樣式一致，且 62 個洗手間圖片均成功載入。公廁藍 `#4d9bbf→#b8e3f2`、場館紫 `#8f74b8→#e0d2f6`、油站橙 `#c87835→#f8d8ac`、ATM 綠 `#4b9e7c→#c3ebd7`。`pnpm test:washroom-icons`、`pnpm test:map-markers`、`pnpm check`、一般／Pages 建置、Pages／PWA 檢查及 `git diff --check` 通過；Pages workflow `38023130751` 成功。
+
+- [ ] **再調淺洗手間底色：** 公廁與康文署場館洗手間的水滴 marker、卡片小圖標、圖例改用更淺的淡藍與淡紫漸層；保持左下略深、右上接近白色；油站與 ATM 色階不變，指定圖案、名稱、品牌、輪廓、投影及點擊行為不變。以正式站檢查實際色值和圖片載入。
