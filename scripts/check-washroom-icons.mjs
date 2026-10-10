@@ -18,7 +18,13 @@ assert.match(symbol, /const publicSource = `\$\{import\.meta\.env\.BASE_URL\}fac
 assert.match(symbol, /washroom-symbol \$\{kind\}/);
 assert.match(mapView, /const washroom = !fuel && !atm && !onStreet;/);
 assert.match(mapView, /washroom \? washroomSymbolMarkup\(venue\)/);
-assert.match(toiletCard, /<WashroomSymbol venue=\{isLcsdVenue\} \/>/);
+assert.match(toiletCard, /<WashroomSymbol venue=\{isVenueLocation\} \/>/);
+assert.match(toiletCard, /toilet\.locationPrecision === 'venue' \|\| isLcsdVenue/);
+assert.match(toiletCard, /venueLocationPrecision/);
+assert.match(toiletCard, /showPhoto && !isStaticPages && !isVenueLocation/);
+assert.match(mapView, /distanceToVenue/);
+assert.match(mapView, /venueLocationPrecision/);
+assert.match(mapView, /nearbyIcon\(place\.kind,[^\n]+venueLocation\)/);
 assert.doesNotMatch(mapView, /venue \? '🏟️'/);
 assert.doesNotMatch(toiletCard, /isLcsdVenue \? '🏟️' : '🚻'/);
 assert.match(styles, /\.toilet-marker:not\(\.is-onstreet\) \{ background: linear-gradient\(to top right,/);

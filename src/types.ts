@@ -140,6 +140,7 @@ export interface PublicToilet {
   updatedAt?: string;
   latitude: number;
   longitude: number;
+  locationPrecision?: 'toilet' | 'venue';
   kind?: 'publicToilet' | 'lcsdVenue' | 'lcsdParkToilet' | 'afcdCountryParkToilet';
   source?: string;
   sourceUrl?: string;

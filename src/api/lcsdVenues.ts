@@ -22,7 +22,7 @@ export async function fetchLcsdVenues(signal: AbortSignal) {
     parkResponse.ok ? (parkResponse.json() as Promise<LcsdParkWashroomResponse>).catch(() => null) : Promise.resolve(null),
     afcdResponse?.ok ? (afcdResponse.json() as Promise<AfcdCountryParkToiletResponse>).catch(() => null) : Promise.resolve(null),
   ]);
-  const venues = Array.isArray(venuePayload.records) ? venuePayload.records : [];
+  const venues = Array.isArray(venuePayload.records) ? venuePayload.records.map((venue) => ({ ...venue, locationPrecision: 'venue' as const })) : [];
   const parks = Array.isArray(parkPayload?.facilities) ? parkPayload.facilities : [];
   const afcdCountryParkToilets = Array.isArray(afcdPayload?.facilities) ? afcdPayload.facilities : [];
   const additionalParks = parks.filter((park) => !venues.some((venue) => (

@@ -112,8 +112,8 @@ assert.match(mapView, /afcdCountryParkWashroom/);
 assert.match(toiletCard, /afcdCountryParkWashroom/);
 assert.match(i18n, /washroomSources: '食環署 · 康文署 · 漁護署'/);
 assert.match(i18n, /washroomSources: 'FEHD · LCSD · AFCD'/);
-assert.match(i18n, /漁護署郊野公園公廁/);
-assert.match(i18n, /AFCD country-park toilets/);
+assert.match(i18n, /漁農自然護理署郊野公園公廁/);
+assert.match(i18n, /AFCD country park public toilet/);
 assert.match(app, /Agriculture, Fisheries and Conservation Department/);
 assert.match(app, /漁農自然護理署/);
 
