@@ -429,3 +429,10 @@ Pages 建置會產生 `public/pages-data/motorcycle-roadside.json`：以中英�
 - 以一个可重复使用的 `WashroomSymbol` 提供 React 卡片图标及 Leaflet HTML marker 字符串；不增加图像文件或依赖。
 - 食环署公厕采用白色双厕格门线条，场馆洗手间采用白色洗手盆线条。两者保持 2px 圆角线条、相同视觉重量，并借原有蓝色／紫色 marker 底色区别来源。
 - marker 内图标随现有水滴旋转反向校正，卡片则直接直立显示；保留两种 marker 的大小、anchor、投影和点击逻辑。
+
+
+## 142. 指定洗手间图案与设施左下深、右上浅渐变
+
+- 把用户提供的场馆运动图案和男女洗手间图案分别存为公开静态资源；公共厕所图案只会裁掉外缘空白，以便小尺寸仍可辨认，保留原来的红、蓝与黑色图形。
+- `WashroomSymbol` 改为在 React 卡片及 Leaflet HTML marker 共用这两张资源：场馆使用运动图案，公共厕所使用男女图案；不改变 marker 尺寸、anchor、投影或点击路径。
+- 公厕、场馆、油站、ATM 的水滴、卡片图标和图例统一采用 `linear-gradient(to top right, 深色, 浅色)`，即左下深、右上浅。带品牌的油站／ATM 继续在相应渐变水滴上显示小型品牌图，而非用白色底覆盖水滴。
