@@ -8,6 +8,9 @@ const [app, map, styles] = await Promise.all([
 ]);
 
 assert.match(map, /className="toilet-popup-detail-trigger"[^>]*aria-haspopup="dialog"/);
+assert.match(map, /className="toilet-popup-detail-action"[^>]*aria-haspopup="dialog"[^>]*onClick=\{selectToilet\}>\{text\(language, 'details'\)\}/);
+assert.match(styles, /\.toilet-popup-detail-row \{ display: flex; align-items: flex-start;/);
+assert.match(styles, /\.toilet-popup-detail-action \{ display: inline-flex;/);
 assert.match(map, /const selectToilet = 'toilet' in item \? \(\) => onSelectToilet\(item\.toilet\.id\)/);
 assert.match(map, /lastViewedToiletId/);
 assert.match(app, /const \[lastViewedToiletId, setLastViewedToiletId\]/);

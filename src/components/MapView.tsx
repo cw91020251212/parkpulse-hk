@@ -71,13 +71,16 @@ export function MapView({ language, position, parks, nearbyItems, selectedId, la
         const selectToilet = 'toilet' in item ? () => onSelectToilet(item.toilet.id) : undefined;
         return <Marker key={place.id} position={[place.latitude, place.longitude]} icon={nearbyIcon(place.kind, onStreet?.occupancy, onStreet?.vacant, brand, isLastViewed, onStreet?.static, onStreet?.total, venueLocation, locationUnconfirmed)} zIndexOffset={isLastViewed ? 600 : 300} eventHandlers={onStreet ? { click: () => onSelectOnStreet(onStreet.id) } : undefined}>
           {!onStreet && <Popup><div className="toilet-popup">
-            {selectToilet ? <button className="toilet-popup-detail-trigger" type="button" aria-haspopup="dialog" aria-label={`${text(language, 'viewFacilityDetails')}: ${place.name}`} onClick={selectToilet}>
-              <strong>{place.name}</strong>
-              <small>{label(place.kind)}</small>
-              <small>{venueLocation ? text(language, 'distanceToVenue', { value: formatDistance(item.distanceKm) }) : formatDistance(item.distanceKm)} · {extra}</small>
-              {venueLocation && <small>{place.kind === 'hadCommunityToilet' ? text(language, 'hadVenuePrecision') : place.kind === 'afcdLongValleyTemporaryToilets' ? text(language, 'afcdLongValleyTemporaryPrecision') : text(language, 'venueLocationPrecision')}</small>}
-              {'remarks' in place && place.remarks && <small>{place.remarks}</small>}
-            </button> : <><strong>{place.name}</strong><small>{label(place.kind)}</small><small>{formatDistance(item.distanceKm)} · {extra}</small></>}
+            {selectToilet ? <div className="toilet-popup-detail-row">
+              <button className="toilet-popup-detail-trigger" type="button" aria-haspopup="dialog" aria-label={`${text(language, 'viewFacilityDetails')}: ${place.name}`} onClick={selectToilet}>
+                <strong>{place.name}</strong>
+                <small>{label(place.kind)}</small>
+                <small>{venueLocation ? text(language, 'distanceToVenue', { value: formatDistance(item.distanceKm) }) : formatDistance(item.distanceKm)} · {extra}</small>
+                {venueLocation && <small>{place.kind === 'hadCommunityToilet' ? text(language, 'hadVenuePrecision') : place.kind === 'afcdLongValleyTemporaryToilets' ? text(language, 'afcdLongValleyTemporaryPrecision') : text(language, 'venueLocationPrecision')}</small>}
+                {'remarks' in place && place.remarks && <small>{place.remarks}</small>}
+              </button>
+              <button className="toilet-popup-detail-action" type="button" aria-haspopup="dialog" aria-label={`${text(language, 'viewFacilityDetails')}: ${place.name}`} onClick={selectToilet}>{text(language, 'details')}</button>
+            </div> : <><strong>{place.name}</strong><small>{label(place.kind)}</small><small>{formatDistance(item.distanceKm)} · {extra}</small></>}
             <a className="map-popup-address" href={placeUrl} target="_blank" rel="noreferrer">{place.address || text(language, 'addressUnavailable')}</a>
             {selectFacility && <button className="map-popup-detail-button" type="button" onClick={selectFacility}>{text(language, 'viewFacilityDetails')}</button>}
             <a className="map-popup-directions" href={`https://www.google.com/maps/dir/?api=1&destination=${place.latitude},${place.longitude}${travel}`} target="_blank" rel="noreferrer">{directions}</a>

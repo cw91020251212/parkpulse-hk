@@ -754,6 +754,10 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .facility-details-button:hover { border-color: #51c8b8; background: #1a5661; }
 .toilet-popup .map-popup-address { display: block; max-width: 230px; margin-top: 4px; overflow-wrap: anywhere; white-space: normal; }
 .toilet-popup-detail-trigger { display: block; width: 100%; margin: 0; border: 0; padding: 0; color: inherit; background: transparent; font: inherit; text-align: left; cursor: pointer; }
+.toilet-popup-detail-row { display: flex; align-items: flex-start; gap: 8px; }
+.toilet-popup-detail-row .toilet-popup-detail-trigger { flex: 1; min-width: 0; width: auto; }
+.toilet-popup-detail-action { display: inline-flex; flex: 0 0 auto; align-items: center; justify-content: center; min-height: 32px; margin: 0; border: 1px solid #137e79; border-radius: 8px; padding: 5px 9px; color: #073a46; background: #b9f5ea; font: inherit; font-size: 12px; font-weight: 900; white-space: nowrap; }
+.toilet-popup-detail-action:hover { background: #d9fff8; }
 .toilet-popup-detail-trigger:hover strong { text-decoration: underline; text-underline-offset: 2px; }
 .toilet-popup-detail-trigger:focus-visible { outline: 2px solid #137e79; outline-offset: 2px; border-radius: 3px; }
 .washroom-detail-panel { padding-top: 52px; }

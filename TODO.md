@@ -1,3 +1,4 @@
 
 - [x] **收摺地圖圖例並把省下空間還給地圖：** 地圖圖例預設收起，只在地圖下方搜尋提示列最右側顯示一個向下三角形按鈕；按下按鈕會在地圖下方提示列內顯示全部圖例，再按可收起。移除地圖下方常駐圖例，令地圖在手機版增加約 60px 高度（上限 576px），平板版高度增至 450px；桌面版由 flex 佈局自動把圖例原佔空間交還地圖。**驗收證據：** `pnpm test:map-zoom-style`、`pnpm check`、`pnpm build`、Pages 模式建置、`pnpm test:pwa` 及 `git diff --check` 通過；預覽確認按鈕位於地圖下方提示列最右側，按下可顯示 11 個圖例項目，再按可收起。
 - [x] **由洗手間地圖 popup 開啟詳情並記住最後查看的 marker：** 點選公廁 marker 開啟白色 popup；再點 popup 的主要資訊可打開灰色詳情面板，重用完整公廁卡片資料（地址、來源、位置精度、開放資訊及導航等）；關閉詳情面板或按瀏覽器返回後，該水滴 marker 保留粉紅色既有描邊，且不改變地圖尺寸。**驗收證據：** `pnpm test:toilet-map-detail`、`pnpm test:washroom-icons`、`pnpm check`、`pnpm build`、`pnpm exec vite build --mode pages`、`git diff --check` 均通過；預覽實測詳情層為固定浮層，關閉後 marker 邊框 `rgb(255, 59, 120)`、寬度仍為原有 1 CSS px。
+- [x] **在洗手間白色 popup 紅圈位置加入「詳情」按鈕：** 按鈕位於 popup 主要資訊右側，使用者按下後開啟既有灰色公廁詳情面板；不影響地址連結、導航連結及最後查看 marker 描邊。**驗收證據：** `pnpm test:toilet-map-detail`、TypeScript 檢查、一般及 Pages 建置、`git diff --check` 通過，並以預覽實測按鈕可打開詳情。
