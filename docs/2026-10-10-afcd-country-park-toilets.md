@@ -24,3 +24,6 @@ Pages 資料建置會查詢 CSDI 季度檔案索引，選取最新 GeoJSON ZIP�
 
 ## 回歸驗證
 已通過 `pnpm test:afcd-country-park-toilets`、`pnpm test:lcsd-park-washrooms`、`pnpm test:washroom-icons`、`pnpm test:map-markers`、`pnpm test:map-zoom-style`、`pnpm test:startup-location`、`pnpm check`、`pnpm build`、`pnpm build:pages`、`pnpm test:pages`、`pnpm test:pwa` 及 `git diff --check`。Pages 建置取得 2026-Q3、167 筆 AFCD 公廁快照；資料更新失敗的既有非本次快照按流程保留。
+
+## 正式部署
+提交 `69861c9f67f5adffc8a7eb6513e36d0bf382aed9` 的 GitHub Actions Pages workflow `38041168904` 已成功完成。正式站回應 AFCD 快照 167 筆、2026-Q3；確認 `SM/TF/004` 中文／英文名稱、座標及暢通易達欄位正確，正式 JS bundle 含中英文來源摘要、範圍及 AFCD 卡片標籤。正式網址：https://cw91020251212.github.io/parkpulse-hk/。
