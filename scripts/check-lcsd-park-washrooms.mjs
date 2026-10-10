@@ -68,12 +68,13 @@ assert.equal(fixtureRecords[0].sourceUrl, fixture[0].url);
 
 const snapshot = JSON.parse(await readFile(new URL('../public/pages-data/lcsd-park-washrooms.json', import.meta.url), 'utf8'));
 const namedIndex = JSON.parse(await readFile(new URL('../data/lcsd-named-toilet-points.json', import.meta.url), 'utf8'));
+const supplementalIndex = JSON.parse(await readFile(new URL('../data/official-nearby-toilet-points.json', import.meta.url), 'utf8'));
 assert.ok(snapshot.datasetsInspected >= 40, 'must inspect the official LCSD facility catalog');
 assert.ok(snapshot.datasetsLoaded >= 35, 'must load enough official LCSD facility files');
 assert.ok(Array.isArray(snapshot.facilities) && snapshot.facilities.length >= 390, 'must retain park-level records and the nationwide exact-name toilet points');
 assert.equal(snapshot.records, snapshot.facilities.length);
 assert.ok(Array.isArray(namedIndex.points) && namedIndex.points.length >= 80, 'must retain the verified nationwide named-toilet index');
-assert.equal(snapshot.exactToiletPoints, namedIndex.points.length);
+assert.equal(snapshot.exactToiletPoints, namedIndex.points.length + supplementalIndex.points.length);
 assert.equal(namedIndex.audit.officialLcsdVenueRecordsScanned, 319);
 assert.equal(new Set(snapshot.facilities.map((record) => record.id)).size, snapshot.facilities.length, 'snapshot IDs must be unique');
 for (const record of snapshot.facilities) {
@@ -90,6 +91,7 @@ const taiPoWaterfrontNo2ToNo6 = snapshot.facilities.filter((record) =>
   && /[二三四五六]號廁所/u.test(record.name));
 assert.equal(taiPoWaterfrontNo2ToNo6.length, 5, 'officially named No. 2–6 toilets must have individual exact points');
 const taiPoWaterfrontToiletNo5 = taiPoWaterfrontNo2ToNo6.find((record) => record.name === '大埔海濱公園五號廁所');
+const taiPoWaterfrontNearbyToilet = snapshot.facilities.find((record) => record.id === 'official-nearby-tai-po-waterfront-toilet');
 assert.ok(taiPoWaterfrontVenue, 'the LCSD dataset park coordinate must remain a venue-level location');
 assert.ok(taiPoWaterfrontToiletNo5, 'the exact official No. 5 toilet point visible in the user screenshot must be retained');
 assert.equal(taiPoWaterfrontToiletNo5.name, '大埔海濱公園五號廁所');
@@ -102,6 +104,15 @@ const metersBetween = (a, b) => {
   const longitudeScale = latitudeScale * Math.cos((a.latitude * Math.PI) / 180);
   return Math.hypot((a.latitude - b.latitude) * latitudeScale, (a.longitude - b.longitude) * longitudeScale);
 };
+assert.ok(taiPoWaterfrontNearbyToilet, 'the official LandsD nearby-toilet point must not be discarded as an ambiguous search result');
+assert.equal(taiPoWaterfrontNearbyToilet.name, '廁所(大埔海濱公園附近)');
+assert.equal(taiPoWaterfrontNearbyToilet.nameEn, 'Toilet (Near to Tai Po Waterfront Park)');
+assert.deepEqual([taiPoWaterfrontNearbyToilet.latitude, taiPoWaterfrontNearbyToilet.longitude], [22.451399214, 114.178652267]);
+assert.equal(taiPoWaterfrontNearbyToilet.locationPrecision, 'toilet');
+assert.match(taiPoWaterfrontNearbyToilet.sourceUrl, /locationSearch/);
+assert.match(taiPoWaterfrontNearbyToilet.coordinateSourceUrl, /e=836451\.0&n=834661\.0/);
+assert.match(taiPoWaterfrontNearbyToilet.remarks, /未將它擅自改稱看台下層廁所/);
+assert.ok(metersBetween(taiPoWaterfrontNearbyToilet, taiPoWaterfrontVenue) < 100, 'the named point is near the park-level location, not a replacement for its venue record');
 const viewingTerrace = { latitude: 22.452482528, longitude: 114.187463973 };
 assert.ok(metersBetween(taiPoWaterfrontToiletNo5, viewingTerrace) < 100, 'No. 5 toilet must match the official nearby viewing-terrace location, not the park centre');
 assert.ok(metersBetween(taiPoWaterfrontToiletNo5, taiPoWaterfrontVenue) > 800 && metersBetween(taiPoWaterfrontToiletNo5, taiPoWaterfrontVenue) < 1_000, 'the park-level coordinate is about 887 m away and must not be used as the exact No. 5 toilet point');
@@ -132,4 +143,4 @@ assert.ok(toiletCard.includes("toilet.kind === 'lcsdParkToilet'") && toiletCard.
 assert.ok(toiletCard.includes("toilet.locationPrecision === 'venue-uncertain'"), 'uncertain LCSD venue coordinates must use the gray precision treatment');
 assert.ok(mapView.includes("item.toilet.locationPrecision === 'venue-uncertain'"), 'uncertain LCSD venue markers must use the gray marker treatment');
 
-console.log(`LCSD park washrooms OK: ${snapshot.facilities.length} records, ${snapshot.exactToiletPoints} nationwide named exact points; Tai Po Waterfront Park No. 2–6 are individually mapped.`);
+console.log(`LCSD park washrooms OK: ${snapshot.facilities.length} records, ${namedIndex.points.length} venue-matched exact points + ${supplementalIndex.points.length} supplemental official point; Tai Po Waterfront Park No. 2–6 are individually mapped.`);

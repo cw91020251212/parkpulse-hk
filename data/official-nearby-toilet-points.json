@@ -1,0 +1,24 @@
+{
+  "source": "地政總署位置搜尋及香港測繪處官方座標轉換服務",
+  "updatedAt": "2026-10-11",
+  "points": [
+    {
+      "id": "official-nearby-tai-po-waterfront-toilet",
+      "name": "廁所(大埔海濱公園附近)",
+      "nameEn": "Toilet (Near to Tai Po Waterfront Park)",
+      "address": "新界大埔大埔海濱公園附近",
+      "addressEn": "Tai Po Waterfront Park, Tai Po, NT",
+      "district": "大埔區",
+      "venueName": "大埔海濱公園",
+      "latitude": 22.451399214,
+      "longitude": 114.178652267,
+      "hkGridE": 836451.0,
+      "hkGridN": 834661.0,
+      "sourceQueryUrl": "https://www.map.gov.hk/gs/api/v1.0.0/locationSearch?q=%E5%A4%A7%E5%9F%94%E6%B5%B7%E6%BF%B1%E5%85%AC%E5%9C%92%20%E5%BB%81%E6%89%80&n=50&lang=tc",
+      "transformUrl": "https://www.geodetic.gov.hk/transform/v2/?inSys=hkgrid&outSys=wgsgeog&e=836451.0&n=834661.0",
+      "locationPrecision": "toilet",
+      "remarks": "地政總署地名搜尋直接列出「廁所(大埔海濱公園附近)」，座標由官方香港格網轉換；索引名稱為「附近」，未將它擅自改稱看台下層廁所。",
+      "remarksEn": "Lands Department's gazetteer directly lists “Toilet (Near to Tai Po Waterfront Park)”; coordinates are transformed from the official Hong Kong Grid. The source calls it a nearby toilet and does not identify it as the lower-grandstand toilet."
+    }
+  ]
+}
