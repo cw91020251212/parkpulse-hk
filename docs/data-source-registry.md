@@ -70,6 +70,27 @@
 - **已知缺口：** 香港濕地公園雖有洗手間資料，但目前 AFCD 公廁快照沒有其廁所級點位。園方官方示意圖不是 WGS84 點位資料；使用者已向園方查詢，等候回覆。詳見[來源盤點](2026-10-10-government-public-toilet-source-survey.md)。
 - **驗證：** `pnpm test:afcd-country-park-toilets`。
 
+### 民政事務總署社區會堂／中心暢通易達洗手間
+
+- **官方清單：** [英文社區會堂／中心名單](https://www.had.gov.hk/psi/chcc/chsccs_en.csv)、[中文版名單](https://www.had.gov.hk/psi/chcc/chsccs_tc.csv)、[暢通易達設施 CSV](https://www.had.gov.hk/psi/barrier-free-facilities-in-community-halls-community-centres/barrier_free_facilities_in_community_halls_community_centres_en.csv)。暢通易達設施以官方英文場地名稱配對；中英文名單必須以「參考編號＋地區」配對，不能只用參考編號，因短碼 `KT` 可在不同區重複。只納入設施欄明列 `Accessible Toilet` 的中心。
+- **更新位置／輸出：** `lib/had-community-toilets.mjs` 下載及配對 CSV，並以 [地政總署位置搜尋 API](https://www.map.gov.hk/gs/api/v1.0.0/locationSearch) 的精確英文場地名稱結果，再用[香港大地測量轉換服務](https://www.geodetic.gov.hk/transform/v2/)把 HK Grid 轉成 WGS84。`pnpm build:pages` 產生 `public/had-community-toilets.json`；前端透過 `src/api/additionalToilets.ts` 和 `src/hooks/useAdditionalToilets.ts` 載入。
+- **座標／可用性限制：** 這些座標只代表社區中心／會堂，不是廁所所在房間；`locationPrecision: 'venue-uncertain'` 使用灰階虛線 marker、場館導航、不顯示廁所相片。來源只證明有暢通易達洗手間；沒有確定一般公眾能否直接使用，也沒有營業時間，卡片和 popup 必須保留提示。現行快照為 110 筆、18 個中英文區名；產生器最低要求 100 筆與 18 個官方英文區名，測試亦核對 18 個中文區名及觀塘／葵青不會因 `KT` 重號錯配，並拒絕非精確同名配對或無效座標。
+- **驗證：** `pnpm test:had-community-toilets` 和 `pnpm test:washroom-icons`。
+
+### 漁護署塱原自然生態中心訪客洗手間
+
+- **設施來源：** [塱原自然生態中心官方設施頁](https://www.lvnp.gov.hk/tc/lvnc.html)列明訪客設施包括洗手間及其開放時間；[地政總署位置搜尋](https://www.map.gov.hk/gs/api/v1.0.0/locationSearch)明確回傳 `Toilet (Long Valley Nature Centre)`，地址為 `G/F, Long Valley Nature Centre`。HK Grid 轉 WGS84 後為 `22.506623894, 114.108754063`，是明確命名的廁所點，不是公園中心推算。
+- **更新位置／輸出：** `lib/afcd-nature-centre-toilets.mjs`；`pnpm build:pages` 產生 `public/pages-data/afcd-nature-centre-toilets.json`。與民政署同由 `src/api/additionalToilets.ts` 載入，因本筆 `locationPrecision: 'toilet'` 保留精確廁所標記。驗證：`pnpm test:afcd-nature-centre-toilets`。
+- **新界單車徑覆蓋限制：** [2024 年政府立法會答覆](https://www.info.gov.hk/gia/general/202406/12/P2024061200281.htm)指出沿線現有逾 100 個非臨時公廁主要由 FEHD 管理，另有 FEHD 新設 8 個公廁；同一答覆提到 AFCD 在塱原自然生態公園單車徑附近管理 3 處臨時廁所，但沒有逐點名稱或座標。現有 FEHD 快照可找到馬料水吐露港公路、科學園路、馬料水海濱、河上鄉單車徑旁及荃灣海興路等官方座標點。下方以灰階「園區位置」標出官方資料指出的三處臨時廁所近區；它不是精確廁所點，亦不代表塱原訪客中心那一筆。
+
+### 塱原三處臨時廁所：官方園區位置灰階標記
+
+- **存在依據：** [2024 年政府立法會答覆](https://www.info.gov.hk/gia/general/202406/12/P2024061200281.htm)提到漁護署在塱原自然生態公園近單車徑三處位置設有臨時廁所，未列逐點名稱／座標。
+- **座標來源：** 漁護署[塱原自然生態公園 CSDI 官方資料集](https://data.gov.hk/tc-data/dataset/hk-afcd-afcdlist-lvnpcsdi)提供一個公園場地點；現行 WGS84 座標是 `22.508721, 114.112952`，不是三處廁所中任何一處，也不是塱原自然生態中心內的精確廁所。Esri HK 的轉換副本曾用作一次性座標核對，但其頁面標為 `Custom License` 且 REST metadata 的 `licenseInfo` 欄位沒有條款內容，因此不是本專案的建置或更新端點。
+- **更新位置／輸出：** `lib/afcd-long-valley-temporary-toilets.mjs` 保存單一官方園區點常數，輸出 `public/pages-data/afcd-long-valley-temporary-toilets.json`；`pnpm build:pages` 重建快照，但不會自動下載第三方轉換副本。日後要更新座標，應由 CSDI 官方資料集頁面使用最新下載／GeoSpatial Service 的 WFS 核對；不要再用已於 2026-06-30 停用的 Data Query Service。前端經 `src/api/additionalToilets.ts` 及 `src/hooks/useAdditionalToilets.ts` 載入。回歸命令：`pnpm test:afcd-long-valley-temporary-toilets`。
+- **再用與署名：** [CSDI 使用條款](https://portal.csdi.gov.hk/csdi-webpage/doc/TNC)容許免費瀏覽、下載、分發及重製資料，但要求清楚標明政府與 CSDI Portal、承認相關資料擁有者。CSDI [FAQ](https://portal.csdi.gov.hk/csdi-webpage/info/FAQ)要求署名文字為 `Common Spatial Data Infrastructure (CSDI) Portal`，並建議把 “CSDI Portal” 連到條款頁。洗手間模式 footer 現在顯示完整署名並連至條款；CSDI [GeoSpatial Services](https://portal.csdi.gov.hk/csdi-webpage/doc/GeoSpatialServices)列出 WFS、WMS 和 ArcGIS REST，未來只以官方服務更新。
+- **顯示與限制：** `kind: afcdLongValleyTemporaryToilets`、`locationPrecision: venue-uncertain`，使用灰階／虛線 marker；卡片、popup、距離及導航均明示只到公園場地點，照片功能關閉。政府答覆年份是 2024；目前廁所仍否開放及營業時間沒有更新證據，應提示到場確認。收到 AFCD 個別座標後，另行改為三個精確廁所點，不能複製公園點三次。
+
 ### 環保署公共充電器
 
 - **官方來源：** [環保署公共充電器 JSON](https://ev-charger.epd.gov.hk/resource/ev_charger_avail/ev_charger_avail.json)。
@@ -130,9 +151,8 @@
 - **使用者目前位置：** 由瀏覽器 Geolocation 提供，不是政府資料集，也沒有固定外部來源 URL；不可把使用者位置寫進公開快照。
 - **導航：** 停車場、設施及公廁的路線按座標組成 Google Maps Directions 連結，屬外連導航，不是供應商回傳的資料。
 
-## 已盤點但尚未成為地圖來源
-
-民政事務總署、港鐵、香港國際機場、西九文化區、海洋公園、房委會、市區重建局等公廁來源的資料精度和缺口已記錄在[政府及公營機構公廁來源盤點](2026-10-10-government-public-toilet-source-survey.md)。在找到官方廁所級座標前，不要把地址、商場／車站座標、平面圖像素或濕地公園中心點當成廁所精確 marker；如使用場地座標，必須明確標示「場地位置，非廁所精確點」。
+## 已盤點但尚未完整成為地圖來源
+民政署已有 110 個場地級灰階 marker；康文署塱原自然生態中心已有一個明確命名的官方洗手間點。尚缺精確位置的項目包括濕地公園六個洗手間、塱原單車徑附近三處臨時廁所，以及仍待逐項核實的港鐵、香港國際機場、西九文化區、海洋公園、房委會和市區重建局等來源。詳見[政府及公營機構公廁來源盤點](2026-10-10-government-public-toilet-source-survey.md)。不得把地址、商場／車站座標、平面圖像素或濕地公園中心點當成廁所精確 marker；如只有官方場地座標，必須明確標示「場地位置，非廁所精確點」。
 
 ## 更新後的最小檢查
 

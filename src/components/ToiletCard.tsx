@@ -11,28 +11,31 @@ type Props = { language: Language; toilet: PublicToiletViewModel };
 export function ToiletCard({ language, toilet: { toilet, distanceKm } }: Props) {
   const navigationUrl = `https://www.google.com/maps/dir/?api=1&destination=${toilet.latitude},${toilet.longitude}`;
   const isLcsdVenue = toilet.kind === 'lcsdVenue';
-  const isVenueLocation = toilet.locationPrecision === 'venue' || isLcsdVenue;
+  const isLongValleyTemporaryVenue = toilet.kind === 'afcdLongValleyTemporaryToilets';
+  const isUnconfirmedVenue = toilet.kind === 'hadCommunityToilet' || isLongValleyTemporaryVenue;
+  const isVenueLocation = toilet.locationPrecision === 'venue' || toilet.locationPrecision === 'venue-uncertain' || isLcsdVenue;
   const isLcsdParkWashroom = toilet.kind === 'lcsdParkToilet';
   const isAfcdCountryParkToilet = toilet.kind === 'afcdCountryParkToilet';
+  const isAfcdNatureCentreToilet = toilet.kind === 'afcdNatureCentreToilet';
   const displayName = language === 'en' ? toilet.nameEn ?? toilet.name : toilet.name;
   const displayAddress = language === 'en' ? toilet.addressEn ?? toilet.address : toilet.address;
   const displayOpeningHours = language === 'en' ? toilet.openingHoursEn ?? toilet.openingHours : toilet.openingHours;
   const displayRemarks = language === 'en' ? toilet.remarksEn ?? toilet.remarks : toilet.remarks;
   const [showPhoto, setShowPhoto] = useState(false);
   const [photoState, setPhotoState] = usePlacePhoto({ id: toilet.id, name: displayName, address: displayAddress, latitude: toilet.latitude, longitude: toilet.longitude }, showPhoto && !isStaticPages && !isVenueLocation);
-  const source = isLcsdVenue ? text(language, 'venueWashroom') : isLcsdParkWashroom ? text(language, 'lcsdParkWashroom') : isAfcdCountryParkToilet ? text(language, 'afcdCountryParkWashroom') : text(language, 'publicToilet');
-  const fallbackAddress = isLcsdVenue ? text(language, 'venue') : isLcsdParkWashroom ? text(language, 'lcsdParkWashroom') : isAfcdCountryParkToilet ? text(language, 'afcdCountryParkWashroom') : text(language, 'publicToilet');
+  const source = isLongValleyTemporaryVenue ? text(language, 'afcdLongValleyTemporaryWashrooms') : toilet.kind === 'hadCommunityToilet' ? text(language, 'hadCommunityWashroom') : isAfcdNatureCentreToilet ? text(language, 'afcdNatureCentreWashroom') : isLcsdVenue ? text(language, 'venueWashroom') : isLcsdParkWashroom ? text(language, 'lcsdParkWashroom') : isAfcdCountryParkToilet ? text(language, 'afcdCountryParkWashroom') : text(language, 'publicToilet');
+  const fallbackAddress = isLongValleyTemporaryVenue ? text(language, 'afcdLongValleyTemporaryWashrooms') : isLcsdVenue ? text(language, 'venue') : isLcsdParkWashroom ? text(language, 'lcsdParkWashroom') : isAfcdCountryParkToilet ? text(language, 'afcdCountryParkWashroom') : text(language, 'publicToilet');
 
   return <article className="toilet-card">
     <div className="toilet-card-main">
       <div className="card-heading">
-        <span className={isVenueLocation ? 'toilet-card-icon is-venue' : 'toilet-card-icon'} aria-hidden="true"><WashroomSymbol venue={isVenueLocation} /></span>
+        <span className={`toilet-card-icon${isVenueLocation ? ' is-venue' : ''}${isUnconfirmedVenue ? ' is-location-unconfirmed' : ''}`} aria-hidden="true"><WashroomSymbol venue={isVenueLocation} /></span>
         <div><h3>{displayName}</h3><p>{displayAddress ?? fallbackAddress}</p></div>
         <span className="distance">{formatDistance(distanceKm)}{isVenueLocation && <small className="distance-scope">{text(language, 'distanceToVenueLabel')}</small>}</span>
       </div>
       <div className="toilet-facts">
         <span className={isLcsdVenue ? 'washroom-source is-venue' : 'washroom-source'}>{source}</span>
-        {isVenueLocation && <span className="washroom-precision is-venue">{text(language, 'venueLocationPrecision')}</span>}
+        {isVenueLocation && <span className={`washroom-precision is-venue${isUnconfirmedVenue ? ' is-location-unconfirmed' : ''}`}>{text(language, isLongValleyTemporaryVenue ? 'afcdLongValleyTemporaryPrecision' : isUnconfirmedVenue ? 'hadVenuePrecision' : 'venueLocationPrecision')}</span>}
         <span>{displayOpeningHours ? text(language, 'opening', { value: displayOpeningHours }) : text(language, 'openingUnavailable')}</span>
         {displayRemarks && <span>{displayRemarks}</span>}
       </div>

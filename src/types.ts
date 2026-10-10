@@ -132,6 +132,7 @@ export interface PublicToilet {
   address?: string;
   addressEn?: string;
   district?: string;
+  districtEn?: string;
   photoPlaceUrl?: string;
   openingHours?: string;
   openingHoursEn?: string;
@@ -140,10 +141,11 @@ export interface PublicToilet {
   updatedAt?: string;
   latitude: number;
   longitude: number;
-  locationPrecision?: 'toilet' | 'venue';
-  kind?: 'publicToilet' | 'lcsdVenue' | 'lcsdParkToilet' | 'afcdCountryParkToilet';
+  locationPrecision?: 'toilet' | 'venue' | 'venue-uncertain';
+  kind?: 'publicToilet' | 'lcsdVenue' | 'lcsdParkToilet' | 'afcdCountryParkToilet' | 'hadCommunityToilet' | 'afcdNatureCentreToilet' | 'afcdLongValleyTemporaryToilets';
   source?: string;
   sourceUrl?: string;
+  coordinateSourceUrl?: string;
   category?: string;
   facilityId?: string;
   countryPark?: string;
