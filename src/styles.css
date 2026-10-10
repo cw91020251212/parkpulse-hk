@@ -756,3 +756,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .detail-grid dd { overflow-wrap: anywhere; }
 .nearby-facility-actions { flex-wrap: wrap; }
 .nearby-facility-actions .primary-action, .nearby-facility-actions .secondary-action { flex: 1 1 145px; }
+
+/* Map controls stay clickable while allowing the map underneath to show through. */
+.landsd-map .leaflet-control-zoom a { opacity: .5; }
+.map-wrap > .map-focus-toggle { opacity: .5; }

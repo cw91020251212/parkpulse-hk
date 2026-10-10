@@ -5,7 +5,10 @@ const [mapSource, styles] = await Promise.all([
   readFile(new URL('../src/components/MapView.tsx', import.meta.url), 'utf8'),
   readFile(new URL('../src/styles.css', import.meta.url), 'utf8'),
 ]);
-
+const zoomControlRule = styles.match(/\.landsd-map \.leaflet-control-zoom a \{([^}]*)\}/)?.[1] ?? '';
+const mapFocusControlRule = styles.match(/\.map-wrap > \.map-focus-toggle \{([^}]*)\}/)?.[1] ?? '';
+assert.match(zoomControlRule, /opacity: \.5;/, 'Map zoom in/out buttons stay 50% transparent');
+assert.match(mapFocusControlRule, /opacity: \.5;/, 'Map expand button stays 50% transparent');
 assert.match(mapSource, /const LANDSD_MIN_NATIVE_ZOOM = 10;/);
 assert.match(mapSource, /const LANDSD_MAX_NATIVE_ZOOM = 20;/);
 assert.match(mapSource, /const MAP_MAX_ZOOM = 22;/);
