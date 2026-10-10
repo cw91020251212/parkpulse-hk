@@ -16,3 +16,7 @@
 - 本机洗手间模式：31 个 marker 与 31 张卡均正确载入用户指定图案；场馆与公厕两种图案均出现，marker 尺寸保持 20px 内，卡片图标尺寸保持 22px 内。
 - 本机 ATM 模式：50 个 marker／50 张卡的 outer marker 和卡片图标都实际计算为左下深、右上浅的绿色渐变，带品牌的 ATM marker 亦保持渐变。
 - `pnpm test:washroom-icons`、`pnpm test:map-markers`、`pnpm test:map-zoom-style`、`pnpm test:startup-location`、`pnpm check`、`pnpm build`、`pnpm build:pages`、`pnpm test:pages`、`pnpm test:pwa` 及 `git diff --check` 已通过。
+
+## Pages 子路徑修正（2026-10-10）
+
+正式站位於 `/parkpulse-hk/`，之前圖案卻引用 `/facility-icons/...`，所以 GitHub Pages 根路徑回傳 404；正確的 `/parkpulse-hk/facility-icons/...` 回傳 200。本機 `/` 下測試未能發現此差異。現改由 `import.meta.env.BASE_URL` 組合兩個圖案網址，並擴充 `pnpm test:washroom-icons` 防止再退回根目錄路徑。漸變 CSS 已核對仍採左下深、右上淺，不需更改。

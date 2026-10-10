@@ -13,8 +13,8 @@ await Promise.all([
   access(new URL('../public/facility-icons/public-toilet-gender.png', import.meta.url)),
 ]);
 
-assert.match(symbol, /const venueSource = '\/facility-icons\/venue-sport\.png';/);
-assert.match(symbol, /const publicSource = '\/facility-icons\/public-toilet-gender\.png';/);
+assert.match(symbol, /const venueSource = `\$\{import\.meta\.env\.BASE_URL\}facility-icons\/venue-sport\.png`;/);
+assert.match(symbol, /const publicSource = `\$\{import\.meta\.env\.BASE_URL\}facility-icons\/public-toilet-gender\.png`;/);
 assert.match(symbol, /washroom-symbol \$\{kind\}/);
 assert.match(mapView, /const washroom = !fuel && !atm && !onStreet;/);
 assert.match(mapView, /washroom \? washroomSymbolMarkup\(venue\)/);

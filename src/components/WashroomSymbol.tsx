@@ -1,7 +1,7 @@
 type Props = { venue?: boolean };
 
-const venueSource = '/facility-icons/venue-sport.png';
-const publicSource = '/facility-icons/public-toilet-gender.png';
+const venueSource = `${import.meta.env.BASE_URL}facility-icons/venue-sport.png`;
+const publicSource = `${import.meta.env.BASE_URL}facility-icons/public-toilet-gender.png`;
 
 export function washroomSymbolMarkup(venue: boolean) {
   const kind = venue ? 'is-venue' : 'is-public';

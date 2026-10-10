@@ -436,3 +436,9 @@ Pages 建置會產生 `public/pages-data/motorcycle-roadside.json`：以中英�
 - 把用户提供的场馆运动图案和男女洗手间图案分别存为公开静态资源；公共厕所图案只会裁掉外缘空白，以便小尺寸仍可辨认，保留原来的红、蓝与黑色图形。
 - `WashroomSymbol` 改为在 React 卡片及 Leaflet HTML marker 共用这两张资源：场馆使用运动图案，公共厕所使用男女图案；不改变 marker 尺寸、anchor、投影或点击路径。
 - 公厕、场馆、油站、ATM 的水滴、卡片图标和图例统一采用 `linear-gradient(to top right, 深色, 浅色)`，即左下深、右上浅。带品牌的油站／ATM 继续在相应渐变水滴上显示小型品牌图，而非用白色底覆盖水滴。
+
+
+## 143. 修正指定洗手間圖案的 GitHub Pages 子路徑
+
+- 洗手間圖案資源路徑以前端建置的 `import.meta.env.BASE_URL` 為前綴；本機 `/` 和 GitHub Pages `/parkpulse-hk/` 都能正確載入。
+- 在洗手間圖標回歸檢查中鎖定 base path 用法，避免根目錄絕對路徑在 GitHub Pages 子路徑發布後變成 404。
