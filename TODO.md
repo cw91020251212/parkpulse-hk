@@ -198,3 +198,5 @@
 - [x] **符合 CSDI 資料署名條款：** 洗手間模式明示資料屬香港特別行政區政府／漁護署，並以精確文字 `Common Spatial Data Infrastructure (CSDI) Portal` 連結至 CSDI 使用條款；不以 Esri HK 自訂授權副本作建置更新來源。
 - [ ] **日後重核塱原 AFCD CSDI 園區點：** 使用官方資料集最新下載或 WFS/WMS 重新確認場地點及 WGS84 座標；CSDI Data Query Service 已於 2026-06-30 停用，不再使用該服務或 Esri HK 自訂授權鏡像作更新來源。
 - [ ] **補查港鐵及其他公營機構一般公眾可用廁所：** 只有取得官方位置與對外開放證據後才納入；車站／商場場地座標不得冒充廁所點，也不可假設付費區內或只供商戶使用的廁所對所有市民開放。港鐵現有車站／無障礙設施 CSV 沒有 WGS84 座標，官方資料亦顯示部分車站洗手間須入閘使用；需逐站證明公眾可達性及個別座標後再考慮。其他機構沿用相同精度與開放資格標示。
+
+- [x] **修复油站／ATM 地址截断与详情跳转：** 油站及 ATM 结果卡和地图白色地点弹窗均可打开同一个灰色详细资料面板；面板完整显示资料来源提供的地址原文并自动换行，显示类别、品牌／资料来源、开放时间和备注（来源有提供时），并提供 Google Maps 地点查询及对应导航。卡片、地图弹窗及洗手间结果卡的地址都可点击；没有来源地址时只用设施座标查询，不捏造地址。详情可用关闭按钮或手机／浏览器返回键关闭。**证据：** `pnpm check`、`pnpm test:place-details`、`pnpm test:nearby-facilities`、`pnpm test:toilet-photos`、`pnpm test:pages`、`pnpm test:pwa`、`pnpm exec vite build --mode pages`、`git diff --check` 全部通过。

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { isStaticPages } from '../api/site';
 import { formatDistance } from '../domain/distance';
+import { googleMapsPlaceUrl } from '../domain/placeLinks';
 import { usePlacePhoto } from '../hooks/usePlacePhoto';
 import { text, type Language } from '../i18n';
 import type { PublicToiletViewModel } from '../types';
@@ -19,6 +20,7 @@ export function ToiletCard({ language, toilet: { toilet, distanceKm } }: Props) 
   const isAfcdNatureCentreToilet = toilet.kind === 'afcdNatureCentreToilet';
   const displayName = language === 'en' ? toilet.nameEn ?? toilet.name : toilet.name;
   const displayAddress = language === 'en' ? toilet.addressEn ?? toilet.address : toilet.address;
+  const addressUrl = googleMapsPlaceUrl(displayName, displayAddress, toilet.latitude, toilet.longitude);
   const displayOpeningHours = language === 'en' ? toilet.openingHoursEn ?? toilet.openingHours : toilet.openingHours;
   const displayRemarks = language === 'en' ? toilet.remarksEn ?? toilet.remarks : toilet.remarks;
   const [showPhoto, setShowPhoto] = useState(false);
@@ -30,7 +32,7 @@ export function ToiletCard({ language, toilet: { toilet, distanceKm } }: Props) 
     <div className="toilet-card-main">
       <div className="card-heading">
         <span className={`toilet-card-icon${isVenueLocation ? ' is-venue' : ''}${isUnconfirmedVenue ? ' is-location-unconfirmed' : ''}`} aria-hidden="true"><WashroomSymbol venue={isVenueLocation} /></span>
-        <div><h3>{displayName}</h3><p>{displayAddress ?? fallbackAddress}</p></div>
+        <div><h3>{displayName}</h3><a className="card-address-link" href={addressUrl} target="_blank" rel="noreferrer" aria-label={`${text(language, 'openPlaceOnMap')}: ${displayName}`}><p>{displayAddress || fallbackAddress}</p></a></div>
         <span className="distance">{formatDistance(distanceKm)}{isVenueLocation && <small className="distance-scope">{text(language, 'distanceToVenueLabel')}</small>}</span>
       </div>
       <div className="toilet-facts">

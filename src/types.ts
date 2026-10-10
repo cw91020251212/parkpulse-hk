@@ -186,6 +186,7 @@ export interface NearbyFacility {
 export interface NearbyFacilityViewModel {
   facility: NearbyFacility;
   distanceKm: number;
+  onSelect?: () => void;
 }
 
 export interface OnStreetParking {

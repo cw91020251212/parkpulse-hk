@@ -492,3 +492,8 @@ Pages 建置會產生 `public/pages-data/motorcycle-roadside.json`：以中英�
 
 ## 152. CSDI 資料再用與來源署名
 AFCD CSDI 塱原園區位置資料須遵守 CSDI Portal 條款：重用資料時清楚標明政府及 CSDI Portal，並承認相關資料擁有者；洗手間模式頁尾須標明資料屬香港特別行政區政府／漁護署，並顯示精確署名 `Common Spatial Data Infrastructure (CSDI) Portal`，連到 CSDI 使用條款。舊 Data Query Service 已於 2026-06-30 停用；日後更新園區點時，應從官方資料集最新下載或 WFS/WMS 服務核對，不依賴 Esri HK 的 `Custom License` 轉換副本 API。現行塱原點位為固定的一個官方場地座標，明確不是三處廁所座標；座標刷新須人工核對官方資料集。
+
+
+## 153. 油站、ATM 与公厕地址详情
+
+油站与 ATM 卡片及地图白色 Popup 共用同一应用内详情面板；详情显示来源地址原文、类别、品牌／来源、可用营业时间及备注。地址不得单行省略，须自动换行；地址链接以设施名称和来源地址查询 Google Maps，导航分别使用油站驾车与 ATM 步行路线。公厕卡地址同样可点击查找。无来源地址时只以既有设施座标作为地图查询条件，不推算或伪造地址。详情支援关闭按钮与浏览器返回键，保留繁中／英文文案。

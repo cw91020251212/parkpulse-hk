@@ -26,6 +26,7 @@
     "test:accessible-parking": "node --experimental-strip-types scripts/check-accessible-parking.mjs",
     "test:toilets": "node scripts/check-public-toilets.mjs",
     "test:toilet-photos": "node scripts/check-toilet-photos.mjs",
+    "test:place-details": "node --experimental-strip-types scripts/check-place-details.mjs",
     "test:verified-place-links": "node scripts/check-verified-place-links.mjs",
     "test:lcsd-venues": "node scripts/check-lcsd-venues.mjs",
     "test:lcsd-park-washrooms": "node scripts/check-lcsd-park-washrooms.mjs",

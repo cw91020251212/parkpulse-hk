@@ -737,3 +737,22 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .legend-atm { background: linear-gradient(to top right, #4b9e7c, #c3ebd7); }
 
 .csdi-attribution { font-size: 12px; font-weight: 700; }
+
+
+/* Full addresses stay readable; nearby cards and map popups open a real detail view. */
+.toilet-card .card-heading p { max-width: 100%; overflow: visible; overflow-wrap: anywhere; text-overflow: clip; white-space: normal; }
+.toilet-card .card-address-link { display: block; color: inherit; text-decoration: none; }
+.toilet-card .card-address-link:hover p { color: #b8fff3; text-decoration: underline; text-underline-offset: 2px; }
+.nearby-facility-main { cursor: pointer; }
+.nearby-facility-main:hover .card-heading h3 { color: #a7f3e7; }
+.nearby-facility-main:focus-visible { outline: 2px solid #48d6c5; outline-offset: -3px; border-radius: 12px; }
+.facility-details-button { border: 1px solid #397088; border-radius: 8px; padding: 7px 8px; color: #d8f3f5; background: #16465d; font-size: 11px; font-weight: 900; text-align: center; }
+.facility-details-button:hover { border-color: #51c8b8; background: #1a5661; }
+.toilet-popup .map-popup-address { display: block; max-width: 230px; margin-top: 4px; overflow-wrap: anywhere; white-space: normal; }
+.map-popup-detail-button { display: block; width: 100%; min-height: 34px; margin-top: 8px; border: 1px solid #137e79; border-radius: 8px; padding: 6px 9px; color: #073a46; background: #b9f5ea; font-size: 12px; font-weight: 900; }
+.map-popup-detail-button:hover { background: #d9fff8; }
+.detail-address { overflow-wrap: anywhere; }
+.detail-address a { color: #d6eef0; text-decoration: underline; text-underline-offset: 2px; }
+.detail-grid dd { overflow-wrap: anywhere; }
+.nearby-facility-actions { flex-wrap: wrap; }
+.nearby-facility-actions .primary-action, .nearby-facility-actions .secondary-action { flex: 1 1 145px; }
