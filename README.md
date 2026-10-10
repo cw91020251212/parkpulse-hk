@@ -17,6 +17,10 @@ GitHub Pages 版本保留停車位（data.gov.hk 即時讀取）、公廁、康�
 
 頁尾的「使用聲明／Disclaimer」說明資料、第三方地圖／相片、定位和瀏覽器偏好的限制；完整中英文文件見：[使用聲明 / Disclaimer](docs/disclaimer.md)。
 
+## 資料來源 / Data sources
+
+接手維護或更新公開資料前，請先看[資料來源與更新索引 / Data source registry](docs/data-source-registry.md)：按功能列出官方網址、程式更新位置、快照檔、刷新命令、精度限制及相應檢查。
+
 ## 安裝至手機主畫面
 
 GitHub Pages 版本是一個可安裝的 PWA。Android／Chrome 可在瀏覽器選單選擇「安裝應用程式」或「加到主畫面」；iPhone／iPad 請在 Safari 點擊分享按鈕，選擇「加入主畫面」。安裝後以獨立視窗開啟，並會保留最近讀取的應用外殼與靜態設施資料供短暫離線查看；即時停車空位和地圖仍需要網絡。
