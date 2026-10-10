@@ -16,6 +16,7 @@
     "test:startup-location": "node scripts/check-startup-location.mjs",
     "test:map-markers": "node scripts/check-map-facility-markers.mjs",
     "test:map-zoom-style": "node scripts/check-map-zoom-style.mjs",
+    "test:vehicle-selection": "node scripts/check-vehicle-selection.mjs",
     "test:washroom-icons": "node scripts/check-washroom-icons.mjs",
     "test:total-spaces": "node scripts/check-total-spaces.mjs",
     "test:official-static-carparks": "node scripts/check-official-static-carparks.mjs",
