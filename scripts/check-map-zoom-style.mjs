@@ -1,14 +1,25 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const [mapSource, styles] = await Promise.all([
+const [mapSource, styles, appSource, i18n] = await Promise.all([
   readFile(new URL('../src/components/MapView.tsx', import.meta.url), 'utf8'),
   readFile(new URL('../src/styles.css', import.meta.url), 'utf8'),
+  readFile(new URL('../src/App.tsx', import.meta.url), 'utf8'),
+  readFile(new URL('../src/i18n.ts', import.meta.url), 'utf8'),
 ]);
 const zoomControlRule = styles.match(/\.landsd-map \.leaflet-control-zoom a \{([^}]*)\}/)?.[1] ?? '';
 const mapFocusControlRule = styles.match(/\.map-wrap > \.map-focus-toggle \{([^}]*)\}/)?.[1] ?? '';
 assert.match(zoomControlRule, /opacity: \.5;/, 'Map zoom in/out buttons stay 50% transparent');
 assert.match(mapFocusControlRule, /opacity: \.5;/, 'Map expand button stays 50% transparent');
+assert.match(mapSource, /className="map-legend-toggle"[^>]*aria-controls="map-marker-legend"[^>]*aria-expanded=\{legendOpen\}/);
+assert.match(mapSource, /className="map-marker-legend" hidden=\{!legendOpen\}/);
+assert.match(mapSource, /legendAvailable[\s\S]*legendCentre/);
+assert.doesNotMatch(appSource, /className="map-marker-legend"/);
+assert.match(i18n, /showMapLegend: '顯示地圖圖例'/);
+assert.match(i18n, /hideMapLegend: 'Hide map legend'/);
+assert.match(styles, /\.map-marker-legend\s*\{[^}]*position: absolute;/);
+assert.match(styles, /\.map-legend-toggle\s*\{[^}]*bottom: 62px;/);
+assert.match(styles, /100dvh - 224px/);
 assert.match(mapSource, /const LANDSD_MIN_NATIVE_ZOOM = 10;/);
 assert.match(mapSource, /const LANDSD_MAX_NATIVE_ZOOM = 20;/);
 assert.match(mapSource, /const MAP_MAX_ZOOM = 22;/);
