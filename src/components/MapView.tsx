@@ -21,6 +21,18 @@ function Recenter({ position, request, startup }: { position: Coordinates; reque
 function FocusSelected({ park }: { park?: ParkViewModel }) { const map = useMap(); useEffect(() => { if (park) map.flyTo([park.info.latitude, park.info.longitude], Math.max(map.getZoom(), 15), { duration: 0.35 }); }, [map, park]); return null; }
 function ResizeMap({ expanded }: { expanded: boolean }) { const map = useMap(); useEffect(() => { const timer = window.setTimeout(() => map.invalidateSize({ animate: true }), 220); return () => window.clearTimeout(timer); }, [expanded, map]); return null; }
 
+function PopupHistory() {
+  const map = useMap(); const popupOpen = useRef(false); const historyEntry = useRef(false);
+  useEffect(() => {
+    const onPopupOpen = () => { popupOpen.current = true; if (historyEntry.current) return; window.history.pushState({ ...(window.history.state ?? {}), parkspotPopup: true }, ''); historyEntry.current = true; };
+    const onPopupClose = () => { popupOpen.current = false; window.queueMicrotask(() => { if (popupOpen.current || !historyEntry.current) return; historyEntry.current = false; if (window.history.state?.parkspotPopup === true) window.history.back(); }); };
+    const onPopState = (event: PopStateEvent) => { if (!historyEntry.current || event.state?.parkspotPopup === true) return; historyEntry.current = false; popupOpen.current = false; map.closePopup(); };
+    map.on('popupopen', onPopupOpen); map.on('popupclose', onPopupClose); window.addEventListener('popstate', onPopState);
+    return () => { map.off('popupopen', onPopupOpen); map.off('popupclose', onPopupClose); window.removeEventListener('popstate', onPopState); };
+  }, [map]);
+  return null;
+}
+
 function LongPressPicker({ onPick }: { onPick: (coordinates: Coordinates) => void }) {
   const map = useMap();
   useEffect(() => {
@@ -49,6 +61,7 @@ export function MapView({ language, position, parks, nearbyItems, selectedId, la
 
   return <div className={expanded ? 'map-wrap is-expanded' : 'map-wrap'} aria-label={text(language, 'mapLabel')}>
     <MapContainer center={[position.lat, position.lng]} zoom={startupLocating ? 10 : 14} minZoom={8} maxZoom={MAP_MAX_ZOOM} scrollWheelZoom inertia={false} className="landsd-map">
+      <PopupHistory />
       <TileLayer minNativeZoom={LANDSD_MIN_NATIVE_ZOOM} maxNativeZoom={LANDSD_MAX_NATIVE_ZOOM} maxZoom={MAP_MAX_ZOOM} attribution='&copy; <a href="https://api.portal.hkmapservice.gov.hk/disclaimer" target="_blank" rel="noreferrer">Map information from Lands Department</a>' url={LANDSD_BASEMAP_URL} />
       <TileLayer minNativeZoom={LANDSD_MIN_NATIVE_ZOOM} maxNativeZoom={LANDSD_MAX_NATIVE_ZOOM} maxZoom={MAP_MAX_ZOOM} url={LANDSD_LABEL_URL} opacity={1} zIndex={10} />
       <Recenter position={position} request={recenterRequest} startup={startupRecenter} />

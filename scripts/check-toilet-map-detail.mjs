@@ -11,6 +11,10 @@ assert.match(map, /className="toilet-popup-detail-trigger"[^>]*aria-haspopup="di
 assert.match(map, /className="toilet-popup-detail-action"[^>]*aria-haspopup="dialog"[^>]*onClick=\{selectToilet\}>\{text\(language, 'details'\)\}/);
 assert.match(styles, /\.toilet-popup-detail-row \{ display: flex; align-items: flex-start;/);
 assert.match(styles, /\.toilet-popup-detail-action \{ display: inline-flex;/);
+assert.match(map, /function PopupHistory\(\)/);
+assert.match(map, /parkspotPopup: true/);
+assert.match(map, /event\.state\?\.parkspotPopup === true/);
+assert.match(map, /map\.closePopup\(\)/);
 assert.match(map, /const selectToilet = 'toilet' in item \? \(\) => onSelectToilet\(item\.toilet\.id\)/);
 assert.match(map, /lastViewedToiletId/);
 assert.match(app, /const \[lastViewedToiletId, setLastViewedToiletId\]/);
