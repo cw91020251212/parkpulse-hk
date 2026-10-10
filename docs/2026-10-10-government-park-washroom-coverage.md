@@ -1,9 +1,14 @@
 
 
-## 回歸驗證
+## 漁護署郊野公園公廁來源補充
 
-- 官方全量產生器檢查到 56 個資料類別、成功讀取 45 份官方 JSON，建立 319 筆 GIHS 去重後的戶外公廁。建置要求最低 35 份可讀檔、250 筆結果，低於門檻時保留舊快照。
-- 大埔區本機預覽顯示 18 張洗手間結果卡及 18 個 marker；大埔頭遊樂場僅一筆、距搜尋中心 1.1 公里，並顯示官方地址、開放時間和男／女／暢通易達設施。英文切換顯示 `Tai Po Tau Playground` 等官方英文內容。
-- 通過 `pnpm test:lcsd-park-washrooms`、`pnpm test:washroom-icons`、`pnpm test:map-markers`、`pnpm test:map-zoom-style`、`pnpm test:startup-location`、`pnpm check`、`pnpm build`、`pnpm build:pages`、`pnpm test:pages`、`pnpm test:pwa` 和 `git diff --check`。建置產生的其他即時資料快照已還原；只有新公廁快照屬本次功能。
+使用者指出大埔鉛礦坳營地公廁未顯示。既有康文署戶外場地快照無法涵蓋此設施，進一步查核漁護署（AFCD）郊野公園公廁專用資料。官方 CSDI 資料集 ID 為 `afcd_rcd_1635136427551_29173`；官方版本 API 提供季度檔案，2026 Q3 GeoJSON 內有 167 個點位，其中包括：
 
-正式 GitHub Pages workflow `38028356522` 已對提交 `06f7766` 成功部署。部署後檢查確認新版 JavaScript bundle 與 `/parkpulse-hk/pages-data/lcsd-park-washrooms.json` 均回應 HTTP 200，正式快照包含 319 筆資料且大埔頭遊樂場唯一一筆。在正式瀏覽器切換洗手間模式，旺角搜尋中心顯示 70 張卡與 70 個洗手間圖示 marker；大埔頭紀錄的正式 JSON、座標及中英文資料均已核實。
+- 名稱：廁所（鉛礦坳營地）／Toilet (Lead Mine Pass Campsite)
+- AFCD 設施 ID：`SM/TF/004`
+- 所屬郊野公園：城門郊野公園／Shing Mun Country Park
+- 類型：沖水式廁所／Flushing Toilet
+- 無障礙設施：官方欄位為 `Y`
+- WGS84：經度 `114.1582168747`、緯度 `22.4120975474`
+
+來源：漁護署 [郊野公園廁所資料頁](https://www.afcd.gov.hk/tc_chi/country/cou_vis/cou_vis_rec/cou_toi.html)、[CSDI 資料集頁](https://portal.csdi.gov.hk/csdi-webpage/dataset/afcd_rcd_1635136427551_29173)，季度檔案由 CSDI 官方版本清單連結取得。初步座標比對 167 個 AFCD 點位與現有食環署及康文署快照在 150 米內無重複，後續整合仍會保留通用近距離去重保護。

@@ -10,6 +10,7 @@ import { buildMotorcycleRoadside, MOTORCYCLE_ROADSIDE_WFS_URL } from '../lib/mot
 import { buildLinkOperatorRates, buildSinoOperatorRates } from '../lib/operator-rates.mjs';
 import { parsePublicToilets } from '../lib/public-toilets.mjs';
 import { buildLcsdParkWashrooms } from '../lib/lcsd-park-washrooms.mjs';
+import { buildAfcdCountryParkToilets } from '../lib/afcd-country-park-toilets.mjs';
 import { refreshBrandIcons } from './refresh-brand-icons.mjs';
 
 const publicDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../public');
@@ -79,6 +80,8 @@ await refreshOrKeep('public-toilets.json', async () => {
 });
 
 await refreshOrKeep('lcsd-park-washrooms.json', () => buildLcsdParkWashrooms());
+
+await refreshOrKeep('afcd-country-park-toilets.json', () => buildAfcdCountryParkToilets());
 
 await refreshOrKeep('fuel-stations.json', async () => {
   const records = parseFuelStations(await (await request(FUEL_STATIONS_URL, 'text/html')).text());

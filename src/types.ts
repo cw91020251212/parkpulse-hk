@@ -140,10 +140,17 @@ export interface PublicToilet {
   updatedAt?: string;
   latitude: number;
   longitude: number;
-  kind?: 'publicToilet' | 'lcsdVenue' | 'lcsdParkToilet';
+  kind?: 'publicToilet' | 'lcsdVenue' | 'lcsdParkToilet' | 'afcdCountryParkToilet';
   source?: string;
   sourceUrl?: string;
   category?: string;
+  facilityId?: string;
+  countryPark?: string;
+  countryParkEn?: string;
+  toiletType?: string;
+  toiletTypeEn?: string;
+  barrierFree?: boolean;
+  sourcePeriod?: string;
 }
 
 export interface PublicToiletViewModel {

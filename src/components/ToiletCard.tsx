@@ -12,14 +12,15 @@ export function ToiletCard({ language, toilet: { toilet, distanceKm } }: Props) 
   const navigationUrl = `https://www.google.com/maps/dir/?api=1&destination=${toilet.latitude},${toilet.longitude}`;
   const isLcsdVenue = toilet.kind === 'lcsdVenue';
   const isLcsdParkWashroom = toilet.kind === 'lcsdParkToilet';
+  const isAfcdCountryParkToilet = toilet.kind === 'afcdCountryParkToilet';
   const displayName = language === 'en' ? toilet.nameEn ?? toilet.name : toilet.name;
   const displayAddress = language === 'en' ? toilet.addressEn ?? toilet.address : toilet.address;
   const displayOpeningHours = language === 'en' ? toilet.openingHoursEn ?? toilet.openingHours : toilet.openingHours;
   const displayRemarks = language === 'en' ? toilet.remarksEn ?? toilet.remarks : toilet.remarks;
   const [showPhoto, setShowPhoto] = useState(false);
   const [photoState, setPhotoState] = usePlacePhoto({ id: toilet.id, name: displayName, address: displayAddress, latitude: toilet.latitude, longitude: toilet.longitude }, showPhoto && !isStaticPages);
-  const source = isLcsdVenue ? text(language, 'venueWashroom') : isLcsdParkWashroom ? text(language, 'lcsdParkWashroom') : text(language, 'publicToilet');
-  const fallbackAddress = isLcsdVenue ? text(language, 'venue') : isLcsdParkWashroom ? source : text(language, 'publicToilet');
+  const source = isLcsdVenue ? text(language, 'venueWashroom') : isLcsdParkWashroom ? text(language, 'lcsdParkWashroom') : isAfcdCountryParkToilet ? text(language, 'afcdCountryParkWashroom') : text(language, 'publicToilet');
+  const fallbackAddress = isLcsdVenue ? text(language, 'venue') : isLcsdParkWashroom ? text(language, 'lcsdParkWashroom') : isAfcdCountryParkToilet ? text(language, 'afcdCountryParkWashroom') : text(language, 'publicToilet');
 
   return <article className="toilet-card">
     <div className="toilet-card-main">
