@@ -804,8 +804,11 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
   .landsd-map { min-height: 450px; height: 450px; }
 }
 @media (max-width: 720px) {
+  .filters { margin-top: 16px; }
+  .map-column { height: max(407px, calc(100dvh - 173px)); }
+  .map-column > .map-wrap { flex: 1 1 auto; height: auto; min-height: 360px; }
   .map-wrap,
-  .landsd-map { min-height: 360px; height: clamp(360px, calc((100dvh - 240px) / var(--ui-zoom, 1)), 560px); }
+  .landsd-map { height: 100%; min-height: 0; }
 }
 
 .manual-position-source { color: #e4d8ff !important; background: #3b3156 !important; border: 1px dashed #9b85c3; }
