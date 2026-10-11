@@ -120,7 +120,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .area-tools { border-top: 1px solid #20475f; }
 .map-bottom-tools { flex: 0 0 auto; padding: 9px 14px; background: #0b263d; }
 .area-tools-row { display: flex; align-items: center; gap: 9px; }
-.area-search-toggle { flex: 0 0 auto; min-height: 32px; border: 1px solid #287065; border-radius: 999px; padding: 6px 10px; color: #d8fffa; background: #104c4d; font-size: 11px; font-weight: 900; }
+.area-search-toggle { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; height: var(--area-tool-height); min-height: var(--area-tool-height); border: 1px solid #287065; border-radius: 999px; padding: 0 10px; color: #d8fffa; background: #104c4d; font-size: 11px; font-weight: 900; }
 .area-search-toggle:hover { border-color: #55d9ca; background: #13625f; }
 .map-gesture-note { margin: 0; color: #9ab9c2; font-size: 10px; font-weight: 700; line-height: 1.35; }
 .map-marker-legend { display: flex; flex-wrap: wrap; gap: 5px 9px; padding-top: 7px; color: #a9c4ca; font-size: 10px; font-weight: 800; line-height: 1.2; }.map-marker-legend span { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }.legend-swatch { width: 8px; height: 8px; border: 1px solid #d5f6f2; border-radius: 50%; }.legend-available { background: #069b8d; }.legend-full { background: #d55b45; }.legend-closed { background: #677c87; }.legend-unknown { background: #9a6f39; }.legend-toilet { background: #2777b8; }.legend-venue { background: #7655a9; }.legend-venue-unconfirmed { background: linear-gradient(135deg, #65717a, #c5cbd0); border-style: dashed; }.toilet-marker.is-location-unconfirmed, .toilet-card-icon.is-location-unconfirmed { filter: grayscale(1); }.toilet-marker.is-location-unconfirmed { opacity: .84; border-style: dashed; }.washroom-precision.is-location-unconfirmed { border: 1px dashed #aab4ba; color: #e2e8eb; background: #36444c; }.legend-fuel { background: #c36d1b; }.legend-atm { background: #237d61; }.legend-center { font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
@@ -180,7 +180,8 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 
 /* 統一篩選牌及結果卡：內容長短不再改變基本卡片節奏。 */
 :root {
-  --filter-control-height: 30px;
+  --filter-control-height: 26px;
+  --area-tool-height: 28px;
   --result-card-gap: 10px;
   --result-action-width: 76px;
 }
@@ -344,7 +345,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 
 @media (max-width: 560px) {
   :root {
-    --filter-control-height: 40px;
+    --filter-control-height: 26px;
     --result-action-width: 78px;
   }
 
@@ -777,12 +778,12 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .map-marker-legend[hidden] { display: none; }
 .map-legend-toggle {
   position: static;
-  flex: 0 0 36px;
+  flex: 0 0 var(--area-tool-height);
   margin-left: auto;
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: var(--area-tool-height);
+  height: var(--area-tool-height);
   border: 1px solid #c8e5e4;
   border-radius: 50%;
   padding: 0;
