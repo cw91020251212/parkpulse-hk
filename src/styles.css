@@ -63,8 +63,6 @@ h1 { margin: 1px 0 0; font-size: 26px; line-height: 1.08; letter-spacing: .02em;
 .leaflet-control-zoom a { color: #0a2134 !important; }
 .landsd-credit { position: absolute; z-index: 1001; right: 10px; bottom: 22px; display: inline-flex; align-items: center; gap: 6px; padding: 4px 6px; color: #182d35; background: rgb(255 255 255 / 50%); border: 1px solid rgb(255 255 255 / 65%); border-radius: 5px; font-size: 11px; font-weight: 700; text-decoration: none; text-shadow: 0 1px 1px rgb(255 255 255 / 72%); box-shadow: 0 1px 4px #0002; }
 .landsd-credit img { width: 26px; height: 26px; object-fit: contain; }
-.landsd-credit a { display: inline-flex; align-items: center; color: inherit; text-decoration: none; }
-.landsd-credit a:focus-visible { outline: 2px solid #14b8a6; outline-offset: 2px; border-radius: 3px; }
 .parking-marker-shell, .toilet-marker-shell { background: transparent !important; border: 0 !important; overflow: visible !important; }
 .parking-marker-shell::before { content: ""; position: absolute; z-index: 0; left: 4px; bottom: -16px; width: 30px; height: 7px; border-radius: 50%; background: rgb(48 64 71 / 34%); pointer-events: none; }
 .toilet-marker-shell::before { content: ""; position: absolute; z-index: 0; left: 3px; bottom: -14px; width: 28px; height: 6px; border-radius: 50%; background: rgb(48 64 71 / 34%); pointer-events: none; }

@@ -15,8 +15,8 @@ assert.match(map, /function PopupHistory\(\)/);
 assert.match(map, /parkspotPopup: true/);
 assert.match(map, /event\.state\?\.parkspotPopup === true/);
 assert.match(map, /map\.closePopup\(\)/);
-assert.match(map, /<a href="https:\/\/www\.map\.gov\.hk\/" target="_blank" rel="noreferrer" aria-label=\{text\(language, 'landsdMapLink'\)\}><img src=\{LANDSD_LOGO_URL\} alt=\{text\(language, 'landsdLogo'\)\} \/><\/a>/);
-assert.doesNotMatch(map, /LandsdMapCredit|landsd-credit-options|parkspotLandsdMenu/);
+assert.match(map, /<a className="landsd-credit" href="https:\/\/api\.portal\.hkmapservice\.gov\.hk\/disclaimer" target="_blank" rel="noreferrer"><span>\{text\(language, 'landsdCredit'\)\}<\/span><img src=\{LANDSD_LOGO_URL\} alt=\{text\(language, 'landsdLogo'\)\} \/><\/a>/);
+assert.doesNotMatch(map, /https:\/\/www\.map\.gov\.hk\/|landsdMapLink|LandsdMapCredit|landsd-credit-options|parkspotLandsdMenu/);
 assert.match(map, /const selectToilet = 'toilet' in item \? \(\) => onSelectToilet\(item\.toilet\.id\)/);
 assert.match(map, /lastViewedToiletId/);
 assert.match(app, /const \[lastViewedToiletId, setLastViewedToiletId\]/);
@@ -26,4 +26,4 @@ assert.match(app, /onSelectToilet=\{openToiletDetail\}/);
 assert.match(styles, /\.toilet-marker\.is-last-viewed \{ --marker-outline: #ff3b78; \}/);
 assert.match(styles, /\.washroom-detail-panel \{ padding-top: 52px; \}/);
 
-console.log('Verified toilet popup detail and back behavior, and direct LandsD disclaimer/map links without an overlay.');
+console.log('Verified toilet popup detail and back behavior, and the original LandsD disclaimer attribution without a map shortcut or overlay.');
