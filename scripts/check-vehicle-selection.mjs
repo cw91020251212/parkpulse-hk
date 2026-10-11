@@ -14,10 +14,16 @@ assert.match(filters, /\(\['toilets', 'fuel', 'atm'\] as const\)/);
 assert.match(app, /useState<VehicleType \| null>\(\(\) => readPreferences\(\)\.vehicleType\)/);
 assert.match(app, /saved\.vehicleType === null \? null/);
 assert.match(app, /if \(!vehicleType\) return \[\];/);
+assert.match(app, /useOnStreetParking\(facilityMode === 'onStreet' && vehicleType !== null && vehicleType !== 'motorCycle'\)/);
+assert.match(app, /facilityMode !== 'onStreet' \|\| !vehicleType \|\| activeVehicleType === 'motorCycle'/);
+assert.match(app, /facilityMode !== 'onStreet' \|\| vehicleType !== 'motorCycle'/);
+assert.match(app, /const onStreetResultLabel = !vehicleType \? text\(language, 'vehicleNotSelected'\)/);
+assert.match(app, /!vehicleType \? 'vehicleNotSelected' : showingMotorcycleOnStreet \? 'noMotorcycleOnStreet'/);
+assert.match(app, /!vehicleType \? 'vehicleSelectionHint' : 'tryAnotherArea'/);
 assert.match(app, /!facilityMode && !vehicleType && <div className="empty-state">/);
 assert.match(copy, /vehicleNotSelected: '未選擇車種'/);
 assert.match(copy, /vehicleNotSelected: 'No vehicle type selected'/);
-assert.match(styles, /--filter-control-height: 30px;/, 'All filter chips and height controls use the shorter height');
+assert.match(styles, /--filter-control-height: 32px;/, 'All filter chips and height controls use the shorter height');
 assert.match(styles, /\.chip,\s*\.height-select,\s*\.height-select select\s*\{\s*font-size: 14px;/, 'Filter text remains at 14px');
 
 console.log('Vehicle selection can be cleared, the empty state is persisted and explicit, and facility filters remain available.');
