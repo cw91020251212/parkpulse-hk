@@ -646,12 +646,6 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
   background: #12384d;
 }
 
-.parking-marker.is-last-viewed {
-  outline: 1px solid #ff3b78;
-  outline-offset: 1px;
-  box-shadow: none;
-}
-
 /* 名稱列不再為評分留位；只有灰色次要資料列避開評分連結。 */
 .park-card-rating {
   top: 58px;
@@ -738,7 +732,9 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .legend-fuel { background: linear-gradient(to top right, #c87835, #f8d8ac); }
 .legend-atm { background: linear-gradient(to top right, #4b9e7c, #c3ebd7); }
 .legend-aed { display: inline-grid; place-items: center; overflow: hidden; background: linear-gradient(to top right, #4e9d71, #d6f4df); }
-.toilet-marker.is-last-viewed { --marker-outline: #ff3b78; }
+
+.parking-marker.is-viewed,
+.toilet-marker.is-viewed { --marker-outline: #ff3b78; }
 
 .aed-symbol { display: block; width: 21px; height: 21px; border-radius: 3px; object-fit: contain; }
 .toilet-marker .aed-symbol { width: 22px; height: 22px; }
