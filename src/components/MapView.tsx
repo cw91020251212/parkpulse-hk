@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import L from 'leaflet';
 import { Circle, MapContainer, Marker, Popup, TileLayer, Tooltip, useMap } from 'react-leaflet';
 import { getFacilityBrandIcon } from '../domain/brandIcons';
@@ -174,69 +174,6 @@ function PopupHistory() {
   return null;
 }
 
-function LandsdMapCredit({ language }: { language: Language }) {
-  const [open, setOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const historyEntry = useRef(false);
-  const close = useCallback(() => {
-    setOpen(false);
-    if (!historyEntry.current) return;
-    if (window.history.state?.parkspotLandsdMenu === true) window.history.back();
-    else historyEntry.current = false;
-  }, []);
-
-  const toggle = () => {
-    if (open) { close(); return; }
-    const previousState = window.history.state;
-    window.history.pushState({ ...(previousState && typeof previousState === 'object' ? previousState : {}), parkspotLandsdMenu: true }, '');
-    historyEntry.current = true;
-    setOpen(true);
-  };
-
-  useEffect(() => {
-    const onPopState = (event: PopStateEvent) => {
-      if (event.state?.parkspotLandsdMenu === true) { historyEntry.current = true; setOpen(true); return; }
-      if (!historyEntry.current) return;
-      historyEntry.current = false;
-      setOpen(false);
-    };
-    window.addEventListener('popstate', onPopState);
-    return () => window.removeEventListener('popstate', onPopState);
-  }, []);
-
-  useEffect(() => {
-    if (!open) return;
-    const onOutsidePointerDown = (event: PointerEvent) => {
-      if (containerRef.current?.contains(event.target as Node)) return;
-      event.preventDefault();
-      event.stopPropagation();
-      close();
-    };
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape') return;
-      event.preventDefault();
-      close();
-    };
-    document.addEventListener('pointerdown', onOutsidePointerDown, true);
-    document.addEventListener('keydown', onKeyDown);
-    return () => {
-      document.removeEventListener('pointerdown', onOutsidePointerDown, true);
-      document.removeEventListener('keydown', onKeyDown);
-    };
-  }, [open, close]);
-
-  return <div className="landsd-credit" ref={containerRef}>
-    <a href="https://api.portal.hkmapservice.gov.hk/disclaimer" target="_blank" rel="noreferrer" onClick={close}>{text(language, 'landsdCredit')}</a>
-    <div className="landsd-credit-menu">
-      <button className="landsd-credit-toggle" type="button" aria-haspopup="dialog" aria-expanded={open} aria-controls="landsd-credit-options" aria-label={text(language, 'landsdLogoAction')} title={text(language, 'landsdLogoAction')} onClick={toggle}><img src={LANDSD_LOGO_URL} alt="" /></button>
-      {open && <div id="landsd-credit-options" className="landsd-credit-options" role="dialog" aria-label={text(language, 'landsdLogoAction')}>
-        <a href="https://api.portal.hkmapservice.gov.hk/disclaimer" target="_blank" rel="noreferrer" onClick={close}>{text(language, 'landsdViewInfo')}</a>
-        <a href="https://www.map.gov.hk/" target="_blank" rel="noreferrer" onClick={close}>{text(language, 'landsdMapLink')}</a>
-      </div>}
-    </div>
-  </div>;
-}
-
 function LongPressPicker({ onPick }: { onPick: (coordinates: Coordinates) => void }) {
   const map = useMap();
   useEffect(() => {
@@ -311,6 +248,6 @@ export function MapView({ language, position, parks, nearbyItems, selectedId, la
     {startupLocating && <div className="map-startup-location-state" role="status" aria-live="polite"><span className="loader" /><span>{text(language, 'startupLocationLoading')}</span></div>}
     <button className="map-focus-toggle" type="button" onClick={onToggleExpanded} aria-pressed={expanded} aria-label={expanded ? text(language, 'mapCollapse') : text(language, 'mapExpand')} title={expanded ? text(language, 'mapCollapse') : text(language, 'mapExpand')}><MapFocusIcon expanded={expanded} /></button>
     {!expanded && visibleResultCount > 0 && <button className="map-results-link" type="button" onClick={onShowResults}>{text(language, 'showResults', { count: resultsLabel })}</button>}
-    <LandsdMapCredit language={language} />
+    <div className="landsd-credit"><a href="https://api.portal.hkmapservice.gov.hk/disclaimer" target="_blank" rel="noreferrer">{text(language, 'landsdCredit')}</a><a href="https://www.map.gov.hk/" target="_blank" rel="noreferrer" aria-label={text(language, 'landsdMapLink')}><img src={LANDSD_LOGO_URL} alt={text(language, 'landsdLogo')} /></a></div>
   </div>;
 }
