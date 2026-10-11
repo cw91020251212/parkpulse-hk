@@ -53,4 +53,6 @@ assert.match(detail, /emergencyLocationSource/);
 assert.match(detail, /emergencyCoordinateSource/);
 assert.match(styles, /\.toilet-marker\.is-emergency/);
 assert.match(styles, /emergency-pill/);
+assert.match(styles, /\.emergency-popup-wait/);
+assert.match(styles, /#ffe36a/i, 'Emergency waiting-time values must use the requested prominent yellow');
 console.log(`Verified ${snapshot.records.length} official hospital points and live Hospital Authority waiting-time fields.`);
