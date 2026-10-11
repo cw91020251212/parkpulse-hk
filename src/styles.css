@@ -810,3 +810,12 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
   .map-wrap,
   .landsd-map { min-height: 360px; height: clamp(360px, calc((100dvh - 224px) / var(--ui-zoom, 1)), 576px); }
 }
+
+.manual-position-source { color: #e4d8ff !important; background: #3b3156 !important; border: 1px dashed #9b85c3; }
+.manual-position-tools { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 8px; padding: 9px 10px; border: 1px solid #397287; border-radius: 10px; background: #0d3046; }
+.manual-position-tools p { flex: 1 1 220px; margin: 0; color: #c7e4e8; font-size: 11px; line-height: 1.45; }
+.manual-position-tools > div { display: flex; gap: 6px; }
+.manual-position-tools button { border: 1px solid #398477; border-radius: 8px; min-height: 32px; padding: 5px 9px; color: #e0fffa; background: #126153; font-size: 11px; font-weight: 800; }
+.manual-position-tools button.is-secondary { border-color: #436174; background: #19374b; }
+.toilet-marker.is-being-adjusted { cursor: grab !important; outline: 2px solid #39dac7; outline-offset: 3px; }
+.toilet-marker.is-being-adjusted:active { cursor: grabbing !important; }

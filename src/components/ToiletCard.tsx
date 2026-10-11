@@ -9,7 +9,7 @@ import { WashroomSymbol } from './WashroomSymbol';
 
 type Props = { language: Language; toilet: PublicToiletViewModel };
 
-export function ToiletCard({ language, toilet: { toilet, distanceKm } }: Props) {
+export function ToiletCard({ language, toilet: { toilet, distanceKm, manualPositionSource } }: Props) {
   const navigationUrl = `https://www.google.com/maps/dir/?api=1&destination=${toilet.latitude},${toilet.longitude}`;
   const isLcsdVenue = toilet.kind === 'lcsdVenue';
   const isLongValleyTemporaryVenue = toilet.kind === 'afcdLongValleyTemporaryToilets';
@@ -38,6 +38,7 @@ export function ToiletCard({ language, toilet: { toilet, distanceKm } }: Props) 
       <div className="toilet-facts">
         <span className={isLcsdVenue ? 'washroom-source is-venue' : 'washroom-source'}>{source}</span>
         {isVenueLocation && <span className={`washroom-precision is-venue${isUnconfirmedVenue ? ' is-location-unconfirmed' : ''}`}>{text(language, isLongValleyTemporaryVenue ? 'afcdLongValleyTemporaryPrecision' : toilet.kind === 'hadCommunityToilet' ? 'hadVenuePrecision' : 'venueLocationPrecision')}</span>}
+        {manualPositionSource && <span className="manual-position-source">{text(language, manualPositionSource === 'shared' ? 'manualPositionShared' : 'manualPositionLocal')}</span>}
         <span>{displayOpeningHours ? text(language, 'opening', { value: displayOpeningHours }) : text(language, 'openingUnavailable')}</span>
         {displayRemarks && <span>{displayRemarks}</span>}
       </div>

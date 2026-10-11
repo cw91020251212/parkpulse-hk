@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import L from 'leaflet';
 import { Circle, MapContainer, Marker, Popup, TileLayer, Tooltip, useMap } from 'react-leaflet';
 import { getFacilityBrandIcon } from '../domain/brandIcons';
@@ -8,7 +8,16 @@ import { text, vacancyLabel, type Language } from '../i18n';
 import type { Coordinates, NearbyFacility, NearbyFacilityViewModel, OnStreetParkingGroup, OnStreetParkingViewModel, ParkViewModel, PublicToilet, PublicToiletViewModel } from '../types';
 import { washroomSymbolMarkup } from './WashroomSymbol';
 
-type Props = { language: Language; position: Coordinates; parks: ParkViewModel[]; nearbyItems: Array<PublicToiletViewModel | NearbyFacilityViewModel | OnStreetParkingViewModel>; selectedId: string | null; lastViewedParkId: string | null; lastViewedOnStreetId: string | null; lastViewedToiletId: string | null; onSelect: (id: string) => void; onSelectOnStreet: (id: string) => void; onSelectToilet: (id: string) => void; onLocationSelect: (coordinates: Coordinates, behavior: { recenter: boolean }) => void; recenterRequest: number; startupLocating: boolean; startupRecenter: boolean; expanded: boolean; onToggleExpanded: () => void; onShowResults: () => void; resultsLabel: string };
+type Props = {
+  language: Language; position: Coordinates; parks: ParkViewModel[];
+  nearbyItems: Array<PublicToiletViewModel | NearbyFacilityViewModel | OnStreetParkingViewModel>;
+  selectedId: string | null; lastViewedParkId: string | null; lastViewedOnStreetId: string | null; lastViewedToiletId: string | null;
+  onSelect: (id: string) => void; onSelectOnStreet: (id: string) => void; onSelectToilet: (id: string) => void;
+  onBeginManualPositionEdit: (id: string) => void; onManualPositionChange: (id: string, coordinates: Coordinates) => void;
+  manualPositionEditorId: string | null; manualPositionAwaitingConfirmation: boolean;
+  onLocationSelect: (coordinates: Coordinates, behavior: { recenter: boolean }) => void;
+  recenterRequest: number; startupLocating: boolean; startupRecenter: boolean; expanded: boolean; onToggleExpanded: () => void; onShowResults: () => void; resultsLabel: string;
+};
 
 const LANDSD_BASEMAP_URL = 'https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/basemap/WGS84/{z}/{x}/{y}.png';
 const LANDSD_LABEL_URL = 'https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/label/hk/tc/WGS84/{z}/{x}/{y}.png';
@@ -20,6 +29,60 @@ const LANDSD_LOGO_URL = 'https://api.hkmapservice.gov.hk/mapapi/landsdlogo.jpg';
 function Recenter({ position, request, startup }: { position: Coordinates; request: number; startup: boolean }) { const map = useMap(); const startupFlightUsed = useRef(false); useEffect(() => { if (request === 0) return; if (startup && !startupFlightUsed.current) { startupFlightUsed.current = true; map.flyTo([position.lat, position.lng], 14, { duration: 1.4 }); return; } map.setView([position.lat, position.lng], 14, { animate: true }); }, [map, position.lat, position.lng, request, startup]); return null; }
 function FocusSelected({ park }: { park?: ParkViewModel }) { const map = useMap(); useEffect(() => { if (park) map.flyTo([park.info.latitude, park.info.longitude], Math.max(map.getZoom(), 15), { duration: 0.35 }); }, [map, park]); return null; }
 function ResizeMap({ expanded }: { expanded: boolean }) { const map = useMap(); useEffect(() => { const timer = window.setTimeout(() => map.invalidateSize({ animate: true }), 220); return () => window.clearTimeout(timer); }, [expanded, map]); return null; }
+
+function ManualToiletLongPress({ editorId, onBegin }: { editorId: string | null; onBegin: (id: string) => void }) {
+  const map = useMap();
+  const hold = useRef<{ id: string; timer: number; x: number; y: number } | null>(null);
+  const stop = useCallback(() => { if (hold.current) window.clearTimeout(hold.current.timer); hold.current = null; }, []);
+  useEffect(() => {
+    const container = map.getContainer();
+    const getPoint = (event: MouseEvent | TouchEvent) => {
+      if ('clientX' in event) return { x: event.clientX, y: event.clientY };
+      const touch = event.touches[0] ?? event.changedTouches[0];
+      return touch ? { x: touch.clientX, y: touch.clientY } : undefined;
+    };
+    const start = (event: MouseEvent | TouchEvent) => {
+      if (editorId || !(event.target instanceof Element)) return;
+      const target = event.target.closest<HTMLElement>('[data-manual-toilet-id]');
+      if (!target) return;
+      if ('button' in event && event.button !== 0) return;
+      const point = getPoint(event);
+      const id = decodeURIComponent(target.dataset.manualToiletId ?? '');
+      if (!point || !id) return;
+      event.stopPropagation();
+      stop();
+      const timer = window.setTimeout(() => { hold.current = null; onBegin(id); }, 1_300);
+      hold.current = { id, timer, ...point };
+    };
+    const startMouse = (event: MouseEvent) => start(event);
+    const startTouch = (event: TouchEvent) => start(event);
+    const onMove = (event: MouseEvent | TouchEvent) => {
+      const origin = hold.current;
+      const point = getPoint(event);
+      if (origin && point && Math.hypot(point.x - origin.x, point.y - origin.y) > 14) stop();
+    };
+    const moveMouse = (event: MouseEvent) => onMove(event);
+    const moveTouch = (event: TouchEvent) => onMove(event);
+    container.addEventListener('mousedown', startMouse, true);
+    container.addEventListener('touchstart', startTouch, { capture: true, passive: false });
+    window.addEventListener('mousemove', moveMouse, true);
+    window.addEventListener('touchmove', moveTouch, { capture: true, passive: true });
+    window.addEventListener('mouseup', stop);
+    window.addEventListener('touchend', stop);
+    window.addEventListener('touchcancel', stop);
+    return () => {
+      stop();
+      container.removeEventListener('mousedown', startMouse, true);
+      container.removeEventListener('touchstart', startTouch, true);
+      window.removeEventListener('mousemove', moveMouse, true);
+      window.removeEventListener('touchmove', moveTouch, true);
+      window.removeEventListener('mouseup', stop);
+      window.removeEventListener('touchend', stop);
+      window.removeEventListener('touchcancel', stop);
+    };
+  }, [editorId, map, onBegin, stop]);
+  return null;
+}
 
 function PopupHistory() {
   const map = useMap(); const popupOpen = useRef(false); const historyEntry = useRef(false);
@@ -50,18 +113,19 @@ function LongPressPicker({ onPick }: { onPick: (coordinates: Coordinates) => voi
 
 function markerIcon(park: ParkViewModel, language: Language, lastViewed: boolean) { const label = park.status.kind === 'count' ? String(park.status.count) : park.status.kind === 'available' ? (language === 'en' ? 'A' : '有') : park.status.kind === 'full' ? (language === 'en' ? 'F' : '滿') : park.status.kind === 'closed' ? (language === 'en' ? 'C' : '關') : '–'; return L.divIcon({ className: 'parking-marker-shell', html: `<span class="parking-marker marker-${park.status.kind}${lastViewed ? ' is-last-viewed' : ''}"><b>${label}</b></span>`, iconSize: [38, 38], iconAnchor: [19, 38] }); }
 const selectedCenterIcon = L.divIcon({ className: 'selected-center-marker-shell', html: '<span class="selected-center-marker" aria-hidden="true">📍</span>', iconSize: [32, 36], iconAnchor: [16, 36] });
-function nearbyIcon(kind?: PublicToilet['kind'] | NearbyFacility['kind'] | OnStreetParkingGroup['kind'], occupancy?: OnStreetParkingGroup['occupancy'], vacant?: number, brand?: string, lastViewed = false, staticRoadside = false, total = 0, venueLocation = false, locationUnconfirmed = false) {
-  const venue = kind === 'lcsdVenue' || kind === 'hadCommunityToilet' || venueLocation; const unconfirmedVenue = kind === 'hadCommunityToilet' || kind === 'afcdLongValleyTemporaryToilets' || locationUnconfirmed; const fuel = kind === 'fuel'; const atm = kind === 'atm'; const motorcycle = kind === 'motorcycle'; const onStreet = kind === 'metered' || kind === 'nonMetered' || motorcycle; const washroom = !fuel && !atm && !onStreet; const brandIcon = fuel || atm ? getFacilityBrandIcon(fuel ? 'fuel' : 'atm', brand) : undefined; const count = staticRoadside ? total : vacant ?? 0; const label = onStreet ? String(count > 99 ? '99+' : count) : washroom ? washroomSymbolMarkup(venue) : fuel ? '⛽' : '🏧'; const content = brandIcon ? `<span class="facility-brand-mark" aria-hidden="true"><img src="${brandIcon.src}" alt="" /></span>` : `<span aria-hidden="true">${label}</span>`; return L.divIcon({ className: 'toilet-marker-shell', html: `<span class="toilet-marker${venue ? ' is-venue' : fuel ? ' is-fuel' : atm ? ' is-atm' : onStreet ? ` is-onstreet is-${occupancy}${motorcycle ? ' is-motorcycle' : ''}` : ''}${unconfirmedVenue ? ' is-location-unconfirmed' : ''}${brandIcon ? ' is-brand' : ''}${lastViewed ? ' is-last-viewed' : ''}">${content}</span>`, iconSize: [34, 34], iconAnchor: [17, 34] });
+function nearbyIcon(kind?: PublicToilet['kind'] | NearbyFacility['kind'] | OnStreetParkingGroup['kind'], occupancy?: OnStreetParkingGroup['occupancy'], vacant?: number, brand?: string, lastViewed = false, staticRoadside = false, total = 0, venueLocation = false, locationUnconfirmed = false, manualEditing = false, toiletId?: string) {
+  const venue = kind === 'lcsdVenue' || kind === 'hadCommunityToilet' || venueLocation; const unconfirmedVenue = kind === 'hadCommunityToilet' || kind === 'afcdLongValleyTemporaryToilets' || locationUnconfirmed; const fuel = kind === 'fuel'; const atm = kind === 'atm'; const motorcycle = kind === 'motorcycle'; const onStreet = kind === 'metered' || kind === 'nonMetered' || motorcycle; const washroom = !fuel && !atm && !onStreet; const brandIcon = fuel || atm ? getFacilityBrandIcon(fuel ? 'fuel' : 'atm', brand) : undefined; const count = staticRoadside ? total : vacant ?? 0; const label = onStreet ? String(count > 99 ? '99+' : count) : washroom ? washroomSymbolMarkup(venue) : fuel ? '⛽' : '🏧'; const content = brandIcon ? `<span class="facility-brand-mark" aria-hidden="true"><img src="${brandIcon.src}" alt="" /></span>` : `<span aria-hidden="true">${label}</span>`; const editTarget = venue && toiletId ? ` data-manual-toilet-id="${encodeURIComponent(toiletId)}"` : ''; return L.divIcon({ className: 'toilet-marker-shell', html: `<span${editTarget} class="toilet-marker${venue ? ' is-venue' : fuel ? ' is-fuel' : atm ? ' is-atm' : onStreet ? ` is-onstreet is-${occupancy}${motorcycle ? ' is-motorcycle' : ''}` : ''}${unconfirmedVenue ? ' is-location-unconfirmed' : ''}${brandIcon ? ' is-brand' : ''}${lastViewed ? ' is-last-viewed' : ''}${manualEditing ? ' is-being-adjusted' : ''}">${content}</span>`, iconSize: [34, 34], iconAnchor: [17, 34] });
 }
 function MapFocusIcon({ expanded }: { expanded: boolean }) { return expanded ? <svg className="map-focus-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 3 3 3 3-3M9 21l3-3 3 3M3 9l3 3-3 3M21 9l-3 3 3 3" /></svg> : <svg className="map-focus-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3H3v6m0-6 7 7M15 3h6v6m0-6-7 7M9 21H3v-6m0 6 7-7m5 7h6v-6m0 6-7-7" /></svg>; }
 
-export function MapView({ language, position, parks, nearbyItems, selectedId, lastViewedParkId, lastViewedOnStreetId, lastViewedToiletId, onSelect, onSelectOnStreet, onSelectToilet, onLocationSelect, recenterRequest, startupLocating, startupRecenter, expanded, onToggleExpanded, onShowResults, resultsLabel }: Props) {
+export function MapView({ language, position, parks, nearbyItems, selectedId, lastViewedParkId, lastViewedOnStreetId, lastViewedToiletId, onSelect, onSelectOnStreet, onSelectToilet, onBeginManualPositionEdit, onManualPositionChange, manualPositionEditorId, manualPositionAwaitingConfirmation, onLocationSelect, recenterRequest, startupLocating, startupRecenter, expanded, onToggleExpanded, onShowResults, resultsLabel }: Props) {
   const selected = parks.find((park) => park.info.park_Id === selectedId); const visibleResultCount = parks.length + nearbyItems.length;
   const label = (kind?: PublicToilet['kind'] | NearbyFacility['kind'] | OnStreetParkingGroup['kind']) => kind === 'hadCommunityToilet' ? text(language, 'hadCommunityWashroom') : kind === 'afcdLongValleyTemporaryToilets' ? text(language, 'afcdLongValleyTemporaryWashrooms') : kind === 'afcdNatureCentreToilet' ? text(language, 'afcdNatureCentreWashroom') : kind === 'lcsdVenue' ? text(language, 'venueWashroom') : kind === 'lcsdParkToilet' ? text(language, 'lcsdParkWashroom') : kind === 'afcdCountryParkToilet' ? text(language, 'afcdCountryParkWashroom') : kind === 'fuel' ? (language === 'en' ? 'Consumer Council fuel station' : '消委會油站') : kind === 'atm' ? (language === 'en' ? 'HKMA ATM' : '金管局 ATM') : kind === 'metered' ? text(language, 'meteredParking') : kind === 'nonMetered' ? text(language, 'nonMeteredTrial') : kind === 'motorcycle' ? text(language, 'motorcycleOnStreet') : text(language, 'publicToilet');
 
   return <div className={expanded ? 'map-wrap is-expanded' : 'map-wrap'} aria-label={text(language, 'mapLabel')}>
     <MapContainer center={[position.lat, position.lng]} zoom={startupLocating ? 10 : 14} minZoom={8} maxZoom={MAP_MAX_ZOOM} scrollWheelZoom inertia={false} className="landsd-map">
       <PopupHistory />
+      <ManualToiletLongPress editorId={manualPositionEditorId} onBegin={onBeginManualPositionEdit} />
       <TileLayer minNativeZoom={LANDSD_MIN_NATIVE_ZOOM} maxNativeZoom={LANDSD_MAX_NATIVE_ZOOM} maxZoom={MAP_MAX_ZOOM} attribution='&copy; <a href="https://api.portal.hkmapservice.gov.hk/disclaimer" target="_blank" rel="noreferrer">Map information from Lands Department</a>' url={LANDSD_BASEMAP_URL} />
       <TileLayer minNativeZoom={LANDSD_MIN_NATIVE_ZOOM} maxNativeZoom={LANDSD_MAX_NATIVE_ZOOM} maxZoom={MAP_MAX_ZOOM} url={LANDSD_LABEL_URL} opacity={1} zIndex={10} />
       <Recenter position={position} request={recenterRequest} startup={startupRecenter} />
@@ -74,6 +138,7 @@ export function MapView({ language, position, parks, nearbyItems, selectedId, la
         const onStreet = 'onStreet' in item ? item.onStreet : undefined;
         const place = 'toilet' in item ? item.toilet : 'facility' in item ? item.facility : onStreet!;
         const venueLocation = 'toilet' in item && (item.toilet.locationPrecision === 'venue' || item.toilet.locationPrecision === 'venue-uncertain' || item.toilet.kind === 'lcsdVenue');
+        const manualPositionEditing = 'toilet' in item && venueLocation && item.toilet.id === manualPositionEditorId;
         const locationUnconfirmed = 'toilet' in item && item.toilet.locationPrecision === 'venue-uncertain';
         const travel = place.kind === 'fuel' || onStreet ? '&travelmode=driving' : place.kind === 'atm' ? '&travelmode=walking' : '';
         const directions = place.kind === 'fuel' || onStreet ? text(language, 'drivingNavigation') : place.kind === 'atm' ? text(language, 'walkingNavigation') : venueLocation ? text(language, 'navigateToVenue') : text(language, 'navigation');
@@ -82,8 +147,9 @@ export function MapView({ language, position, parks, nearbyItems, selectedId, la
         const placeUrl = googleMapsPlaceUrl(place.name, place.address, place.latitude, place.longitude);
         const selectFacility = 'facility' in item ? item.onSelect : undefined;
         const selectToilet = 'toilet' in item ? () => onSelectToilet(item.toilet.id) : undefined;
-        return <Marker key={place.id} position={[place.latitude, place.longitude]} icon={nearbyIcon(place.kind, onStreet?.occupancy, onStreet?.vacant, brand, isLastViewed, onStreet?.static, onStreet?.total, venueLocation, locationUnconfirmed)} zIndexOffset={isLastViewed ? 600 : 300} eventHandlers={onStreet ? { click: () => onSelectOnStreet(onStreet.id) } : undefined}>
-          {!onStreet && <Popup><div className="toilet-popup">
+        const markerEvents: L.LeafletEventHandlerFnMap | undefined = onStreet ? { click: () => onSelectOnStreet(onStreet.id) } : manualPositionEditing ? manualPositionAwaitingConfirmation ? undefined : { dragend: (event) => { const { lat, lng } = (event.target as L.Marker).getLatLng(); onManualPositionChange(place.id, { lat, lng }); } } : undefined;
+        return <Marker key={place.id} position={[place.latitude, place.longitude]} icon={nearbyIcon(place.kind, onStreet?.occupancy, onStreet?.vacant, brand, isLastViewed, onStreet?.static, onStreet?.total, venueLocation, locationUnconfirmed, manualPositionEditing, venueLocation && 'toilet' in item ? item.toilet.id : undefined)} zIndexOffset={isLastViewed || manualPositionEditing ? 600 : 300} draggable={manualPositionEditing && !manualPositionAwaitingConfirmation} bubblingMouseEvents={!venueLocation} eventHandlers={markerEvents}>
+          {!onStreet && !manualPositionEditing && <Popup><div className="toilet-popup">
             {selectToilet ? <div className="toilet-popup-detail-row">
               <button className="toilet-popup-detail-trigger" type="button" aria-haspopup="dialog" aria-label={`${text(language, 'viewFacilityDetails')}: ${place.name}`} onClick={selectToilet}>
                 <strong>{place.name}</strong>

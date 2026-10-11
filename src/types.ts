@@ -18,6 +18,12 @@ export const VEHICLE_LABELS: Record<VehicleType, string> = {
 
 export type Coordinates = { lat: number; lng: number };
 
+export interface ManualToiletPosition {
+  toiletId: string;
+  latitude: number;
+  longitude: number;
+}
+
 export interface ChargeRule {
   price?: number;
   periodStart?: string;
@@ -159,6 +165,7 @@ export interface PublicToilet {
 export interface PublicToiletViewModel {
   toilet: PublicToilet;
   distanceKm: number;
+  manualPositionSource?: 'shared' | 'local';
 }
 
 export type NearbyMode = 'toilets' | 'fuel' | 'atm' | 'onStreet';
