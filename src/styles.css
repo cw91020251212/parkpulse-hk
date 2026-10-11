@@ -737,7 +737,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .toilet-marker.is-viewed { --marker-outline: #ff3b78; }
 
 .aed-symbol { display: block; width: 21px; height: 21px; border-radius: 3px; object-fit: contain; }
-.toilet-marker .aed-symbol { width: 22px; height: 22px; }
+.toilet-marker .aed-symbol { width: 30px; height: 30px; }
 .legend-aed-symbol { display: block; width: 15px; height: 15px; object-fit: contain; }
 .aed-detail-symbol { display: inline-block; width: 18px; height: 18px; margin-right: 3px; vertical-align: -4px; object-fit: contain; }
 .toilet-facts .washroom-source.is-aed { color: #cef5d8; background: #15563a; }
