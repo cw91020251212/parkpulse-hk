@@ -13,8 +13,8 @@ type Props = {
   nearbyItems: Array<PublicToiletViewModel | NearbyFacilityViewModel | OnStreetParkingViewModel>;
   selectedId: string | null; lastViewedParkId: string | null; lastViewedOnStreetId: string | null; lastViewedToiletId: string | null;
   onSelect: (id: string) => void; onSelectOnStreet: (id: string) => void; onSelectToilet: (id: string) => void;
-  onBeginManualPositionEdit: (id: string) => void; onManualPositionChange: (id: string, coordinates: Coordinates) => void;
-  manualPositionEditorId: string | null; manualPositionAwaitingConfirmation: boolean;
+  onBeginManualPositionEdit: (id: string) => void; onManualPositionChange: (id: string, coordinates: Coordinates) => void; onCompleteManualPositionEdit: (id: string, coordinates: Coordinates) => void; onCancelManualPositionEdit: () => void;
+  manualPositionEditorId: string | null;
   onLocationSelect: (coordinates: Coordinates, behavior: { recenter: boolean }) => void;
   recenterRequest: number; startupLocating: boolean; startupRecenter: boolean; expanded: boolean; onToggleExpanded: () => void; onShowResults: () => void; resultsLabel: string;
 };
@@ -30,57 +30,135 @@ function Recenter({ position, request, startup }: { position: Coordinates; reque
 function FocusSelected({ park }: { park?: ParkViewModel }) { const map = useMap(); useEffect(() => { if (park) map.flyTo([park.info.latitude, park.info.longitude], Math.max(map.getZoom(), 15), { duration: 0.35 }); }, [map, park]); return null; }
 function ResizeMap({ expanded }: { expanded: boolean }) { const map = useMap(); useEffect(() => { const timer = window.setTimeout(() => map.invalidateSize({ animate: true }), 220); return () => window.clearTimeout(timer); }, [expanded, map]); return null; }
 
-function ManualToiletLongPress({ editorId, onBegin }: { editorId: string | null; onBegin: (id: string) => void }) {
+function ManualToiletLongPress({ editorId, onBegin, onMove, onComplete, onCancel }: { editorId: string | null; onBegin: (id: string) => void; onMove: (id: string, coordinates: Coordinates) => void; onComplete: (id: string, coordinates: Coordinates) => void; onCancel: () => void }) {
   const map = useMap();
-  const hold = useRef<{ id: string; timer: number; x: number; y: number } | null>(null);
-  const stop = useCallback(() => { if (hold.current) window.clearTimeout(hold.current.timer); hold.current = null; }, []);
+  const hold = useRef<{ id: string; timer: number; x: number; y: number; touchId?: number; active: boolean; moved: boolean; position?: Coordinates; draggingWasEnabled: boolean } | null>(null);
+  const editorIdRef = useRef(editorId); editorIdRef.current = editorId;
+  const callbacks = useRef({ onBegin, onMove, onComplete, onCancel }); callbacks.current = { onBegin, onMove, onComplete, onCancel };
+  const stop = useCallback(() => {
+    const current = hold.current;
+    if (!current) return;
+    if (current.timer) window.clearTimeout(current.timer);
+    if (current.active && current.draggingWasEnabled) map.dragging.enable();
+    hold.current = null;
+  }, [map]);
   useEffect(() => {
     const container = map.getContainer();
-    const getPoint = (event: MouseEvent | TouchEvent) => {
+    let suppressClickId: string | null = null;
+    let suppressClickUntil = 0;
+    const getPoint = (event: MouseEvent | TouchEvent, touchId?: number) => {
       if ('clientX' in event) return { x: event.clientX, y: event.clientY };
-      const touch = event.touches[0] ?? event.changedTouches[0];
+      const touch = [...Array.from(event.touches), ...Array.from(event.changedTouches)].find((item) => touchId === undefined || item.identifier === touchId);
       return touch ? { x: touch.clientX, y: touch.clientY } : undefined;
     };
+    const toCoordinates = (point: { x: number; y: number }) => {
+      const bounds = container.getBoundingClientRect();
+      if (!bounds.width || !bounds.height) return undefined;
+      const size = map.getSize();
+      const latLng = map.containerPointToLatLng([(point.x - bounds.left) * (size.x / bounds.width), (point.y - bounds.top) * (size.y / bounds.height)]);
+      return { lat: latLng.lat, lng: latLng.lng };
+    };
     const start = (event: MouseEvent | TouchEvent) => {
-      if (editorId || !(event.target instanceof Element)) return;
+      if (editorIdRef.current || !(event.target instanceof Element)) return;
+      if ('button' in event && event.button !== 0) return;
       const target = event.target.closest<HTMLElement>('[data-manual-toilet-id]');
       if (!target) return;
-      if ('button' in event && event.button !== 0) return;
-      const point = getPoint(event);
+      const touchId = 'changedTouches' in event ? (event.touches[0] ?? event.changedTouches[0])?.identifier : undefined;
+      const point = getPoint(event, touchId);
       const id = decodeURIComponent(target.dataset.manualToiletId ?? '');
       if (!point || !id) return;
-      event.stopPropagation();
       stop();
-      const timer = window.setTimeout(() => { hold.current = null; onBegin(id); }, 1_300);
-      hold.current = { id, timer, ...point };
+      const current = { id, timer: 0, ...point, touchId, active: false, moved: false, draggingWasEnabled: false } as { id: string; timer: number; x: number; y: number; touchId?: number; active: boolean; moved: boolean; position?: Coordinates; draggingWasEnabled: boolean };
+      hold.current = current;
+      current.timer = window.setTimeout(() => {
+        if (hold.current !== current) return;
+        current.active = true;
+        current.timer = 0;
+        current.draggingWasEnabled = map.dragging.enabled();
+        if (current.draggingWasEnabled) map.dragging.disable();
+        callbacks.current.onBegin(current.id);
+      }, 1_300);
+    };
+    const move = (event: MouseEvent | TouchEvent) => {
+      const current = hold.current;
+      if (!current) return;
+      if ('changedTouches' in event && event.touches.length > 1) {
+        if (current.active) {
+          if (current.moved && current.position) {
+            suppressClickId = encodeURIComponent(current.id);
+            suppressClickUntil = Date.now() + 500;
+            callbacks.current.onComplete(current.id, current.position);
+          } else callbacks.current.onCancel();
+        }
+        stop();
+        return;
+      }
+      const point = getPoint(event, current.touchId);
+      if (!point) return;
+      if (!current.active) {
+        if (Math.hypot(point.x - current.x, point.y - current.y) > 14) stop();
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      if (Math.hypot(point.x - current.x, point.y - current.y) < 3) return;
+      const coordinates = toCoordinates(point);
+      if (!coordinates) return;
+      current.moved = true;
+      current.position = coordinates;
+      callbacks.current.onMove(current.id, coordinates);
+    };
+    const finish = (event: MouseEvent | TouchEvent) => {
+      const current = hold.current;
+      if (!current) return;
+      if ('changedTouches' in event && current.touchId !== undefined && !Array.from(event.changedTouches).some((touch) => touch.identifier === current.touchId)) return;
+      if (current.active) {
+        if (current.moved && current.position) {
+          const point = getPoint(event, current.touchId);
+          const coordinates = point ? toCoordinates(point) ?? current.position : current.position;
+          suppressClickId = encodeURIComponent(current.id);
+          suppressClickUntil = Date.now() + 500;
+          callbacks.current.onComplete(current.id, coordinates);
+        } else callbacks.current.onCancel();
+      }
+      stop();
+    };
+    const suppressDraggedClick = (event: MouseEvent) => {
+      if (Date.now() > suppressClickUntil || !suppressClickId || !(event.target instanceof Element)) return;
+      const marker = event.target.closest<HTMLElement>('[data-manual-toilet-id]');
+      if (marker?.dataset.manualToiletId !== suppressClickId) return;
+      event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation();
+      suppressClickId = null;
     };
     const startMouse = (event: MouseEvent) => start(event);
     const startTouch = (event: TouchEvent) => start(event);
-    const onMove = (event: MouseEvent | TouchEvent) => {
-      const origin = hold.current;
-      const point = getPoint(event);
-      if (origin && point && Math.hypot(point.x - origin.x, point.y - origin.y) > 14) stop();
-    };
-    const moveMouse = (event: MouseEvent) => onMove(event);
-    const moveTouch = (event: TouchEvent) => onMove(event);
+    const moveMouse = (event: MouseEvent) => move(event);
+    const moveTouch = (event: TouchEvent) => move(event);
     container.addEventListener('mousedown', startMouse, true);
     container.addEventListener('touchstart', startTouch, { capture: true, passive: false });
     window.addEventListener('mousemove', moveMouse, true);
-    window.addEventListener('touchmove', moveTouch, { capture: true, passive: true });
-    window.addEventListener('mouseup', stop);
-    window.addEventListener('touchend', stop);
-    window.addEventListener('touchcancel', stop);
+    window.addEventListener('touchmove', moveTouch, { capture: true, passive: false });
+    window.addEventListener('mouseup', finish, true);
+    window.addEventListener('touchend', finish, true);
+    window.addEventListener('touchcancel', finish, true);
+    container.addEventListener('click', suppressDraggedClick, true);
     return () => {
+      const current = hold.current;
+      if (current?.active) {
+        if (current.moved && current.position) callbacks.current.onComplete(current.id, current.position);
+        else callbacks.current.onCancel();
+      }
       stop();
       container.removeEventListener('mousedown', startMouse, true);
       container.removeEventListener('touchstart', startTouch, true);
       window.removeEventListener('mousemove', moveMouse, true);
       window.removeEventListener('touchmove', moveTouch, true);
-      window.removeEventListener('mouseup', stop);
-      window.removeEventListener('touchend', stop);
-      window.removeEventListener('touchcancel', stop);
+      window.removeEventListener('mouseup', finish, true);
+      window.removeEventListener('touchend', finish, true);
+      window.removeEventListener('touchcancel', finish, true);
+      container.removeEventListener('click', suppressDraggedClick, true);
     };
-  }, [editorId, map, onBegin, stop]);
+  }, [map, stop]);
   return null;
 }
 
@@ -118,14 +196,14 @@ function nearbyIcon(kind?: PublicToilet['kind'] | NearbyFacility['kind'] | OnStr
 }
 function MapFocusIcon({ expanded }: { expanded: boolean }) { return expanded ? <svg className="map-focus-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 3 3 3 3-3M9 21l3-3 3 3M3 9l3 3-3 3M21 9l-3 3 3 3" /></svg> : <svg className="map-focus-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3H3v6m0-6 7 7M15 3h6v6m0-6-7 7M9 21H3v-6m0 6 7-7m5 7h6v-6m0 6-7-7" /></svg>; }
 
-export function MapView({ language, position, parks, nearbyItems, selectedId, lastViewedParkId, lastViewedOnStreetId, lastViewedToiletId, onSelect, onSelectOnStreet, onSelectToilet, onBeginManualPositionEdit, onManualPositionChange, manualPositionEditorId, manualPositionAwaitingConfirmation, onLocationSelect, recenterRequest, startupLocating, startupRecenter, expanded, onToggleExpanded, onShowResults, resultsLabel }: Props) {
+export function MapView({ language, position, parks, nearbyItems, selectedId, lastViewedParkId, lastViewedOnStreetId, lastViewedToiletId, onSelect, onSelectOnStreet, onSelectToilet, onBeginManualPositionEdit, onManualPositionChange, onCompleteManualPositionEdit, onCancelManualPositionEdit, manualPositionEditorId, onLocationSelect, recenterRequest, startupLocating, startupRecenter, expanded, onToggleExpanded, onShowResults, resultsLabel }: Props) {
   const selected = parks.find((park) => park.info.park_Id === selectedId); const visibleResultCount = parks.length + nearbyItems.length;
   const label = (kind?: PublicToilet['kind'] | NearbyFacility['kind'] | OnStreetParkingGroup['kind']) => kind === 'hadCommunityToilet' ? text(language, 'hadCommunityWashroom') : kind === 'afcdLongValleyTemporaryToilets' ? text(language, 'afcdLongValleyTemporaryWashrooms') : kind === 'afcdNatureCentreToilet' ? text(language, 'afcdNatureCentreWashroom') : kind === 'lcsdVenue' ? text(language, 'venueWashroom') : kind === 'lcsdParkToilet' ? text(language, 'lcsdParkWashroom') : kind === 'afcdCountryParkToilet' ? text(language, 'afcdCountryParkWashroom') : kind === 'fuel' ? (language === 'en' ? 'Consumer Council fuel station' : '消委會油站') : kind === 'atm' ? (language === 'en' ? 'HKMA ATM' : '金管局 ATM') : kind === 'metered' ? text(language, 'meteredParking') : kind === 'nonMetered' ? text(language, 'nonMeteredTrial') : kind === 'motorcycle' ? text(language, 'motorcycleOnStreet') : text(language, 'publicToilet');
 
   return <div className={expanded ? 'map-wrap is-expanded' : 'map-wrap'} aria-label={text(language, 'mapLabel')}>
     <MapContainer center={[position.lat, position.lng]} zoom={startupLocating ? 10 : 14} minZoom={8} maxZoom={MAP_MAX_ZOOM} scrollWheelZoom inertia={false} className="landsd-map">
       <PopupHistory />
-      <ManualToiletLongPress editorId={manualPositionEditorId} onBegin={onBeginManualPositionEdit} />
+      <ManualToiletLongPress editorId={manualPositionEditorId} onBegin={onBeginManualPositionEdit} onMove={onManualPositionChange} onComplete={onCompleteManualPositionEdit} onCancel={onCancelManualPositionEdit} />
       <TileLayer minNativeZoom={LANDSD_MIN_NATIVE_ZOOM} maxNativeZoom={LANDSD_MAX_NATIVE_ZOOM} maxZoom={MAP_MAX_ZOOM} attribution='&copy; <a href="https://api.portal.hkmapservice.gov.hk/disclaimer" target="_blank" rel="noreferrer">Map information from Lands Department</a>' url={LANDSD_BASEMAP_URL} />
       <TileLayer minNativeZoom={LANDSD_MIN_NATIVE_ZOOM} maxNativeZoom={LANDSD_MAX_NATIVE_ZOOM} maxZoom={MAP_MAX_ZOOM} url={LANDSD_LABEL_URL} opacity={1} zIndex={10} />
       <Recenter position={position} request={recenterRequest} startup={startupRecenter} />
@@ -147,8 +225,8 @@ export function MapView({ language, position, parks, nearbyItems, selectedId, la
         const placeUrl = googleMapsPlaceUrl(place.name, place.address, place.latitude, place.longitude);
         const selectFacility = 'facility' in item ? item.onSelect : undefined;
         const selectToilet = 'toilet' in item ? () => onSelectToilet(item.toilet.id) : undefined;
-        const markerEvents: L.LeafletEventHandlerFnMap | undefined = onStreet ? { click: () => onSelectOnStreet(onStreet.id) } : manualPositionEditing ? manualPositionAwaitingConfirmation ? undefined : { dragend: (event) => { const { lat, lng } = (event.target as L.Marker).getLatLng(); onManualPositionChange(place.id, { lat, lng }); } } : undefined;
-        return <Marker key={place.id} position={[place.latitude, place.longitude]} icon={nearbyIcon(place.kind, onStreet?.occupancy, onStreet?.vacant, brand, isLastViewed, onStreet?.static, onStreet?.total, venueLocation, locationUnconfirmed, manualPositionEditing, venueLocation && 'toilet' in item ? item.toilet.id : undefined)} zIndexOffset={isLastViewed || manualPositionEditing ? 600 : 300} draggable={manualPositionEditing && !manualPositionAwaitingConfirmation} bubblingMouseEvents={!venueLocation} eventHandlers={markerEvents}>
+        const markerEvents: L.LeafletEventHandlerFnMap | undefined = onStreet ? { click: () => onSelectOnStreet(onStreet.id) } : undefined;
+        return <Marker key={place.id} position={[place.latitude, place.longitude]} icon={nearbyIcon(place.kind, onStreet?.occupancy, onStreet?.vacant, brand, isLastViewed, onStreet?.static, onStreet?.total, venueLocation, locationUnconfirmed, manualPositionEditing, venueLocation && 'toilet' in item ? item.toilet.id : undefined)} zIndexOffset={isLastViewed || manualPositionEditing ? 600 : 300} draggable={false} bubblingMouseEvents={!venueLocation} eventHandlers={markerEvents}>
           {!onStreet && !manualPositionEditing && <Popup><div className="toilet-popup">
             {selectToilet ? <div className="toilet-popup-detail-row">
               <button className="toilet-popup-detail-trigger" type="button" aria-haspopup="dialog" aria-label={`${text(language, 'viewFacilityDetails')}: ${place.name}`} onClick={selectToilet}>
