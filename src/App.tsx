@@ -85,7 +85,7 @@ function readPreferences() {
 function Logo() { return <img className="brand-mark" src={publicAsset('parkpulse-hk-icon.png')} alt="" aria-hidden="true" />; }
 function RefreshIcon() { return <svg className="refresh-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7" fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2.2" /><path d="M21 3v6h-6" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" /></svg>; }
 function LocateIcon() { return <img className="locate-icon" src={publicAsset('location-control.png')} alt="" />; }
-const AED_SYMBOL_URL = publicAsset('icons/iso-7010-e010-aed.svg');
+const AED_SYMBOL_URL = `${publicAsset('icons/iso-7010-e010-aed.svg')}?v=20261011c`;
 function formatSnapshotTime(language: Language, value: string) { const date = new Date(value); return Number.isNaN(date.getTime()) ? value : date.toLocaleString(language === 'en' ? 'en-HK' : 'zh-HK', { dateStyle: 'medium', timeStyle: 'short', hour12: false }); }
 
 export default function App() {
