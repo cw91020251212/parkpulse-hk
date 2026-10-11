@@ -32,8 +32,10 @@ const [residents, visitors, app, map, card, detail, filters, styles] = await Pro
   readFile(new URL('src/styles.css', root), 'utf8'),
 ]);
 const codes = snapshot.records.map((record) => record.code).sort();
-assert.ok(codes.every((code) => Object.hasOwn(residents, code)), 'Resident source must contain every displayed control point; additional source codes without a verified LandsD point are not displayed');
-assert.ok(codes.every((code) => Object.hasOwn(visitors, code)), 'Visitor source must contain every displayed control point; additional source codes without a verified LandsD point are not displayed');
+const missingResidentCodes = codes.filter((code) => !Object.hasOwn(residents, code));
+const missingVisitorCodes = codes.filter((code) => !Object.hasOwn(visitors, code));
+assert.deepEqual(missingResidentCodes, [], `Resident source is missing displayed control point(s): ${missingResidentCodes.join(', ')}`);
+assert.deepEqual(missingVisitorCodes, [], `Visitor source is missing displayed control point(s): ${missingVisitorCodes.join(', ')}`);
 assert.match(filters, /'border'/);
 assert.match(app, /borderWait/);
 assert.match(app, /borderControlPoints/);

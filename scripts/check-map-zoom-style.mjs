@@ -19,7 +19,7 @@ assert.match(i18n, /showMapLegend: '顯示地圖圖例'/);
 assert.match(i18n, /hideMapLegend: 'Hide map legend'/);
 assert.doesNotMatch(styles, /\.map-marker-legend\s*\{[^}]*position: absolute;/);
 assert.match(styles, /\.map-legend-toggle\s*\{[^}]*position: static;[^}]*margin-left: auto;/);
-assert.match(styles, /100dvh - 224px/);
+assert.match(styles, /\.map-column \{ height: max\(407px, calc\(100dvh - 173px\)\); \}/);
 assert.match(mapSource, /const LANDSD_MIN_NATIVE_ZOOM = 10;/);
 assert.match(mapSource, /const LANDSD_MAX_NATIVE_ZOOM = 20;/);
 assert.match(mapSource, /const MAP_MAX_ZOOM = 22;/);
