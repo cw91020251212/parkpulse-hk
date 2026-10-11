@@ -5,7 +5,7 @@ import { text, type Language } from '../i18n';
 import type { NearbyFacilityViewModel } from '../types';
 
 type Props = { language: Language; item: NearbyFacilityViewModel };
-const AED_SYMBOL_URL = `${publicAsset('icons/iso-7010-e010-aed.svg')}?v=20261011c`;
+const AED_SYMBOL_URL = `${publicAsset('icons/iso-7010-e010-aed.svg')}?v=20261011d`;
 
 export function NearbyFacilityCard({ language, item }: Props) {
   const { facility, distanceKm, onSelect } = item;
