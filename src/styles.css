@@ -180,7 +180,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 
 /* 統一篩選牌及結果卡：內容長短不再改變基本卡片節奏。 */
 :root {
-  --filter-control-height: 34px;
+  --filter-control-height: 30px;
   --result-card-gap: 10px;
   --result-action-width: 76px;
 }

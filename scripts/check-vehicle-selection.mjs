@@ -17,7 +17,7 @@ assert.match(app, /if \(!vehicleType\) return \[\];/);
 assert.match(app, /!facilityMode && !vehicleType && <div className="empty-state">/);
 assert.match(copy, /vehicleNotSelected: '未選擇車種'/);
 assert.match(copy, /vehicleNotSelected: 'No vehicle type selected'/);
-assert.match(styles, /--filter-control-height: 34px;/, 'All filter chips and height controls use the shorter height');
+assert.match(styles, /--filter-control-height: 30px;/, 'All filter chips and height controls use the shorter height');
 assert.match(styles, /\.chip,\s*\.height-select,\s*\.height-select select\s*\{\s*font-size: 14px;/, 'Filter text remains at 14px');
 
 console.log('Vehicle selection can be cleared, the empty state is persisted and explicit, and facility filters remain available.');
