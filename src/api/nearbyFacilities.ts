@@ -1,4 +1,4 @@
-import type { EmergencyWaitTime, NearbyFacility } from '../types';
+import type { BorderQueue, BorderQueueStatus, EmergencyWaitTime, NearbyFacility } from '../types';
 import type { Language } from '../i18n';
 import { isStaticPages, publicAsset } from './site';
 
@@ -7,6 +7,8 @@ const HA_AE_WAITING_URL: Record<Language, string> = {
   en: 'https://www.ha.org.hk/opendata/aed/aedwtdata2-en.json',
 };
 const HA_AE_SOURCE_URL = 'https://data.gov.hk/en-data/dataset/hospital-hadata-ae-waiting-time';
+
+export const BORDER_CONTROL_POINTS_SOURCE_URL = 'https://data.gov.hk/en-data/dataset/hk-immd-set28-land-boundary-control-points-waiting-time';
 
 type Response = { records?: NearbyFacility[]; source?: string; generatedAt?: string };
 type EmergencyLocation = {
@@ -18,6 +20,12 @@ type EmergencyLocation = {
 type EmergencySnapshot = { records?: EmergencyLocation[]; source?: string };
 type HaWaitRecord = { hospName?: string; t1wt?: string; manageT1case?: string; t2wt?: string; manageT2case?: string; t3p50?: string; t3p95?: string; t45p50?: string; t45p95?: string };
 type HaWaitPayload = { updateTime?: string; waitTime?: HaWaitRecord[] };
+type BorderLocation = {
+  id: string; kind: 'border'; code: string; nameTc: string; nameEn: string; addressTc: string; addressEn: string;
+  latitude: number; longitude: number; source: string; sourceUrl: string; locationSourceUrl?: string; coordinateTransformSourceUrl?: string;
+  residents: BorderQueue; visitors: BorderQueue;
+};
+type BorderSnapshot = { records?: BorderLocation[]; source?: string; generatedAt?: string; residentsLastModified?: string; visitorsLastModified?: string };
 
 function normalized(value: string | undefined) {
   return String(value ?? '').replace(/\s+/g, '').toLocaleLowerCase();
@@ -39,6 +47,10 @@ function toEmergencyWait(record: HaWaitRecord, updatedAt: string): EmergencyWait
     priority45Median: record.t45p50 ?? '',
     priority45P95: record.t45p95 ?? '',
   };
+}
+
+function queue(value: number): BorderQueueStatus {
+  return [0, 1, 2, 4, 99].includes(value) ? value as BorderQueueStatus : 4;
 }
 
 async function fetchEmergencyFacilities(language: Language, signal: AbortSignal) {
@@ -71,8 +83,35 @@ async function fetchEmergencyFacilities(language: Language, signal: AbortSignal)
   return { records, source: locationSnapshot.source || '醫院管理局 · 地政總署' };
 }
 
-export async function fetchNearbyFacilities(kind: 'fuel' | 'atm' | 'aed' | 'emergency', signal: AbortSignal, language: Language) {
+async function fetchBorderControlPoints(language: Language, signal: AbortSignal) {
+  const response = await fetch(publicAsset('pages-data/border-control-points.json'), { signal });
+  if (!response.ok) throw new Error('未能讀取入境事務處邊境管制站等候時間快照');
+  const snapshot = await response.json() as BorderSnapshot;
+  const records = (snapshot.records ?? []).map((location) => ({
+    id: location.id,
+    kind: 'border' as const,
+    name: language === 'en' ? location.nameEn : location.nameTc,
+    address: language === 'en' ? location.addressEn : location.addressTc,
+    latitude: location.latitude,
+    longitude: location.longitude,
+    source: location.source || '入境事務處陸路邊境管制站等候時間官方快照',
+    sourceUrl: location.sourceUrl || BORDER_CONTROL_POINTS_SOURCE_URL,
+    locationSourceUrl: location.locationSourceUrl,
+    coordinateTransformSourceUrl: location.coordinateTransformSourceUrl,
+    borderWait: {
+      residents: { arrival: queue(location.residents.arrival), departure: queue(location.residents.departure) },
+      visitors: { arrival: queue(location.visitors.arrival), departure: queue(location.visitors.departure) },
+      snapshotGeneratedAt: snapshot.generatedAt,
+      residentsLastModified: snapshot.residentsLastModified,
+      visitorsLastModified: snapshot.visitorsLastModified,
+    },
+  } satisfies NearbyFacility));
+  return { records, source: snapshot.source || '入境事務處陸路邊境管制站等候時間官方快照' };
+}
+
+export async function fetchNearbyFacilities(kind: 'fuel' | 'atm' | 'aed' | 'emergency' | 'border', signal: AbortSignal, language: Language) {
   if (kind === 'emergency') return fetchEmergencyFacilities(language, signal);
+  if (kind === 'border') return fetchBorderControlPoints(language, signal);
   const snapshot = kind === 'fuel' ? 'fuel-stations' : kind === 'atm' ? 'atms' : 'aeds';
   const endpoint = kind === 'aed' || isStaticPages ? publicAsset(`pages-data/${snapshot}.json`) : kind === 'fuel' ? '/api/fuel-stations' : '/api/atms';
   const response = await fetch(endpoint, { signal });

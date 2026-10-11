@@ -168,7 +168,7 @@ export interface PublicToiletViewModel {
   manualPositionSource?: 'shared' | 'local';
 }
 
-export type NearbyMode = 'toilets' | 'fuel' | 'atm' | 'aed' | 'emergency' | 'onStreet';
+export type NearbyMode = 'toilets' | 'fuel' | 'atm' | 'aed' | 'emergency' | 'border' | 'onStreet';
 
 export interface GoogleMapsRating {
   rating: number;
@@ -186,13 +186,14 @@ export interface NearbyFacility {
   remarks?: string;
   latitude: number;
   longitude: number;
-  kind: 'fuel' | 'atm' | 'aed' | 'emergency';
+  kind: 'fuel' | 'atm' | 'aed' | 'emergency' | 'border';
   source: string;
   sourceUrl?: string;
   locationSourceUrl?: string;
   coordinateTransformSourceUrl?: string;
   snapshotGeneratedAt?: string;
   emergencyWait?: EmergencyWaitTime;
+  borderWait?: BorderWaitingTime;
 }
 
 export interface EmergencyWaitTime {
@@ -205,6 +206,21 @@ export interface EmergencyWaitTime {
   priority3P95: string;
   priority45Median: string;
   priority45P95: string;
+}
+
+export type BorderQueueStatus = 0 | 1 | 2 | 4 | 99;
+
+export interface BorderQueue {
+  arrival: BorderQueueStatus;
+  departure: BorderQueueStatus;
+}
+
+export interface BorderWaitingTime {
+  residents: BorderQueue;
+  visitors: BorderQueue;
+  snapshotGeneratedAt?: string;
+  residentsLastModified?: string;
+  visitorsLastModified?: string;
 }
 
 export interface NearbyFacilityViewModel {

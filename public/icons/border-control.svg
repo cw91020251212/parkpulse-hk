@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Border control">
+  <g fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="7">
+    <path d="M14 40h36"/>
+    <path d="M17 23h30"/>
+    <path d="m15 23 8-8m-8 8 8 8m34 0-8 8m8-8-8-8"/>
+    <path d="M22 40v10m20-10v10"/>
+  </g>
+</svg>

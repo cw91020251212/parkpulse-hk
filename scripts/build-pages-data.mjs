@@ -16,6 +16,7 @@ import { buildAfcdNatureCentreToilets } from '../lib/afcd-nature-centre-toilets.
 import { buildAfcdLongValleyTemporaryToilets } from '../lib/afcd-long-valley-temporary-toilets.mjs';
 import { buildFsdAeds, FSD_AED_API_URL } from '../lib/aeds.mjs';
 import { buildEmergencyDepartments } from '../lib/emergency-departments.mjs';
+import { buildBorderControlPoints } from '../lib/border-control-points.mjs';
 import { refreshBrandIcons } from './refresh-brand-icons.mjs';
 
 const publicDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../public');
@@ -91,6 +92,8 @@ await refreshOrKeep('aeds.json', async () => {
 });
 
 await refreshOrKeep('emergency-departments.json', () => buildEmergencyDepartments());
+
+await refreshOrKeep('border-control-points.json', () => buildBorderControlPoints());
 
 await refreshOrKeep('lcsd-park-washrooms.json', () => buildLcsdParkWashrooms());
 

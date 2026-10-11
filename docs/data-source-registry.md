@@ -2,7 +2,7 @@
 
 **用途：** 讓之後接手的 AI 或開發者知道每項資料來自哪裡、要改哪個程式、如何更新快照、資料會顯示在哪裡，以及座標和新鮮度有什麼限制。
 
-本索引按目前專案程式碼及資料檔整理，更新基準日為 **2026-10-11**。列出的 URL 是倉庫中實際配置的來源或對外連結；本文件不保證上游此刻可連線、資料仍維持相同格式，或服務方沒有更改條款。每次更新前仍要先查看官方來源與回應格式。請把程式和產生器視為資料流程的真實來源，不要只手改 `public/` 裏的 JSON。
+本索引按目前專案程式碼及資料檔整理，更新基準日為 **2026-10-12**。列出的 URL 是倉庫中實際配置的來源或對外連結；本文件不保證上游此刻可連線、資料仍維持相同格式，或服務方沒有更改條款。每次更新前仍要先查看官方來源與回應格式。請把程式和產生器視為資料流程的真實來源，不要只手改 `public/` 裏的 JSON。
 
 ## 接手前先看
 
@@ -153,6 +153,13 @@
 - **政府停車場地址定位：** `lib/gpa-carparks.mjs` 使用上述地政總署位置搜尋與香港測繪處座標轉換服務。這是 GPA 資料轉成 WGS84 的一部分，不是獨立廁所座標來源。
 - **使用者目前位置：** 由瀏覽器 Geolocation 提供，不是政府資料集，也沒有固定外部來源 URL；不可把使用者位置寫進公開快照。
 - **導航：** 停車場、設施及公廁的路線按座標組成 Google Maps Directions 連結，屬外連導航，不是供應商回傳的資料。
+
+### 陸路邊境管制站輪候時間
+
+- **官方狀態來源：** [入境事務處 DATA.GOV.HK 資料集](https://data.gov.hk/tc-data/dataset/hk-immd-set28-land-boundary-control-points-waiting-time)及[官方資料字典](https://www.immd.gov.hk/opendata/hkt/transport/immigration_clearance/data_dictionary_for_land_boundary_control_points_waiting_time.pdf)；香港居民 JSON 為 `https://secure1.info.gov.hk/immd/mobileapps/2bb9ae17/data/CPQueueTimeR.json`，訪港旅客 JSON 為 `https://secure1.info.gov.hk/immd/mobileapps/2bb9ae17/data/CPQueueTimeV.json`。每份 JSON 的 `arrQueue`／`depQueue` 分別表示入境／出境，代碼 `0`、`1`、`2`、`4`、`99` 分別是正常、繁忙、非常繁忙、系統維護、非服務時間；居民及訪客的等待門檻不同，顯示文字要分開處理。
+- **位置來源及精度：** [地政總署 Location Search API](https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-development-location-search-api)先按官方中英文全名比對，再由[地政總署 Coordinates Transformation API](https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-coordinates-transformation-api)把 HK1980 Grid 轉為 WGS84。產生器白名單只包含 HYW、HZM、LMC、LSC、LWS、MKT、SBC、STK 八個已核對站點；上游若多出未配對的代碼，不能因此自動加 marker。地圖點代表管制站官方位置，不保證是入境／出境大堂入口。
+- **更新位置／輸出：** `lib/border-control-points.mjs` 讀取兩份入境處 JSON、地點搜尋和座標轉換，產生 `public/pages-data/border-control-points.json`；`scripts/build-pages-data.mjs` 已納入 `pnpm build:pages`。前端載入與繁中／英文名稱配對位於 `src/api/nearbyFacilities.ts`，狀態標籤和快照時間格式位於 `src/domain/borderWait.ts`，UI 位於 `src/components/MapView.tsx`、`src/components/NearbyFacilityCard.tsx`、`src/components/NearbyFacilityDetail.tsx` 及 `src/i18n.ts`。
+- **刷新／限制：** 入境處 JSON 沒有可供瀏覽器直接使用的 CORS；GitHub Pages 只讀建置快照，不是手機端即時資料。快照記錄 `generatedAt` 和兩份來源的 `Last-Modified`；卡片／Popup／詳情須保留快照／非即時提示和產生時間。GitHub Actions 推送 `main`、每六小時排程及手動觸發都會執行 Pages 建置。執行 `pnpm test:border` 核對八站、來源、五種狀態碼和居民／旅客門檻；`pnpm test:map-markers`、`pnpm test:pages` 核對地圖整合及靜態資料。
 
 ## 已盤點但尚未完整成為地圖來源
 民政署已有 110 個場地級灰階 marker；康文署塱原自然生態中心已有一個明確命名的官方洗手間點。尚缺精確位置的項目包括濕地公園六個洗手間、塱原單車徑附近三處臨時廁所，以及仍待逐項核實的港鐵、香港國際機場、西九文化區、海洋公園、房委會和市區重建局等來源。詳見[政府及公營機構公廁來源盤點](2026-10-10-government-public-toilet-source-survey.md)。不得把地址、商場／車站座標、平面圖像素或濕地公園中心點當成廁所精確 marker；如只有官方場地座標，必須明確標示「場地位置，非廁所精確點」。

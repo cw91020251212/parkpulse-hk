@@ -708,6 +708,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .toilet-marker.is-atm { --marker-outline: #397d64; background: linear-gradient(to top right, #4b9e7c, #c3ebd7); }
 .toilet-marker.is-aed { --marker-outline: #39785b; background: linear-gradient(to top right, #4e9d71, #d6f4df); }
 .toilet-marker.is-emergency { --marker-outline: #2f6176; background: linear-gradient(to top right, #65b8d5, #dff7ff); }
+.toilet-marker.is-border { --marker-outline: #384b96; background: linear-gradient(to top right, #3d519f, #aabcf8); }
 .toilet-marker.is-fuel.is-brand { --marker-outline: #9a602c; background: linear-gradient(to top right, #c87835, #f8d8ac); }
 .toilet-marker.is-atm.is-brand { --marker-outline: #397d64; background: linear-gradient(to top right, #4b9e7c, #c3ebd7); }
 .facility-brand-mark { background: rgb(255 255 255 / 92%); }
@@ -722,6 +723,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .toilet-card-icon.is-atm:not(.is-brand) { background: linear-gradient(to top right, #4b9e7c, #c3ebd7); }
 .toilet-card-icon.is-aed { background: linear-gradient(to top right, #4e9d71, #d6f4df); }
 .toilet-card-icon.is-emergency { background: linear-gradient(to top right, #65b8d5, #dff7ff); }
+.toilet-card-icon.is-border { background: linear-gradient(to top right, #3d519f, #aabcf8); }
 .toilet-card-icon.is-fuel.is-brand { background: linear-gradient(to top right, #c87835, #f8d8ac); }
 .toilet-card-icon.is-atm.is-brand { background: linear-gradient(to top right, #4b9e7c, #c3ebd7); }
 .legend-toilet { background: linear-gradient(to top right, #a8d6e8, #eef9fd); }
@@ -735,6 +737,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .legend-atm { background: linear-gradient(to top right, #4b9e7c, #c3ebd7); }
 .legend-aed { display: inline-grid; place-items: center; overflow: hidden; background: linear-gradient(to top right, #4e9d71, #d6f4df); }
 .legend-emergency { display: inline-grid; place-items: center; overflow: hidden; background: linear-gradient(to top right, #65b8d5, #dff7ff); }
+.legend-border { display: inline-grid; place-items: center; overflow: hidden; background: linear-gradient(to top right, #3d519f, #aabcf8); }
 
 .parking-marker.is-viewed,
 .toilet-marker.is-viewed { --marker-outline: #ff3b78; }
@@ -747,8 +750,13 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .toilet-marker .emergency-pill-symbol { width: 31px; height: 31px; }
 .legend-emergency-symbol { display: block; width: 16px; height: 16px; object-fit: contain; }
 .emergency-detail-symbol { display: inline-block; width: 19px; height: 19px; margin-right: 3px; vertical-align: -5px; object-fit: contain; }
+.border-control-symbol { display: block; width: 21px; height: 21px; object-fit: contain; }
+.toilet-marker .border-control-symbol { width: 29px; height: 29px; }
+.legend-border-symbol { display: block; width: 16px; height: 16px; object-fit: contain; }
+.border-detail-symbol { display: inline-block; width: 19px; height: 19px; margin-right: 3px; vertical-align: -5px; object-fit: contain; }
 .toilet-facts .washroom-source.is-aed { color: #cef5d8; background: #15563a; }
 .toilet-facts .washroom-source.is-emergency { color: #d9f7ff; background: #12485e; }
+.toilet-facts .washroom-source.is-border { color: #e3e8ff; background: #303e7d; }
 .data-note a { color: inherit; font-weight: 800; text-decoration: underline; text-underline-offset: 2px; }
 
 .csdi-attribution { font-size: 12px; font-weight: 700; }
@@ -799,6 +807,27 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .emergency-wait-grid dd { margin: 3px 0 0; font-size: 12px; line-height: 1.35; }
 .emergency-wait-grid small { color: #bbe8f3; font-size: 10px; font-weight: 700; }
 .emergency-update { margin: 8px 0 0; color: #b7e4ee; font-size: 11px; }
+.border-snapshot-note { margin: 0 0 8px; border: 1px solid #5266b5; border-radius: 10px; padding: 8px 10px; color: #e0e7ff; background: #232e64; font-size: 12px; font-weight: 800; line-height: 1.4; }
+.border-wait-summary { color: #f0f4ff; background: #263873 !important; font-weight: 900; line-height: 1.45; white-space: normal; }
+.border-location-note { color: #c6d1ff; font-size: 11px; line-height: 1.35; white-space: normal; }
+.border-popup-heading { display: flex; align-items: center; gap: 5px; }
+.border-popup-heading img { width: 20px; height: 20px; object-fit: contain; }
+.border-popup-wait { color: #253b8a !important; font-weight: 900; }
+.border-popup-update { display: block; margin-top: 3px; color: #43538f !important; font-size: 11px; line-height: 1.35; }
+.border-waiting-section { border: 1px solid #5266b5; border-radius: 10px; padding: 10px; background: #202a5d; }
+.border-waiting-section h3 { margin: 0 0 8px; color: #e2e8ff; font-size: 14px; }
+.border-wait-groups { display: grid; gap: 8px; }
+.border-wait-groups section { border-radius: 8px; padding: 8px; background: #17204d; }
+.border-wait-groups h4 { margin: 0 0 6px; color: #cbd5ff; font-size: 12px; }
+.border-wait-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 0; }
+.border-wait-grid > div { border-radius: 7px; padding: 7px; background: #111a42; }
+.border-wait-grid dt { color: #aab7e8; font-size: 11px; font-weight: 800; }
+.border-wait-grid dd { margin: 3px 0 0; color: #dfe5ff; font-size: 12px; font-weight: 900; line-height: 1.35; }
+.border-wait-grid dd.is-normal { color: #89f1d6; }
+.border-wait-grid dd.is-busy { color: #ffe36a; }
+.border-wait-grid dd.is-very-busy { color: #ff9b8d; }
+.border-wait-grid dd.is-unavailable { color: #b9c2d7; }
+.border-update { margin: 8px 0 0; color: #c5d0ff; font-size: 11px; }
 
 /* Map controls stay clickable while allowing the map underneath to show through. */
 .landsd-map .leaflet-control-zoom a { opacity: .5; }
