@@ -3,7 +3,7 @@ import { fetchNearbyFacilities } from '../api/nearbyFacilities';
 import type { NearbyFacility, NearbyMode } from '../types';
 
 export function useNearbyFacilities(mode: NearbyMode | null) {
-  const enabled = mode === 'fuel' || mode === 'atm';
+  const enabled = mode === 'fuel' || mode === 'atm' || mode === 'aed';
   const [facilities, setFacilities] = useState<NearbyFacility[]>([]);
   const [source, setSource] = useState<string>();
   const [loading, setLoading] = useState(false);

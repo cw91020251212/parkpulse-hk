@@ -21,7 +21,7 @@ export function sameToiletAtSamePlace(
 ) {
   const leftName = comparableToiletName(left.name);
   const rightName = comparableToiletName(right.name);
-  return leftName.length >= 4 && rightName.length >= 4
+  return leftName.length >= 2 && rightName.length >= 2
     && leftName === rightName
     && distanceInKm({ lat: left.latitude, lng: left.longitude }, { lat: right.latitude, lng: right.longitude }) <= 0.15;
 }
@@ -33,7 +33,11 @@ export function removeCrossSourceLcsdToiletDuplicates(toilets: PublicToilet[]) {
     toilet.kind === 'publicToilet'
       || toilet.kind === 'afcdCountryParkToilet'
       || toilet.kind === 'afcdNatureCentreToilet');
+  const exactLandsDToilets = toilets.filter((toilet) =>
+    toilet.kind === 'landsdMapToilet' && toilet.locationPrecision === 'toilet');
   const duplicateLcsd = new Set(exactLcsdToilets.filter((toilet) =>
     exactOtherSources.some((existing) => sameToiletAtSamePlace(toilet, existing))));
-  return toilets.filter((toilet) => !duplicateLcsd.has(toilet));
+  const duplicateLandsD = new Set(exactLandsDToilets.filter((toilet) =>
+    [...exactOtherSources, ...exactLcsdToilets].some((existing) => sameToiletAtSamePlace(toilet, existing))));
+  return toilets.filter((toilet) => !duplicateLcsd.has(toilet) && !duplicateLandsD.has(toilet));
 }

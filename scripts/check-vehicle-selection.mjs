@@ -10,7 +10,8 @@ const [filters, app, copy, styles] = await Promise.all([
 
 assert.match(filters, /onClick=\{\(\) => onVehicleChange\(type === vehicleType \? null : type\)\}/);
 assert.match(filters, /aria-pressed=\{type === vehicleType\}/);
-assert.match(filters, /\(\['toilets', 'fuel', 'atm'\] as const\)/);
+assert.match(filters, /\(\['toilets', 'fuel', 'atm', 'aed'\] as const\)/);
+assert.match(filters, /mode === 'aed' \? text\(language, 'aed'\)/);
 assert.match(app, /useState<VehicleType \| null>\(\(\) => readPreferences\(\)\.vehicleType\)/);
 assert.match(app, /saved\.vehicleType === null \? null/);
 assert.match(app, /if \(!vehicleType\) return \[\];/);

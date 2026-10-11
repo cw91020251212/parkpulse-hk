@@ -14,6 +14,7 @@ import { buildAfcdCountryParkToilets } from '../lib/afcd-country-park-toilets.mj
 import { buildHadCommunityToilets } from '../lib/had-community-toilets.mjs';
 import { buildAfcdNatureCentreToilets } from '../lib/afcd-nature-centre-toilets.mjs';
 import { buildAfcdLongValleyTemporaryToilets } from '../lib/afcd-long-valley-temporary-toilets.mjs';
+import { buildFsdAeds, FSD_AED_API_URL } from '../lib/aeds.mjs';
 import { refreshBrandIcons } from './refresh-brand-icons.mjs';
 
 const publicDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../public');
@@ -80,6 +81,12 @@ await refreshOrKeep('public-toilets.json', async () => {
   const records = parsePublicToilets(await (await request(FEHD_TOILETS_URL, 'application/xml,text/xml;q=0.9,*/*;q=0.8')).text());
   if (!records.length) throw new Error('FEHD returned no usable records');
   return { source: '食物環境衞生署 Public Toilets', records, lastUpdatedAt: records.map((record) => record.updatedAt).filter(Boolean).sort().at(-1) };
+});
+
+await refreshOrKeep('aeds.json', async () => {
+  const snapshot = buildFsdAeds(await (await request(FSD_AED_API_URL, 'text/csv')).text());
+  if (snapshot.records.length < 4_000) throw new Error(`FSD returned only ${snapshot.records.length} public AED records`);
+  return snapshot;
 });
 
 await refreshOrKeep('lcsd-park-washrooms.json', () => buildLcsdParkWashrooms());

@@ -712,6 +712,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .toilet-marker.is-venue { --marker-outline: #725c90; background: linear-gradient(to top right, #cbbbe2, #f5f0fb); }
 .toilet-marker.is-fuel { --marker-outline: #9a602c; background: linear-gradient(to top right, #c87835, #f8d8ac); }
 .toilet-marker.is-atm { --marker-outline: #397d64; background: linear-gradient(to top right, #4b9e7c, #c3ebd7); }
+.toilet-marker.is-aed { --marker-outline: #39785b; background: linear-gradient(to top right, #4e9d71, #d6f4df); }
 .toilet-marker.is-fuel.is-brand { --marker-outline: #9a602c; background: linear-gradient(to top right, #c87835, #f8d8ac); }
 .toilet-marker.is-atm.is-brand { --marker-outline: #397d64; background: linear-gradient(to top right, #4b9e7c, #c3ebd7); }
 .facility-brand-mark { background: rgb(255 255 255 / 92%); }
@@ -724,6 +725,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .toilet-card-icon.is-venue { background: linear-gradient(to top right, #cbbbe2, #f5f0fb); }
 .toilet-card-icon.is-fuel:not(.is-brand) { background: linear-gradient(to top right, #c87835, #f8d8ac); }
 .toilet-card-icon.is-atm:not(.is-brand) { background: linear-gradient(to top right, #4b9e7c, #c3ebd7); }
+.toilet-card-icon.is-aed { background: linear-gradient(to top right, #4e9d71, #d6f4df); }
 .toilet-card-icon.is-fuel.is-brand { background: linear-gradient(to top right, #c87835, #f8d8ac); }
 .toilet-card-icon.is-atm.is-brand { background: linear-gradient(to top right, #4b9e7c, #c3ebd7); }
 .legend-toilet { background: linear-gradient(to top right, #a8d6e8, #eef9fd); }
@@ -735,7 +737,15 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .legend-venue-unconfirmed { background: linear-gradient(to top right, #65717a, #c5cbd0); border-style: dashed; }
 .legend-fuel { background: linear-gradient(to top right, #c87835, #f8d8ac); }
 .legend-atm { background: linear-gradient(to top right, #4b9e7c, #c3ebd7); }
+.legend-aed { display: inline-grid; place-items: center; overflow: hidden; background: linear-gradient(to top right, #4e9d71, #d6f4df); }
 .toilet-marker.is-last-viewed { --marker-outline: #ff3b78; }
+
+.aed-symbol { display: block; width: 21px; height: 21px; border-radius: 3px; object-fit: contain; }
+.toilet-marker .aed-symbol { width: 22px; height: 22px; }
+.legend-aed-symbol { display: block; width: 15px; height: 15px; object-fit: contain; }
+.aed-detail-symbol { display: inline-block; width: 18px; height: 18px; margin-right: 3px; vertical-align: -4px; object-fit: contain; }
+.toilet-facts .washroom-source.is-aed { color: #cef5d8; background: #15563a; }
+.data-note a { color: inherit; font-weight: 800; text-decoration: underline; text-underline-offset: 2px; }
 
 .csdi-attribution { font-size: 12px; font-weight: 700; }
 

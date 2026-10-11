@@ -6,6 +6,7 @@ const SOURCES = [
   { file: 'had-community-toilets.json', minimumRecords: 100 },
   { file: 'pages-data/afcd-nature-centre-toilets.json', minimumRecords: 1 },
   { file: 'pages-data/afcd-long-valley-temporary-toilets.json', minimumRecords: 1 },
+  { file: 'pages-data/landsd-map-toilets.json', minimumRecords: 1 },
 ];
 
 export async function fetchAdditionalToilets(signal?: AbortSignal): Promise<{ records: PublicToilet[]; warning: string | null }> {

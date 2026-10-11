@@ -18,6 +18,7 @@ export function ToiletCard({ language, toilet: { toilet, distanceKm, manualPosit
   const isLcsdParkWashroom = toilet.kind === 'lcsdParkToilet';
   const isAfcdCountryParkToilet = toilet.kind === 'afcdCountryParkToilet';
   const isAfcdNatureCentreToilet = toilet.kind === 'afcdNatureCentreToilet';
+  const isLandsdMapToilet = toilet.kind === 'landsdMapToilet';
   const displayName = language === 'en' ? toilet.nameEn ?? toilet.name : toilet.name;
   const displayAddress = language === 'en' ? toilet.addressEn ?? toilet.address : toilet.address;
   const addressUrl = googleMapsPlaceUrl(displayName, displayAddress, toilet.latitude, toilet.longitude);
@@ -25,7 +26,7 @@ export function ToiletCard({ language, toilet: { toilet, distanceKm, manualPosit
   const displayRemarks = language === 'en' ? toilet.remarksEn ?? toilet.remarks : toilet.remarks;
   const [showPhoto, setShowPhoto] = useState(false);
   const [photoState, setPhotoState] = usePlacePhoto({ id: toilet.id, name: displayName, address: displayAddress, latitude: toilet.latitude, longitude: toilet.longitude }, showPhoto && !isStaticPages && !isVenueLocation);
-  const source = isLongValleyTemporaryVenue ? text(language, 'afcdLongValleyTemporaryWashrooms') : toilet.kind === 'hadCommunityToilet' ? text(language, 'hadCommunityWashroom') : isAfcdNatureCentreToilet ? text(language, 'afcdNatureCentreWashroom') : isLcsdVenue ? text(language, 'venueWashroom') : isLcsdParkWashroom ? text(language, 'lcsdParkWashroom') : isAfcdCountryParkToilet ? text(language, 'afcdCountryParkWashroom') : text(language, 'publicToilet');
+  const source = isLongValleyTemporaryVenue ? text(language, 'afcdLongValleyTemporaryWashrooms') : toilet.kind === 'hadCommunityToilet' ? text(language, 'hadCommunityWashroom') : isAfcdNatureCentreToilet ? text(language, 'afcdNatureCentreWashroom') : isLcsdVenue ? text(language, 'venueWashroom') : isLcsdParkWashroom ? text(language, 'lcsdParkWashroom') : isAfcdCountryParkToilet ? text(language, 'afcdCountryParkWashroom') : isLandsdMapToilet ? text(language, 'landsdMapToilet') : text(language, 'publicToilet');
   const fallbackAddress = isLongValleyTemporaryVenue ? text(language, 'afcdLongValleyTemporaryWashrooms') : isLcsdVenue ? text(language, 'venue') : isLcsdParkWashroom ? text(language, 'lcsdParkWashroom') : isAfcdCountryParkToilet ? text(language, 'afcdCountryParkWashroom') : text(language, 'publicToilet');
 
   return <article className="toilet-card">

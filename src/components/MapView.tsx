@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import L from 'leaflet';
 import { Circle, MapContainer, Marker, Popup, TileLayer, Tooltip, useMap } from 'react-leaflet';
+import { publicAsset } from '../api/site';
 import { getFacilityBrandIcon } from '../domain/brandIcons';
 import { formatDistance } from '../domain/distance';
 import { googleMapsPlaceUrl } from '../domain/placeLinks';
@@ -25,6 +26,7 @@ const LANDSD_MIN_NATIVE_ZOOM = 10;
 const LANDSD_MAX_NATIVE_ZOOM = 20;
 const MAP_MAX_ZOOM = 22;
 const LANDSD_LOGO_URL = 'https://api.hkmapservice.gov.hk/mapapi/landsdlogo.jpg';
+const AED_SYMBOL_URL = publicAsset('icons/iso-7010-e010-aed.svg');
 
 function Recenter({ position, request, startup }: { position: Coordinates; request: number; startup: boolean }) { const map = useMap(); const startupFlightUsed = useRef(false); useEffect(() => { if (request === 0) return; if (startup && !startupFlightUsed.current) { startupFlightUsed.current = true; map.flyTo([position.lat, position.lng], 14, { duration: 1.4 }); return; } map.setView([position.lat, position.lng], 14, { animate: true }); }, [map, position.lat, position.lng, request, startup]); return null; }
 function FocusSelected({ park }: { park?: ParkViewModel }) { const map = useMap(); useEffect(() => { if (park) map.flyTo([park.info.latitude, park.info.longitude], Math.max(map.getZoom(), 15), { duration: 0.35 }); }, [map, park]); return null; }
@@ -192,13 +194,28 @@ function LongPressPicker({ onPick }: { onPick: (coordinates: Coordinates) => voi
 function markerIcon(park: ParkViewModel, language: Language, lastViewed: boolean) { const label = park.status.kind === 'count' ? String(park.status.count) : park.status.kind === 'available' ? (language === 'en' ? 'A' : '有') : park.status.kind === 'full' ? (language === 'en' ? 'F' : '滿') : park.status.kind === 'closed' ? (language === 'en' ? 'C' : '關') : '–'; return L.divIcon({ className: 'parking-marker-shell', html: `<span class="parking-marker marker-${park.status.kind}${lastViewed ? ' is-last-viewed' : ''}"><b>${label}</b></span>`, iconSize: [38, 38], iconAnchor: [19, 38] }); }
 const selectedCenterIcon = L.divIcon({ className: 'selected-center-marker-shell', html: '<span class="selected-center-marker" aria-hidden="true">📍</span>', iconSize: [32, 36], iconAnchor: [16, 36] });
 function nearbyIcon(kind?: PublicToilet['kind'] | NearbyFacility['kind'] | OnStreetParkingGroup['kind'], occupancy?: OnStreetParkingGroup['occupancy'], vacant?: number, brand?: string, lastViewed = false, staticRoadside = false, total = 0, venueLocation = false, locationUnconfirmed = false, manualEditing = false, toiletId?: string) {
-  const venue = kind === 'lcsdVenue' || kind === 'hadCommunityToilet' || venueLocation; const unconfirmedVenue = kind === 'hadCommunityToilet' || kind === 'afcdLongValleyTemporaryToilets' || locationUnconfirmed; const fuel = kind === 'fuel'; const atm = kind === 'atm'; const motorcycle = kind === 'motorcycle'; const onStreet = kind === 'metered' || kind === 'nonMetered' || motorcycle; const washroom = !fuel && !atm && !onStreet; const brandIcon = fuel || atm ? getFacilityBrandIcon(fuel ? 'fuel' : 'atm', brand) : undefined; const count = staticRoadside ? total : vacant ?? 0; const label = onStreet ? String(count > 99 ? '99+' : count) : washroom ? washroomSymbolMarkup(venue) : fuel ? '⛽' : '🏧'; const content = brandIcon ? `<span class="facility-brand-mark" aria-hidden="true"><img src="${brandIcon.src}" alt="" /></span>` : `<span aria-hidden="true">${label}</span>`; const editTarget = venue && toiletId ? ` data-manual-toilet-id="${encodeURIComponent(toiletId)}"` : ''; return L.divIcon({ className: 'toilet-marker-shell', html: `<span${editTarget} class="toilet-marker${venue ? ' is-venue' : fuel ? ' is-fuel' : atm ? ' is-atm' : onStreet ? ` is-onstreet is-${occupancy}${motorcycle ? ' is-motorcycle' : ''}` : ''}${unconfirmedVenue ? ' is-location-unconfirmed' : ''}${brandIcon ? ' is-brand' : ''}${lastViewed ? ' is-last-viewed' : ''}${manualEditing ? ' is-being-adjusted' : ''}">${content}</span>`, iconSize: [34, 34], iconAnchor: [17, 34] });
+  const venue = kind === 'lcsdVenue' || kind === 'hadCommunityToilet' || venueLocation;
+  const unconfirmedVenue = kind === 'hadCommunityToilet' || kind === 'afcdLongValleyTemporaryToilets' || locationUnconfirmed;
+  const fuel = kind === 'fuel';
+  const atm = kind === 'atm';
+  const aed = kind === 'aed';
+  const motorcycle = kind === 'motorcycle';
+  const onStreet = kind === 'metered' || kind === 'nonMetered' || motorcycle;
+  const washroom = !fuel && !atm && !aed && !onStreet;
+  const brandIcon = fuel || atm ? getFacilityBrandIcon(fuel ? 'fuel' : 'atm', brand) : undefined;
+  const count = staticRoadside ? total : vacant ?? 0;
+  const label = onStreet ? String(count > 99 ? '99+' : count) : washroom ? washroomSymbolMarkup(venue) : aed ? `<img class="aed-symbol" src="${AED_SYMBOL_URL}" alt="" />` : fuel ? '⛽' : '🏧';
+  const content = brandIcon ? `<span class="facility-brand-mark" aria-hidden="true"><img src="${brandIcon.src}" alt="" /></span>` : `<span aria-hidden="true">${label}</span>`;
+  const editTarget = venue && toiletId ? ` data-manual-toilet-id="${encodeURIComponent(toiletId)}"` : '';
+  const tone = venue ? ' is-venue' : fuel ? ' is-fuel' : atm ? ' is-atm' : aed ? ' is-aed' : onStreet ? ` is-onstreet is-${occupancy}${motorcycle ? ' is-motorcycle' : ''}` : '';
+  return L.divIcon({ className: 'toilet-marker-shell', html: `<span${editTarget} class="toilet-marker${tone}${unconfirmedVenue ? ' is-location-unconfirmed' : ''}${brandIcon ? ' is-brand' : ''}${lastViewed ? ' is-last-viewed' : ''}${manualEditing ? ' is-being-adjusted' : ''}">${content}</span>`, iconSize: [34, 34], iconAnchor: [17, 34] });
 }
+
 function MapFocusIcon({ expanded }: { expanded: boolean }) { return expanded ? <svg className="map-focus-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 3 3 3 3-3M9 21l3-3 3 3M3 9l3 3-3 3M21 9l-3 3 3 3" /></svg> : <svg className="map-focus-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3H3v6m0-6 7 7M15 3h6v6m0-6-7 7M9 21H3v-6m0 6 7-7m5 7h6v-6m0 6-7-7" /></svg>; }
 
 export function MapView({ language, position, parks, nearbyItems, selectedId, lastViewedParkId, lastViewedOnStreetId, lastViewedToiletId, onSelect, onSelectOnStreet, onSelectToilet, onBeginManualPositionEdit, onManualPositionChange, onCompleteManualPositionEdit, onCancelManualPositionEdit, manualPositionEditorId, onLocationSelect, recenterRequest, startupLocating, startupRecenter, expanded, onToggleExpanded, onShowResults, resultsLabel }: Props) {
   const selected = parks.find((park) => park.info.park_Id === selectedId); const visibleResultCount = parks.length + nearbyItems.length;
-  const label = (kind?: PublicToilet['kind'] | NearbyFacility['kind'] | OnStreetParkingGroup['kind']) => kind === 'hadCommunityToilet' ? text(language, 'hadCommunityWashroom') : kind === 'afcdLongValleyTemporaryToilets' ? text(language, 'afcdLongValleyTemporaryWashrooms') : kind === 'afcdNatureCentreToilet' ? text(language, 'afcdNatureCentreWashroom') : kind === 'lcsdVenue' ? text(language, 'venueWashroom') : kind === 'lcsdParkToilet' ? text(language, 'lcsdParkWashroom') : kind === 'afcdCountryParkToilet' ? text(language, 'afcdCountryParkWashroom') : kind === 'fuel' ? (language === 'en' ? 'Consumer Council fuel station' : '消委會油站') : kind === 'atm' ? (language === 'en' ? 'HKMA ATM' : '金管局 ATM') : kind === 'metered' ? text(language, 'meteredParking') : kind === 'nonMetered' ? text(language, 'nonMeteredTrial') : kind === 'motorcycle' ? text(language, 'motorcycleOnStreet') : text(language, 'publicToilet');
+  const label = (kind?: PublicToilet['kind'] | NearbyFacility['kind'] | OnStreetParkingGroup['kind']) => kind === 'hadCommunityToilet' ? text(language, 'hadCommunityWashroom') : kind === 'afcdLongValleyTemporaryToilets' ? text(language, 'afcdLongValleyTemporaryWashrooms') : kind === 'afcdNatureCentreToilet' ? text(language, 'afcdNatureCentreWashroom') : kind === 'lcsdVenue' ? text(language, 'venueWashroom') : kind === 'lcsdParkToilet' ? text(language, 'lcsdParkWashroom') : kind === 'afcdCountryParkToilet' ? text(language, 'afcdCountryParkWashroom') : kind === 'landsdMapToilet' ? text(language, 'landsdMapToilet') : kind === 'fuel' ? (language === 'en' ? 'Consumer Council fuel station' : '消委會油站') : kind === 'atm' ? (language === 'en' ? 'HKMA ATM' : '金管局 ATM') : kind === 'aed' ? text(language, 'aed') : kind === 'metered' ? text(language, 'meteredParking') : kind === 'nonMetered' ? text(language, 'nonMeteredTrial') : kind === 'motorcycle' ? text(language, 'motorcycleOnStreet') : text(language, 'publicToilet');
 
   return <div className={expanded ? 'map-wrap is-expanded' : 'map-wrap'} aria-label={text(language, 'mapLabel')}>
     <MapContainer center={[position.lat, position.lng]} zoom={startupLocating ? 10 : 14} minZoom={8} maxZoom={MAP_MAX_ZOOM} scrollWheelZoom inertia={false} className="landsd-map">
@@ -237,7 +254,7 @@ export function MapView({ language, position, parks, nearbyItems, selectedId, la
                 {'remarks' in place && place.remarks && <small>{place.remarks}</small>}
               </button>
               <button className="toilet-popup-detail-action" type="button" aria-haspopup="dialog" aria-label={`${text(language, 'viewFacilityDetails')}: ${place.name}`} onClick={selectToilet}>{text(language, 'details')}</button>
-            </div> : <><strong>{place.name}</strong><small>{label(place.kind)}</small><small>{formatDistance(item.distanceKm)} · {extra}</small></>}
+            </div> : <><strong>{place.name}</strong><small>{place.kind === 'aed' ? `${label(place.kind)} · ${text(language, 'aedSources')}` : label(place.kind)}</small><small>{formatDistance(item.distanceKm)} · {extra}</small></>}
             <a className="map-popup-address" href={placeUrl} target="_blank" rel="noreferrer">{place.address || text(language, 'addressUnavailable')}</a>
             {selectFacility && <button className="map-popup-detail-button" type="button" onClick={selectFacility}>{text(language, 'viewFacilityDetails')}</button>}
             <a className="map-popup-directions" href={`https://www.google.com/maps/dir/?api=1&destination=${place.latitude},${place.longitude}${travel}`} target="_blank" rel="noreferrer">{directions}</a>

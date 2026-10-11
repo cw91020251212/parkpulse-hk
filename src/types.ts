@@ -148,7 +148,7 @@ export interface PublicToilet {
   latitude: number;
   longitude: number;
   locationPrecision?: 'toilet' | 'venue' | 'venue-uncertain';
-  kind?: 'publicToilet' | 'lcsdVenue' | 'lcsdParkToilet' | 'afcdCountryParkToilet' | 'hadCommunityToilet' | 'afcdNatureCentreToilet' | 'afcdLongValleyTemporaryToilets';
+  kind?: 'publicToilet' | 'lcsdVenue' | 'lcsdParkToilet' | 'afcdCountryParkToilet' | 'hadCommunityToilet' | 'afcdNatureCentreToilet' | 'afcdLongValleyTemporaryToilets' | 'landsdMapToilet';
   source?: string;
   sourceUrl?: string;
   coordinateSourceUrl?: string;
@@ -168,7 +168,7 @@ export interface PublicToiletViewModel {
   manualPositionSource?: 'shared' | 'local';
 }
 
-export type NearbyMode = 'toilets' | 'fuel' | 'atm' | 'onStreet';
+export type NearbyMode = 'toilets' | 'fuel' | 'atm' | 'aed' | 'onStreet';
 
 export interface GoogleMapsRating {
   rating: number;
@@ -186,8 +186,10 @@ export interface NearbyFacility {
   remarks?: string;
   latitude: number;
   longitude: number;
-  kind: 'fuel' | 'atm';
+  kind: 'fuel' | 'atm' | 'aed';
   source: string;
+  sourceUrl?: string;
+  snapshotGeneratedAt?: string;
 }
 
 export interface NearbyFacilityViewModel {
