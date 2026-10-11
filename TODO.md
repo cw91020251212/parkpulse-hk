@@ -4,3 +4,5 @@
 - [x] **在洗手間白色 popup 紅圈位置加入「詳情」按鈕：** 按鈕位於 popup 主要資訊右側，使用者按下後開啟既有灰色公廁詳情面板；不影響地址連結、導航連結及最後查看 marker 描邊。**驗收證據：** `pnpm test:toilet-map-detail`、TypeScript 檢查、一般及 Pages 建置、`git diff --check` 通過，並以預覽實測按鈕可打開詳情。
 - [x] **按手機返回鍵先關閉地圖 popup 而不退出 App：** 公廁白色 popup 開啟時按「返回」，先回到沒有 popup 的主地圖；若灰色詳情面板由 popup 開啟，第一次返回只關詳情並回到仍開啟的白色 popup，下一次返回才關閉 popup；點 popup 的關閉叉或點其他地圖位置關 popup 後，不留會干擾後續返回的 popup 歷史項目。**驗收證據：** `pnpm test:toilet-map-detail`、`pnpm check`、一般及 Pages 建置通過；預覽實測詳情返回回到 popup，再返回關 popup，URL 留在 App。
 - [x] **加入大埔海濱公園附近官方廁所點：** 保留地政總署原名「廁所(大埔海濱公園附近)」及香港測繪處轉換座標 `22.451399214, 114.178652267`，以精確廁所點顯示；維持原有公園場地級點，並清楚標示來源名稱未證實它就是「看台（下層廁所）」。**驗收證據：** `pnpm test:lcsd-park-washrooms`、`pnpm test:toilet-dedupe`、`pnpm check` 通過；靜態快照 400 筆包含 80 個嚴格場地配對精確點及 1 個官方附近補充點。
+
+- [x] **縮短地圖底部搜尋與圖例按鈕高度：** 「搜尋地區」按鈕及圖例三角按鈕高度統一為 30px；搜尋按鈕同時收窄上下 padding，保留文字及按鈕可操作性，不更動地圖高度或其他按鈕。**驗收證據：** `pnpm test:map-zoom-style`、`pnpm check`、一般／Pages 建置、`pnpm test:pwa` 及 `git diff --check` 通過。

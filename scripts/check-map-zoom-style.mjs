@@ -9,8 +9,12 @@ const [mapSource, styles, appSource, i18n] = await Promise.all([
 ]);
 const zoomControlRule = styles.match(/\.landsd-map \.leaflet-control-zoom a \{([^}]*)\}/)?.[1] ?? '';
 const mapFocusControlRule = styles.match(/\.map-wrap > \.map-focus-toggle \{([^}]*)\}/)?.[1] ?? '';
+const areaSearchToggleRule = styles.match(/\.area-search-toggle \{([^}]*)\}/)?.[1] ?? '';
+const mapLegendToggleRule = styles.match(/\.map-legend-toggle\s*\{([^}]*)\}/)?.[1] ?? '';
 assert.match(zoomControlRule, /opacity: \.5;/, 'Map zoom in/out buttons stay 50% transparent');
 assert.match(mapFocusControlRule, /opacity: \.5;/, 'Map expand button stays 50% transparent');
+assert.match(areaSearchToggleRule, /min-height: 30px;[^}]*padding: 4px 9px;/, 'Map area-search button is compact');
+assert.match(mapLegendToggleRule, /flex: 0 0 30px;[^}]*width: 30px;[^}]*height: 30px;/, 'Map legend toggle is compact');
 assert.match(appSource, /className="map-legend-toggle"[^>]*aria-controls="map-marker-legend"[^>]*aria-expanded=\{mapLegendOpen\}/);
 assert.match(appSource, /className="map-marker-legend" hidden=\{!mapLegendOpen\}/);
 assert.match(appSource, /legendAvailable[\s\S]*legendCentre/);
