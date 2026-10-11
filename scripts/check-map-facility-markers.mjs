@@ -12,13 +12,23 @@ assert.match(appSource, /const mapParks = startupLocationPending \|\| facilityMo
 assert.match(appSource, /const mapNearbyItems = startupLocationPending \|\| !facilityMode \? \[\] : activeNearbyResults;/);
 assert.match(appSource, /legend-aed-symbol/);
 assert.match(appSource, /aedSnapshotGeneratedAt/);
+assert.match(appSource, /legend-emergency-symbol/);
+assert.match(appSource, /emergencyWaitStatistics/);
 assert.match(mapSource, /nearbyItems\.map\(\(item\)/);
 assert.match(mapSource, /kind === 'aed'/);
+assert.match(mapSource, /kind === 'emergency'/);
 assert.match(mapSource, /is-aed/);
+assert.match(mapSource, /is-emergency/);
 assert.match(mapSource, /AED_SYMBOL_URL/);
+assert.match(mapSource, /EMERGENCY_SYMBOL_URL/);
 assert.match(mapSource, /aedSources/);
+assert.match(mapSource, /emergencySources/);
 assert.match(detailSource, /aed-detail-symbol/);
 assert.match(detailSource, /aedSnapshot/);
+assert.match(detailSource, /emergency-detail-symbol/);
+assert.match(detailSource, /emergencyUrgentNotice/);
 assert.match(styles, /\.toilet-marker \.aed-symbol \{ width: 30px; height: 30px; \}/);
+assert.match(styles, /\.toilet-marker\.is-emergency/);
+assert.match(styles, /\.emergency-pill-symbol/);
 
-console.log('Facility cards, Leaflet markers, map legend, popup and detail use the same AED symbol; the map-waterdrop symbol uses its available space.');
+console.log('Facility cards, Leaflet markers, map legend, popup and detail cover AED and emergency-department symbols with matching source and safety text.');

@@ -15,6 +15,7 @@ import { buildHadCommunityToilets } from '../lib/had-community-toilets.mjs';
 import { buildAfcdNatureCentreToilets } from '../lib/afcd-nature-centre-toilets.mjs';
 import { buildAfcdLongValleyTemporaryToilets } from '../lib/afcd-long-valley-temporary-toilets.mjs';
 import { buildFsdAeds, FSD_AED_API_URL } from '../lib/aeds.mjs';
+import { buildEmergencyDepartments } from '../lib/emergency-departments.mjs';
 import { refreshBrandIcons } from './refresh-brand-icons.mjs';
 
 const publicDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../public');
@@ -88,6 +89,8 @@ await refreshOrKeep('aeds.json', async () => {
   if (snapshot.records.length < 4_000) throw new Error(`FSD returned only ${snapshot.records.length} public AED records`);
   return snapshot;
 });
+
+await refreshOrKeep('emergency-departments.json', () => buildEmergencyDepartments());
 
 await refreshOrKeep('lcsd-park-washrooms.json', () => buildLcsdParkWashrooms());
 

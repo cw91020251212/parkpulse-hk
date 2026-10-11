@@ -707,6 +707,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .toilet-marker.is-fuel { --marker-outline: #9a602c; background: linear-gradient(to top right, #c87835, #f8d8ac); }
 .toilet-marker.is-atm { --marker-outline: #397d64; background: linear-gradient(to top right, #4b9e7c, #c3ebd7); }
 .toilet-marker.is-aed { --marker-outline: #39785b; background: linear-gradient(to top right, #4e9d71, #d6f4df); }
+.toilet-marker.is-emergency { --marker-outline: #2f6176; background: linear-gradient(to top right, #65b8d5, #dff7ff); }
 .toilet-marker.is-fuel.is-brand { --marker-outline: #9a602c; background: linear-gradient(to top right, #c87835, #f8d8ac); }
 .toilet-marker.is-atm.is-brand { --marker-outline: #397d64; background: linear-gradient(to top right, #4b9e7c, #c3ebd7); }
 .facility-brand-mark { background: rgb(255 255 255 / 92%); }
@@ -720,6 +721,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .toilet-card-icon.is-fuel:not(.is-brand) { background: linear-gradient(to top right, #c87835, #f8d8ac); }
 .toilet-card-icon.is-atm:not(.is-brand) { background: linear-gradient(to top right, #4b9e7c, #c3ebd7); }
 .toilet-card-icon.is-aed { background: linear-gradient(to top right, #4e9d71, #d6f4df); }
+.toilet-card-icon.is-emergency { background: linear-gradient(to top right, #65b8d5, #dff7ff); }
 .toilet-card-icon.is-fuel.is-brand { background: linear-gradient(to top right, #c87835, #f8d8ac); }
 .toilet-card-icon.is-atm.is-brand { background: linear-gradient(to top right, #4b9e7c, #c3ebd7); }
 .legend-toilet { background: linear-gradient(to top right, #a8d6e8, #eef9fd); }
@@ -732,6 +734,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .legend-fuel { background: linear-gradient(to top right, #c87835, #f8d8ac); }
 .legend-atm { background: linear-gradient(to top right, #4b9e7c, #c3ebd7); }
 .legend-aed { display: inline-grid; place-items: center; overflow: hidden; background: linear-gradient(to top right, #4e9d71, #d6f4df); }
+.legend-emergency { display: inline-grid; place-items: center; overflow: hidden; background: linear-gradient(to top right, #65b8d5, #dff7ff); }
 
 .parking-marker.is-viewed,
 .toilet-marker.is-viewed { --marker-outline: #ff3b78; }
@@ -740,7 +743,12 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .toilet-marker .aed-symbol { width: 30px; height: 30px; }
 .legend-aed-symbol { display: block; width: 15px; height: 15px; object-fit: contain; }
 .aed-detail-symbol { display: inline-block; width: 18px; height: 18px; margin-right: 3px; vertical-align: -4px; object-fit: contain; }
+.emergency-pill-symbol { display: block; width: 23px; height: 23px; object-fit: contain; }
+.toilet-marker .emergency-pill-symbol { width: 31px; height: 31px; }
+.legend-emergency-symbol { display: block; width: 16px; height: 16px; object-fit: contain; }
+.emergency-detail-symbol { display: inline-block; width: 19px; height: 19px; margin-right: 3px; vertical-align: -5px; object-fit: contain; }
 .toilet-facts .washroom-source.is-aed { color: #cef5d8; background: #15563a; }
+.toilet-facts .washroom-source.is-emergency { color: #d9f7ff; background: #12485e; }
 .data-note a { color: inherit; font-weight: 800; text-decoration: underline; text-underline-offset: 2px; }
 
 .csdi-attribution { font-size: 12px; font-weight: 700; }
@@ -771,6 +779,23 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .detail-grid dd { overflow-wrap: anywhere; }
 .nearby-facility-actions { flex-wrap: wrap; }
 .nearby-facility-actions .primary-action, .nearby-facility-actions .secondary-action { flex: 1 1 145px; }
+.emergency-statistic { margin: 0 0 8px; border: 1px solid #3788a1; border-radius: 10px; padding: 8px 10px; color: #d6f6ff; background: #113f53; font-size: 12px; font-weight: 800; line-height: 1.4; }
+.emergency-wait-summary { color: #c8f6ff; font-weight: 900; }
+.emergency-location-note { color: #a9ccd7; font-size: 11px; line-height: 1.35; }
+.emergency-urgent-notice { margin: 0 0 12px; border-left: 3px solid #ed6970; border-radius: 0 7px 7px 0; padding: 9px 10px; color: #ffe6e8; background: #562d36; font-weight: 800; line-height: 1.45; }
+.emergency-inline-notice { margin: 0 0 8px; border-left: 3px solid #ed6970; border-radius: 0 7px 7px 0; padding: 8px 10px; color: #ffe6e8; background: #562d36; font-size: 12px; font-weight: 900; line-height: 1.4; }
+.emergency-popup-notice { display: block; margin-top: 6px; color: #8f2431; font-weight: 900; line-height: 1.35; }
+.emergency-popup-heading { display: flex; align-items: center; gap: 5px; }
+.emergency-popup-heading img { width: 20px; height: 20px; object-fit: contain; }
+.emergency-popup-update { display: block; margin-top: 3px; color: #356779; font-size: 11px; line-height: 1.35; }
+.emergency-waiting-section { border: 1px solid #2f7187; border-radius: 10px; padding: 10px; background: #113f53; }
+.emergency-waiting-section h3 { margin: 0 0 8px; color: #d7f7ff; font-size: 14px; }
+.emergency-wait-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 0; }
+.emergency-wait-grid > div { border-radius: 7px; padding: 7px; background: #0c3344; }
+.emergency-wait-grid dt { color: #9fd4e3; font-size: 11px; font-weight: 800; }
+.emergency-wait-grid dd { margin: 3px 0 0; color: #fff; font-size: 12px; font-weight: 900; line-height: 1.35; }
+.emergency-wait-grid small { color: #bbe8f3; font-size: 10px; font-weight: 700; }
+.emergency-update { margin: 8px 0 0; color: #b7e4ee; font-size: 11px; }
 
 /* Map controls stay clickable while allowing the map underneath to show through. */
 .landsd-map .leaflet-control-zoom a { opacity: .5; }

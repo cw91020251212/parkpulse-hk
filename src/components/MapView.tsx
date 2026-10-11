@@ -4,6 +4,7 @@ import { Circle, MapContainer, Marker, Popup, TileLayer, Tooltip, useMap } from 
 import { publicAsset } from '../api/site';
 import { getFacilityBrandIcon } from '../domain/brandIcons';
 import { formatDistance } from '../domain/distance';
+import { emergencyWaitSummary, formatHaUpdateTime } from '../domain/emergencyWait';
 import { googleMapsPlaceUrl } from '../domain/placeLinks';
 import { text, vacancyLabel, type Language } from '../i18n';
 import type { Coordinates, NearbyFacility, NearbyFacilityViewModel, OnStreetParkingGroup, OnStreetParkingViewModel, ParkViewModel, PublicToilet, PublicToiletViewModel } from '../types';
@@ -27,6 +28,7 @@ const LANDSD_MAX_NATIVE_ZOOM = 20;
 const MAP_MAX_ZOOM = 22;
 const LANDSD_LOGO_URL = 'https://api.hkmapservice.gov.hk/mapapi/landsdlogo.jpg';
 const AED_SYMBOL_URL = `${publicAsset('icons/iso-7010-e010-aed.svg')}?v=20261011d`;
+const EMERGENCY_SYMBOL_URL = publicAsset('icons/emergency-pill.svg');
 
 function Recenter({ position, request, startup }: { position: Coordinates; request: number; startup: boolean }) { const map = useMap(); const startupFlightUsed = useRef(false); useEffect(() => { if (request === 0) return; if (startup && !startupFlightUsed.current) { startupFlightUsed.current = true; map.flyTo([position.lat, position.lng], 14, { duration: 1.4 }); return; } map.setView([position.lat, position.lng], 14, { animate: true }); }, [map, position.lat, position.lng, request, startup]); return null; }
 function FocusSelected({ park }: { park?: ParkViewModel }) { const map = useMap(); useEffect(() => { if (park) map.flyTo([park.info.latitude, park.info.longitude], Math.max(map.getZoom(), 15), { duration: 0.35 }); }, [map, park]); return null; }
@@ -199,15 +201,16 @@ function nearbyIcon(kind?: PublicToilet['kind'] | NearbyFacility['kind'] | OnStr
   const fuel = kind === 'fuel';
   const atm = kind === 'atm';
   const aed = kind === 'aed';
+  const emergency = kind === 'emergency';
   const motorcycle = kind === 'motorcycle';
   const onStreet = kind === 'metered' || kind === 'nonMetered' || motorcycle;
-  const washroom = !fuel && !atm && !aed && !onStreet;
+  const washroom = !fuel && !atm && !aed && !emergency && !onStreet;
   const brandIcon = fuel || atm ? getFacilityBrandIcon(fuel ? 'fuel' : 'atm', brand) : undefined;
   const count = staticRoadside ? total : vacant ?? 0;
-  const label = onStreet ? String(count > 99 ? '99+' : count) : washroom ? washroomSymbolMarkup(venue) : aed ? `<img class="aed-symbol" src="${AED_SYMBOL_URL}" alt="" />` : fuel ? '⛽' : '🏧';
+  const label = onStreet ? String(count > 99 ? '99+' : count) : washroom ? washroomSymbolMarkup(venue) : aed ? `<img class="aed-symbol" src="${AED_SYMBOL_URL}" alt="" />` : emergency ? `<img class="emergency-pill-symbol" src="${EMERGENCY_SYMBOL_URL}" alt="" />` : fuel ? '⛽' : '🏧';
   const content = brandIcon ? `<span class="facility-brand-mark" aria-hidden="true"><img src="${brandIcon.src}" alt="" /></span>` : `<span aria-hidden="true">${label}</span>`;
   const editTarget = venue && toiletId ? ` data-manual-toilet-id="${encodeURIComponent(toiletId)}"` : '';
-  const tone = venue ? ' is-venue' : fuel ? ' is-fuel' : atm ? ' is-atm' : aed ? ' is-aed' : onStreet ? ` is-onstreet is-${occupancy}${motorcycle ? ' is-motorcycle' : ''}` : '';
+  const tone = venue ? ' is-venue' : fuel ? ' is-fuel' : atm ? ' is-atm' : aed ? ' is-aed' : emergency ? ' is-emergency' : onStreet ? ` is-onstreet is-${occupancy}${motorcycle ? ' is-motorcycle' : ''}` : '';
   return L.divIcon({ className: 'toilet-marker-shell', html: `<span${editTarget} class="toilet-marker${tone}${unconfirmedVenue ? ' is-location-unconfirmed' : ''}${brandIcon ? ' is-brand' : ''}${viewed ? ' is-viewed' : ''}${manualEditing ? ' is-being-adjusted' : ''}">${content}</span>`, iconSize: [34, 34], iconAnchor: [17, 34] });
 }
 
@@ -215,7 +218,7 @@ function MapFocusIcon({ expanded }: { expanded: boolean }) { return expanded ? <
 
 export function MapView({ language, position, parks, nearbyItems, selectedId, viewedMarkerId, onSelect, onSelectOnStreet, onSelectToilet, onViewPopup, onBeginManualPositionEdit, onManualPositionChange, onCompleteManualPositionEdit, onCancelManualPositionEdit, manualPositionEditorId, onLocationSelect, recenterRequest, startupLocating, startupRecenter, expanded, onToggleExpanded, onShowResults, resultsLabel }: Props) {
   const selected = parks.find((park) => park.info.park_Id === selectedId); const visibleResultCount = parks.length + nearbyItems.length;
-  const label = (kind?: PublicToilet['kind'] | NearbyFacility['kind'] | OnStreetParkingGroup['kind']) => kind === 'hadCommunityToilet' ? text(language, 'hadCommunityWashroom') : kind === 'afcdLongValleyTemporaryToilets' ? text(language, 'afcdLongValleyTemporaryWashrooms') : kind === 'afcdNatureCentreToilet' ? text(language, 'afcdNatureCentreWashroom') : kind === 'lcsdVenue' ? text(language, 'venueWashroom') : kind === 'lcsdParkToilet' ? text(language, 'lcsdParkWashroom') : kind === 'afcdCountryParkToilet' ? text(language, 'afcdCountryParkWashroom') : kind === 'landsdMapToilet' ? text(language, 'landsdMapToilet') : kind === 'fuel' ? (language === 'en' ? 'Consumer Council fuel station' : '消委會油站') : kind === 'atm' ? (language === 'en' ? 'HKMA ATM' : '金管局 ATM') : kind === 'aed' ? text(language, 'aed') : kind === 'metered' ? text(language, 'meteredParking') : kind === 'nonMetered' ? text(language, 'nonMeteredTrial') : kind === 'motorcycle' ? text(language, 'motorcycleOnStreet') : text(language, 'publicToilet');
+  const label = (kind?: PublicToilet['kind'] | NearbyFacility['kind'] | OnStreetParkingGroup['kind']) => kind === 'hadCommunityToilet' ? text(language, 'hadCommunityWashroom') : kind === 'afcdLongValleyTemporaryToilets' ? text(language, 'afcdLongValleyTemporaryWashrooms') : kind === 'afcdNatureCentreToilet' ? text(language, 'afcdNatureCentreWashroom') : kind === 'lcsdVenue' ? text(language, 'venueWashroom') : kind === 'lcsdParkToilet' ? text(language, 'lcsdParkWashroom') : kind === 'afcdCountryParkToilet' ? text(language, 'afcdCountryParkWashroom') : kind === 'landsdMapToilet' ? text(language, 'landsdMapToilet') : kind === 'fuel' ? (language === 'en' ? 'Consumer Council fuel station' : '消委會油站') : kind === 'atm' ? (language === 'en' ? 'HKMA ATM' : '金管局 ATM') : kind === 'aed' ? text(language, 'aed') : kind === 'emergency' ? text(language, 'emergencyDepartment') : kind === 'metered' ? text(language, 'meteredParking') : kind === 'nonMetered' ? text(language, 'nonMeteredTrial') : kind === 'motorcycle' ? text(language, 'motorcycleOnStreet') : text(language, 'publicToilet');
 
   return <div className={expanded ? 'map-wrap is-expanded' : 'map-wrap'} aria-label={text(language, 'mapLabel')}>
     <MapContainer center={[position.lat, position.lng]} zoom={startupLocating ? 10 : 14} minZoom={8} maxZoom={MAP_MAX_ZOOM} scrollWheelZoom inertia={false} className="landsd-map">
@@ -235,9 +238,9 @@ export function MapView({ language, position, parks, nearbyItems, selectedId, vi
         const venueLocation = 'toilet' in item && (item.toilet.locationPrecision === 'venue' || item.toilet.locationPrecision === 'venue-uncertain' || item.toilet.kind === 'lcsdVenue');
         const manualPositionEditing = 'toilet' in item && venueLocation && item.toilet.id === manualPositionEditorId;
         const locationUnconfirmed = 'toilet' in item && item.toilet.locationPrecision === 'venue-uncertain';
-        const travel = place.kind === 'fuel' || onStreet ? '&travelmode=driving' : place.kind === 'atm' ? '&travelmode=walking' : '';
-        const directions = place.kind === 'fuel' || onStreet ? text(language, 'drivingNavigation') : place.kind === 'atm' ? text(language, 'walkingNavigation') : venueLocation ? text(language, 'navigateToVenue') : text(language, 'navigation');
-        const extra = onStreet ? (onStreet.static ? text(language, 'motorcycleOnStreetNoLive') : text(language, 'onStreetSpaceSummary', { vacant: onStreet.vacant, total: onStreet.total, occupied: onStreet.occupied, unavailable: onStreet.unavailable })) : 'openingHours' in place ? place.openingHours ?? text(language, 'openingUnavailable') : text(language, 'openingUnavailable');
+        const travel = place.kind === 'fuel' || place.kind === 'emergency' || onStreet ? '&travelmode=driving' : place.kind === 'atm' ? '&travelmode=walking' : '';
+        const directions = place.kind === 'fuel' || place.kind === 'emergency' || onStreet ? text(language, 'drivingNavigation') : place.kind === 'atm' ? text(language, 'walkingNavigation') : venueLocation ? text(language, 'navigateToVenue') : text(language, 'navigation');
+        const extra = onStreet ? (onStreet.static ? text(language, 'motorcycleOnStreetNoLive') : text(language, 'onStreetSpaceSummary', { vacant: onStreet.vacant, total: onStreet.total, occupied: onStreet.occupied, unavailable: onStreet.unavailable })) : place.kind === 'emergency' ? emergencyWaitSummary(language, place.emergencyWait) : 'openingHours' in place ? place.openingHours ?? text(language, 'openingUnavailable') : text(language, 'openingUnavailable');
         const markerKey = 'toilet' in item ? `toilet:${item.toilet.id}` : 'facility' in item ? `facility:${item.facility.id}` : `onstreet:${onStreet!.id}`;
         const viewed = viewedMarkerId === markerKey; const brand = 'brand' in place ? place.brand : undefined;
         const placeUrl = googleMapsPlaceUrl(place.name, place.address, place.latitude, place.longitude);
@@ -255,7 +258,9 @@ export function MapView({ language, position, parks, nearbyItems, selectedId, vi
                 {'remarks' in place && place.remarks && <small>{place.remarks}</small>}
               </button>
               <button className="toilet-popup-detail-action" type="button" aria-haspopup="dialog" aria-label={`${text(language, 'viewFacilityDetails')}: ${place.name}`} onClick={selectToilet}>{text(language, 'details')}</button>
-            </div> : <><strong>{place.name}</strong><small>{place.kind === 'aed' ? `${label(place.kind)} · ${text(language, 'aedSources')}` : label(place.kind)}</small><small>{formatDistance(item.distanceKm)} · {extra}</small></>}
+            </div> : <>{place.kind === 'emergency' ? <span className="emergency-popup-heading"><img src={EMERGENCY_SYMBOL_URL} alt="" /><strong>{place.name}</strong></span> : <strong>{place.name}</strong>}<small>{place.kind === 'aed' ? `${label(place.kind)} · ${text(language, 'aedSources')}` : place.kind === 'emergency' ? `${label(place.kind)} · ${text(language, 'emergencySources')}` : label(place.kind)}</small><small>{formatDistance(item.distanceKm)} · {extra}</small></>}
+            {place.kind === 'emergency' && <small className="emergency-popup-notice">{text(language, 'emergencyUrgentNotice')}</small>}
+            {place.kind === 'emergency' && <small className="emergency-popup-update">{text(language, 'emergencyUpdated', { value: formatHaUpdateTime(language, place.emergencyWait?.updatedAt) })}</small>}
             <a className="map-popup-address" href={placeUrl} target="_blank" rel="noreferrer">{place.address || text(language, 'addressUnavailable')}</a>
             {selectFacility && <button className="map-popup-detail-button" type="button" onClick={selectFacility}>{text(language, 'viewFacilityDetails')}</button>}
             <a className="map-popup-directions" href={`https://www.google.com/maps/dir/?api=1&destination=${place.latitude},${place.longitude}${travel}`} target="_blank" rel="noreferrer">{directions}</a>
