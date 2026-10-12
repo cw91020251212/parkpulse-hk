@@ -15,10 +15,11 @@ const wrapped = { north: 10, south: -10, east: -170, west: 170, center: { lat: 0
 assert.equal(isCoordinateInViewport({ lat: 0, lng: 179 }, wrapped), true, 'antimeridian-wrapping bounds include longitudes on either side');
 assert.equal(isCoordinateInViewport({ lat: 0, lng: 0 }, wrapped), false, 'antimeridian-wrapping bounds exclude the opposite longitude');
 
-const [app, map, filters] = await Promise.all([
+const [app, map, filters, styles] = await Promise.all([
   readFile(new URL('../src/App.tsx', import.meta.url), 'utf8'),
   readFile(new URL('../src/components/MapView.tsx', import.meta.url), 'utf8'),
   readFile(new URL('../src/components/Filters.tsx', import.meta.url), 'utf8'),
+  readFile(new URL('../src/styles.css', import.meta.url), 'utf8'),
 ]);
 assert.match(app, /searchScope/);
 assert.match(app, /isWithinSearchScope/);
@@ -33,6 +34,8 @@ assert.match(app, /setHasGpsPosition\(true\);\s*setHasManualMapMarker\(false\);/
 assert.match(app, /const selectArea = .*setPosition\(coordinates\); setHasGpsPosition\(false\); setHasManualMapMarker\(behavior\.showManualMarker === true\);/s, 'only an explicit long-press centre keeps a manual marker without masquerading as GPS');
 assert.match(app, /showCurrentLocation=\{hasGpsPosition\}/, 'the GPS state is provided to the map');
 assert.match(app, /showManualCenter=\{hasManualMapMarker\}/, 'the manual map-marker state is provided to the map');
+assert.match(app, /className=\{`workspace\$\{facilityMode \? ' is-facility-mode' : ''\}`\}/, 'nearby facilities mode is identified for its taller mobile map');
+assert.match(styles, /@media \(max-width: 720px\)[\s\S]*?\.map-column \{ height: max\(407px, calc\(100dvh - 173px\)\); \}[\s\S]*?\.workspace\.is-facility-mode \.map-column \{ height: max\(447px, calc\(100dvh - 133px\)\); \}/, 'only nearby facilities mode uses the extra 40px map row on mobile');
 assert.match(app, /onSearchScopeChange=\{changeSearchScope\}/, 'choosing viewport mode releases the startup location gate');
 assert.match(app, /startupLocationPending && searchScope === 'radius'/, 'startup location loading only blocks the original radius mode');
 assert.match(app, /searchScope === 'radius' && !resultsVerified && !startupLocationFallbackActive/, 'unverified park results may render in viewport mode without waiting for location fallback');
