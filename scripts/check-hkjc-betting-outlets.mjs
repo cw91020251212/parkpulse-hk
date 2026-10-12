@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { addressMatchScore, attachHkjcFirstPrizeStats, selectHkjcLocation } from '../lib/hkjc-betting-outlets.mjs';
+import { addressMatchScore, attachHkjcFirstPrizeStats, buildHkjcBettingOutletRecord, selectHkjcLocation } from '../lib/hkjc-betting-outlets.mjs';
 
 const root = process.cwd();
 const source = JSON.parse(await readFile(path.join(root, 'data/hkjc-betting-outlets-directory.json'), 'utf8'));
@@ -62,6 +62,29 @@ for (const [index, record] of snapshot.records.entries()) {
   assert.equal('openingHours' in record, false, 'Directory hours must not be represented as current live status');
   assert.equal('availability' in record, false, 'The app must not invent outlet availability');
 }
+
+const taiPoPlazaSource = source.records.find(({ id }) => id === 'hkjc-074');
+const taiPoPlazaSnapshot = snapshot.records.find(({ id }) => id === 'hkjc-074');
+assert.deepEqual(taiPoPlazaSource.manualLocation, {
+  latitude: 22.45263,
+  longitude: 114.16997,
+  hkE: 835557.322,
+  hkN: 834797.308,
+  locationNameTc: '香港賽馬會',
+  locationAddressTc: '新界大埔安泰街1號大埔廣場地下商場7號舖',
+  locationDistrictTc: '大埔區',
+  addressMatchScore: 0.55,
+  locationNoteTc: '位置按熟悉大埔廣場的使用者所指地圖位置手動校正。',
+  locationNoteEn: 'Manually corrected to the map location indicated by a local user familiar with Tai Po Plaza.',
+});
+assert.equal(taiPoPlazaSnapshot.latitude, taiPoPlazaSource.manualLocation.latitude);
+assert.equal(taiPoPlazaSnapshot.longitude, taiPoPlazaSource.manualLocation.longitude);
+assert.equal(taiPoPlazaSnapshot.locationNoteTc, taiPoPlazaSource.manualLocation.locationNoteTc);
+assert.equal(taiPoPlazaSnapshot.locationNoteEn, taiPoPlazaSource.manualLocation.locationNoteEn);
+const rebuiltTaiPoPlaza = await buildHkjcBettingOutletRecord(taiPoPlazaSource, source);
+assert.equal(rebuiltTaiPoPlaza.latitude, taiPoPlazaSnapshot.latitude);
+assert.equal(rebuiltTaiPoPlaza.longitude, taiPoPlazaSnapshot.longitude);
+assert.equal(rebuiltTaiPoPlaza.locationNoteTc, taiPoPlazaSnapshot.locationNoteTc);
 
 const buildingRecord = snapshot.records.find(({ id }) => id === 'hkjc-043');
 assert.equal(buildingRecord.locationNameTc, '華頌樓');

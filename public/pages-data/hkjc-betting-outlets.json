@@ -3,7 +3,7 @@
     "zh-Hant": "香港賽馬會官方場外投注處名錄",
     "en": "Hong Kong Jockey Club official off-course betting outlet directory"
   },
-  "generatedAt": "2026-10-12T02:28:30.512Z",
+  "generatedAt": "2026-10-12T13:18:37Z",
   "directoryUpdatedAt": "2026-10-09",
   "sourceCheckedAt": "2026-10-12",
   "sourceUrl": "https://entertainment.hkjc.com/zh-hk/visit-us/off-course-experience-shops",
@@ -1787,10 +1787,10 @@
       "nameEn": "Tai Po Plaza",
       "addressTc": "大埔廣場地下商場7號舖",
       "addressEn": "Unit 7 Level 1, Tai Po Plaza",
-      "latitude": 22.452262001,
-      "longitude": 114.170200701,
-      "hkE": 835581.06577893,
-      "hkN": 834756.55592933,
+      "latitude": 22.45263,
+      "longitude": 114.16997,
+      "hkE": 835557.322,
+      "hkN": 834797.308,
       "locationNameTc": "香港賽馬會",
       "locationAddressTc": "新界大埔安泰街1號大埔廣場地下商場7號舖",
       "locationDistrictTc": "大埔區",
@@ -1804,7 +1804,9 @@
       "locationSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-development-location-search-api",
       "coordinateTransformSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-coordinates-transformation-api",
       "firstPrizeRank": 8,
-      "firstPrizeTicketCount": 35
+      "firstPrizeTicketCount": 35,
+      "locationNoteTc": "位置按熟悉大埔廣場的使用者所指地圖位置手動校正。",
+      "locationNoteEn": "Manually corrected to the map location indicated by a local user familiar with Tai Po Plaza."
     },
     {
       "id": "hkjc-075",

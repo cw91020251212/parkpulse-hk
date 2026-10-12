@@ -528,7 +528,19 @@
       "nameTc": "大埔廣場",
       "nameEn": "Tai Po Plaza",
       "addressTc": "大埔廣場地下商場7號舖",
-      "addressEn": "Unit 7 Level 1, Tai Po Plaza"
+      "addressEn": "Unit 7 Level 1, Tai Po Plaza",
+      "manualLocation": {
+        "latitude": 22.45263,
+        "longitude": 114.16997,
+        "hkE": 835557.322,
+        "hkN": 834797.308,
+        "locationNameTc": "香港賽馬會",
+        "locationAddressTc": "新界大埔安泰街1號大埔廣場地下商場7號舖",
+        "locationDistrictTc": "大埔區",
+        "addressMatchScore": 0.55,
+        "locationNoteTc": "位置按熟悉大埔廣場的使用者所指地圖位置手動校正。",
+        "locationNoteEn": "Manually corrected to the map location indicated by a local user familiar with Tai Po Plaza."
+      }
     },
     {
       "id": "hkjc-075",
