@@ -17,15 +17,15 @@
 | 分类 | 记录数 |
 | --- | ---: |
 | 医管局医院／机构位置 | 44 |
-| 医管局专科门诊 | 49 |
+| 医管局专科门诊 | 50 |
 | 医管局家庭医学门诊 | 77 |
 | 衞生署公务员诊所 | 6 |
 | 衞生署公务员转介中心 | 1 |
 | 公务员中医诊所 | 3 |
 | 香港中医医院公务员指定服务 | 1 |
-| **合计** | **181** |
+| **合计** | **182** |
 
-181 条服务记录按坐标合并后为 **133 个地图位置**；其中 **41 个坐标组**含多于一条记录，最多每组 3 条。分类数字描述快照中的地点／服务记录，不等于独立建筑数，也不表示所有服务都能由所有公众或所有公务员使用。
+182 条服务记录按坐标合并后为 **134 个地图位置**；其中 **41 个坐标组**含多于一条记录，最多每组 3 条。分类数字描述快照中的地点／服务记录，不等于独立建筑数，也不表示所有服务都能由所有公众或所有公务员使用。
 
 资料口径：
 
@@ -39,6 +39,8 @@
 
 - 医管局医院资料：[facility-hosp.json](https://www.ha.org.hk/opendata/facility-hosp.json)
 - 医管局专科门诊资料：[facility-sop.json](https://www.ha.org.hk/opendata/facility-sop.json)
+- 医管局专科门诊科别与地点：[专科门诊目录](https://www.ha.org.hk/visitor/ha_visitor_index.asp?Content_ID=10053&Lang=CHIB5)；[新症轮候时间](https://www.ha.org.hk/visitor/ha_visitor_index.asp?Content_ID=214197&Lang=CHIB5)
+- 医管局「排队易」功能说明：[专科门诊电子化](https://www3.ha.org.hk/ehaslink/issue133/tc/feature-1.html)
 - 医管局家庭医学门诊开放数据：[facility-fmc.json](https://www.ha.org.hk/opendata/facility-fmc.json)
 - 医管局家庭医学门诊现行名录：[诊所目录](https://www.ha.org.hk/visitor/ha_isf_result.asp?lang=CHIB5&service_code_id=461&service_type=GOPD&location)
 - 公务员事务局：[公务员医疗及牙科福利](https://www.csb.gov.hk/tc_chi/admin/benefits/64.html)；[家庭医学诊所公务员筹名单](https://www.csb.gov.hk/tc_chi/admin/benefits/files/Annex_CSB_Homepage.pdf)
@@ -49,11 +51,11 @@
 
 ## 主要程式文件
 
-- `src/data/eligible-medical-locations.json`：181 条地点快照及来源元数据。
-- `src/domain/medicalLocations.ts`：分类顺序、文案映射、图标映射、坐标分组键。
-- `src/components/MedicalLocationCard.tsx`：分类筛选、结果卡、详情、预约／电话／导航和来源链接。
+- `src/data/eligible-medical-locations.json`：182 条地点快照及来源元数据，含核对后的专科代码。
+- `src/domain/medicalLocations.ts`：类别与15项科别目录、官方链接和图标映射。
+- `src/components/MedicalLocationCard.tsx`：类别／科别筛选、专科结果卡、HA Go／轮候时间／目录链接。
 - `src/components/Filters.tsx`：附近设施模式的「公营医疗」入口。
-- `src/components/MapView.tsx`：医疗位置独立地图图层及共址标记。
+- `src/components/MapView.tsx`：医疗位置独立图层、共址标记及弹窗科别。
 - `src/App.tsx`：范围过滤、类别统计、结果列表、详情选择与图例接线。
 - `public/icons/medical/*.svg`：单色类别图标，供地图标记和类别筛选重用。
 - `scripts/check-medical-locations.mjs`：数量、类别、坐标、来源、图标和图层隔离测试。
@@ -70,9 +72,15 @@ pnpm build
 pnpm build:pages
 ```
 
-本次实际以 Chromium 检查桌面 1366×768、手机 390×844：医疗模式切换、51 条可视范围结果、家庭医学类别筛选（22 条）、详情官方来源和导航链接；桌面地图为全高，手机页面宽度无横向溢出。构建成功；Vite 仍会提示应用主 JS chunk 超过 500 kB（压缩后约 189 kB），此为性能优化提示而非构建失败。
+本次以 Chromium 检查桌面 1366×768 与手机 390×844：可显示15科筛选，选择精神科后返回3个地点；详情提供 HA Go「排队易」、专科新症轮候时间和科别目录链接。手机页面宽度无横向溢出。
 
 
 ## 2026-10-13 文案精简
 
 应使用者意见，医疗模式现已移除筛选区、详情页和页尾重复的资格／服务免责声明；医疗模式不再显示通用长篇「使用声明」入口。页尾只保留简短的资料更新日期，详情页仍可直接打开对应官方来源。医院／专科记录不再重复塞入通用资格警告；预约区域只显示家庭医学、衞生署、公务员中医及中医医院相关的简明预约事实。
+
+## 2026-10-13 专科科别与排队易
+
+医管局专科门诊名录包含15项服务科别。逐科比对官网结果后，34个有明确服务关联的地点加入 `specialty_codes`；其余未匹配地点显示「官方目录未列出已核对科别」，不会按机构名称猜测。屯门精神健康中心原本不在旧快照，现已补为第50个专科服务地点；地址按医管局服务结果，地图点采用地政总署青山医院C座定位及WGS84坐标转换。
+
+医疗界面现在支持按科别筛选；结果卡和地图点弹窗都显示科别，详情内每个科别可直达对应医管局目录，并提供专科新症轮候时间及 HA Go「排队易」入口。医管局官方资料确认「排队易」可在专科诊症候诊时显示当前轮候；诊症后遥距领取药房筹号及查询药房轮候是另一流程。本次未找到有官方说明、供第三方读取全院即时筹号的公开 API，因此页面链接到 HA Go 官方入口，不读取个人登录资料，也不虚构全院叫号数据。

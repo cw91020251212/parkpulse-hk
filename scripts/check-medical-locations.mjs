@@ -9,7 +9,7 @@ const snapshot = JSON.parse(fs.readFileSync(snapshotPath, 'utf8'));
 const records = snapshot.records;
 const expectedCounts = {
   'ha-hospital-institution': 44,
-  'ha-specialist-outpatient-clinic': 49,
+  'ha-specialist-outpatient-clinic': 50,
   'ha-family-medicine-clinic': 77,
   'dh-civil-servants-clinic': 6,
   'dh-civil-servants-referral-centre': 1,
@@ -17,10 +17,14 @@ const expectedCounts = {
   'cmhhk-designated-civil-service-services': 1,
 };
 
-assert.equal(records.length, 181, 'medical location snapshot record count changed');
+assert.equal(records.length, 182, 'medical location snapshot record count changed');
 assert.deepEqual(snapshot.category_counts, expectedCounts, 'official category counts changed');
 assert.equal(Object.values(expectedCounts).reduce((sum, value) => sum + value, 0), records.length);
 assert.equal(new Set(records.map(({ id }) => id)).size, records.length, 'record IDs must be unique');
+assert.equal(snapshot.specialty_count, 15, 'the HA SOPC service directory should contain the verified 15 specialties');
+assert.ok(snapshot.specialty_source_url?.includes('Content_ID=10053'), 'specialty mapping needs an HA official source');
+assert.equal(records.filter(({ category, specialty_codes }) => category === 'ha-specialist-outpatient-clinic' && specialty_codes?.length).length, 34, 'official specialties should be shown only for matched locations');
+assert.ok(records.find(({ id }) => id === 'ha-sop-tuen-mun-mental-health-centre')?.coordinate_source_url?.includes('map.gov.hk'), 'the additional clinic needs a Lands Department coordinate source');
 assert.equal(records.filter(({ booking_notes }) => booking_notes).length, 88, 'only categories with practical booking information should carry notes');
 for (const record of records) {
   assert.ok(record.name_tc && record.address_tc, `record ${record.id} needs a Traditional Chinese name and address`);
@@ -36,7 +40,7 @@ for (const record of records) {
   const key = `${record.latitude.toFixed(6)},${record.longitude.toFixed(6)}`;
   coordinateGroups.set(key, (coordinateGroups.get(key) ?? 0) + 1);
 }
-assert.equal(coordinateGroups.size, 133, 'coordinate grouping changed; review map marker clustering');
+assert.equal(coordinateGroups.size, 134, 'coordinate grouping changed; review map marker clustering');
 assert.equal([...coordinateGroups.values()].filter((count) => count > 1).length, 41, 'co-located service count changed');
 assert.equal(Math.max(...coordinateGroups.values()), 3, 'unexpected number of co-located services');
 
@@ -62,10 +66,14 @@ const translations = fs.readFileSync(path.join(root, 'src/i18n.ts'), 'utf8');
 assert.match(app, /facilityMode === 'medical'/, 'medical mode must be isolated in the app');
 assert.match(app, /medicalItems=\{mapMedicalItems\}/, 'medical results must use a separate map prop');
 assert.match(app, /MedicalLocationCard/, 'medical results must render dedicated location cards');
+assert.match(app, /medicalSpecialtyFilter/, 'medical search should filter by specialty');
 assert.match(filters, /'medical'/, 'medical mode must be selectable');
 assert.match(map, /groupMedicalLocations/, 'co-located medical facilities must be grouped on the map');
+assert.match(map, /medicalSpecialtyLabel\(code, language\)/, 'specialties should be visible from the map popup');
 assert.match(app, /facilityMode === 'medical' \? \[\] : activeNearbyResults/, 'medical data must not leak into existing facility results');
 assert.doesNotMatch(app + medicalCard + translations, /medicalEligibilityNotice|medicalBookingDisclaimer/, 'long medical disclaimers should not return');
+assert.match(medicalCard, /HA_GO_EASYQ_URL/, 'SOPC details should link to the official HA Go EasyQ page');
+assert.match(medicalCard, /HA_SOPC_WAITING_TIME_URL/, 'SOPC details should link to official new-case waiting times');
 assert.match(app, /medicalDataSnapshot/, 'show a concise medical data update date');
 
-console.log(`Medical snapshot OK: ${records.length} records, ${coordinateGroups.size} map pins, 41 co-located pins, 7 categories.`);
+console.log(`Medical snapshot OK: ${records.length} records, ${coordinateGroups.size} map pins, 34 specialist locations mapped to 15 specialties, 7 categories.`);

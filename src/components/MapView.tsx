@@ -7,7 +7,7 @@ import { borderWaitSummary, formatBorderSnapshotTime } from '../domain/borderWai
 import { formatDistance } from '../domain/distance';
 import { emergencyWaitSummary, formatHaUpdateTime } from '../domain/emergencyWait';
 import { googleMapsPlaceUrl } from '../domain/placeLinks';
-import { MEDICAL_CATEGORY_LABEL_KEYS, medicalCoordinateKey, medicalIconFile } from '../domain/medicalLocations';
+import { MEDICAL_CATEGORY_LABEL_KEYS, medicalCoordinateKey, medicalIconFile, medicalSpecialtyLabel } from '../domain/medicalLocations';
 import { text, vacancyLabel, type Language } from '../i18n';
 import type { Coordinates, MapViewport, MedicalCategory, MedicalLocationViewModel, NearbyFacility, NearbyFacilityViewModel, OnStreetParkingGroup, OnStreetParkingViewModel, ParkViewModel, PublicToilet, PublicToiletViewModel, SearchScope } from '../types';
 import { washroomSymbolMarkup } from './WashroomSymbol';
@@ -308,7 +308,7 @@ export function MapView({ language, position, showCurrentLocation, showManualCen
         const markerKey = `medical-site:${group.key}`;
         const viewed = viewedMarkerId === markerKey || group.items.some((item) => viewedMarkerId === `medical:${item.location.id}`);
         return <Marker key={markerKey} position={[group.items[0].location.latitude, group.items[0].location.longitude]} icon={medicalMarkerIcon(group.category, group.items.length, viewed)} zIndexOffset={viewed ? 650 : 350} eventHandlers={{ popupopen: () => onViewPopup(markerKey) }}>
-          <Popup><div className="medical-map-popup">{group.items.length > 1 && <small className="medical-map-group-count">{text(language, 'medicalCoLocatedCount', { count: group.items.length })}</small>}{group.items.map((item) => { const location = item.location; const name = language === 'en' && location.name_en ? location.name_en : location.name_tc; return <button key={location.id} type="button" onClick={() => item.onSelect?.()}><strong>{name}</strong><small>{text(language, MEDICAL_CATEGORY_LABEL_KEYS[location.category])} · {formatDistance(item.distanceKm)}</small></button>; })}</div></Popup>
+          <Popup><div className="medical-map-popup">{group.items.length > 1 && <small className="medical-map-group-count">{text(language, 'medicalCoLocatedCount', { count: group.items.length })}</small>}{group.items.map((item) => { const location = item.location; const name = language === 'en' && location.name_en ? location.name_en : location.name_tc; return <button key={location.id} type="button" onClick={() => item.onSelect?.()}><strong>{name}</strong><small>{text(language, MEDICAL_CATEGORY_LABEL_KEYS[location.category])} · {formatDistance(item.distanceKm)}</small>{location.category === 'ha-specialist-outpatient-clinic' && (location.specialty_codes?.length ? <small className="medical-map-popup-specialties">{location.specialty_codes.map((code) => medicalSpecialtyLabel(code, language)).join(' · ')}</small> : <small className="medical-map-popup-specialties is-unlisted">{text(language, 'medicalSpecialtyUnlisted')}</small>)}</button>; })}</div></Popup>
         </Marker>;
       })}
     </MapContainer>

@@ -5,14 +5,14 @@
   "scope": "Only locations/services explicitly within Civil Service medical benefits; includes one DH referral-only integrated health centre separately from six general Civil Servants' Clinics. General 18-district Chinese Medicine Clinics are excluded except the three dedicated Civil Service Chinese Medicine Clinics and the specified CMHHK civil-service booking quota.",
   "category_counts": {
     "ha-hospital-institution": 44,
-    "ha-specialist-outpatient-clinic": 49,
+    "ha-specialist-outpatient-clinic": 50,
     "ha-family-medicine-clinic": 77,
     "dh-civil-servants-clinic": 6,
     "dh-civil-servants-referral-centre": 1,
     "civil-service-chinese-medicine-clinic": 3,
     "cmhhk-designated-civil-service-services": 1
   },
-  "row_count": 181,
+  "row_count": 182,
   "physical_site_note": "Rows are service records, not unique campuses. HA hospitals, FMCs, SOPCs, DH and Civil Service clinics may share coordinates/buildings; future map UI should consolidate/collate overlapping services rather than stack identical pins.",
   "sources": {
     "ha_hospitals": "https://www.ha.org.hk/opendata/facility-hosp.json",
@@ -902,7 +902,10 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "23"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-003",
@@ -921,7 +924,12 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "9",
+        "13",
+        "59"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-004",
@@ -959,7 +967,21 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "29",
+        "3",
+        "8",
+        "9",
+        "11",
+        "13",
+        "14",
+        "15",
+        "18",
+        "19",
+        "23",
+        "26"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-006",
@@ -978,7 +1000,21 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "29",
+        "2",
+        "3",
+        "8",
+        "11",
+        "13",
+        "14",
+        "15",
+        "18",
+        "19",
+        "23",
+        "26"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-007",
@@ -997,7 +1033,14 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "8",
+        "13",
+        "18",
+        "59",
+        "26"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-008",
@@ -1073,7 +1116,11 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "18",
+        "19"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-012",
@@ -1092,7 +1139,10 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "15"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-013",
@@ -1111,7 +1161,11 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "9",
+        "13"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-014",
@@ -1149,7 +1203,12 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "8",
+        "13",
+        "26"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-016",
@@ -1187,7 +1246,10 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "13"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-018",
@@ -1206,7 +1268,10 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "19"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-019",
@@ -1225,7 +1290,10 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "9"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-020",
@@ -1244,7 +1312,11 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "13",
+        "23"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-021",
@@ -1263,7 +1335,18 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "29",
+        "8",
+        "11",
+        "13",
+        "14",
+        "15",
+        "18",
+        "19",
+        "26"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-022",
@@ -1282,7 +1365,15 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "8",
+        "11",
+        "13",
+        "18",
+        "19",
+        "26"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-023",
@@ -1301,7 +1392,20 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "29",
+        "2",
+        "3",
+        "8",
+        "11",
+        "13",
+        "14",
+        "15",
+        "18",
+        "19",
+        "26"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-024",
@@ -1358,7 +1462,11 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "13",
+        "59"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-027",
@@ -1377,7 +1485,18 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "8",
+        "9",
+        "11",
+        "13",
+        "15",
+        "18",
+        "19",
+        "23",
+        "26"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-028",
@@ -1396,7 +1515,21 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "29",
+        "5",
+        "9",
+        "11",
+        "13",
+        "14",
+        "15",
+        "18",
+        "19",
+        "59",
+        "23",
+        "26"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-029",
@@ -1415,7 +1548,10 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "23"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-030",
@@ -1434,7 +1570,19 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "29",
+        "5",
+        "8",
+        "9",
+        "11",
+        "13",
+        "18",
+        "19",
+        "23",
+        "26"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-031",
@@ -1453,7 +1601,10 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "23"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-032",
@@ -1472,7 +1623,10 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "23"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-033",
@@ -1510,7 +1664,15 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "11",
+        "13",
+        "18",
+        "19",
+        "23",
+        "26"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-035",
@@ -1529,7 +1691,18 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "29",
+        "3",
+        "11",
+        "13",
+        "14",
+        "15",
+        "18",
+        "19",
+        "26"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-036",
@@ -1548,7 +1721,15 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "8",
+        "11",
+        "13",
+        "18",
+        "19",
+        "26"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-037",
@@ -1586,7 +1767,18 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "29",
+        "8",
+        "9",
+        "11",
+        "13",
+        "18",
+        "19",
+        "23",
+        "26"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-039",
@@ -1643,7 +1835,15 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "11",
+        "13",
+        "18",
+        "19",
+        "23",
+        "26"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-042",
@@ -1662,7 +1862,21 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "2",
+        "3",
+        "8",
+        "9",
+        "11",
+        "13",
+        "14",
+        "15",
+        "18",
+        "19",
+        "23",
+        "26"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-043",
@@ -1738,7 +1952,14 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "8",
+        "9",
+        "13",
+        "18",
+        "26"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-047",
@@ -1757,7 +1978,12 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "29",
+        "13",
+        "18"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-048",
@@ -1776,7 +2002,10 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "9"
+      ]
     },
     {
       "id": "ha-specialist-outpatient-clinic-049",
@@ -1795,7 +2024,20 @@
       "booking_app_url": "https://www3.ha.org.hk/hago/Home/DownloadApps/",
       "source_url": "https://www.ha.org.hk/opendata/facility-sop.json",
       "source_checked_at": "2026-10-13",
-      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules"
+      "eligibility_basis": "HA medical facility/service; civil service benefit subject to eligibility verification and service-specific rules",
+      "specialty_codes": [
+        "2",
+        "3",
+        "8",
+        "11",
+        "13",
+        "14",
+        "15",
+        "18",
+        "19",
+        "23",
+        "26"
+      ]
     },
     {
       "id": "ha-fmc-001",
@@ -3908,6 +4150,27 @@
       "source_url": "https://www.csb.gov.hk/tc_chi/admin/benefits/64.html#DesignatedServicesprovidedbyCMHHK",
       "source_checked_at": "2026-10-13",
       "eligibility_basis": "Civil Service Bureau explicitly-designated clinic/service; verify personal eligibility and service scope before use"
+    },
+    {
+      "id": "ha-sop-tuen-mun-mental-health-centre",
+      "category": "ha-specialist-outpatient-clinic",
+      "name_tc": "屯門精神健康中心",
+      "name_en": "Tuen Mun Mental Health Centre",
+      "address_tc": "新界屯門青松觀路13號",
+      "district_tc": "屯門區",
+      "latitude": 22.409026269,
+      "longitude": 113.973093695,
+      "coordinate_precision": "Building point: Castle Peak Hospital C Block",
+      "specialty_codes": [
+        "23"
+      ],
+      "source_url": "https://www.ha.org.hk/visitor/ha_isf_result.asp?lang=CHIB5&service_code_id=460&service_type=SC&location=&service_item=23",
+      "source_checked_at": "2026-10-13",
+      "coordinate_source_url": "https://www.map.gov.hk/gs/api/v1.0.0/locationSearch?q=%E6%96%B0%E7%95%8C%E5%B1%AF%E9%96%80%E9%9D%92%E6%9D%BE%E8%A7%80%E8%B7%AF13%E8%99%9F&lang=zh-Hant",
+      "eligibility_basis": "Listed as a psychiatry outpatient service by the Hospital Authority."
     }
-  ]
+  ],
+  "specialty_source_url": "https://www.ha.org.hk/visitor/ha_visitor_index.asp?Content_ID=10053&Lang=CHIB5",
+  "specialties_source_checked_at": "2026-10-12",
+  "specialty_count": 15
 }

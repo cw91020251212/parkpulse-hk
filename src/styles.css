@@ -1539,3 +1539,26 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 
 /* Keep every medical category discoverable without requiring horizontal scrolling. */
 .medical-category-filters { flex-wrap: wrap; overflow-x: visible; }
+
+
+/* HA specialist-service labels and practical queue/wait-time links. */
+.medical-specialty-filter { display: grid; grid-template-columns: 1fr; gap: 5px; margin: 0 0 12px; }
+.medical-specialty-filter label { color: #b8d7e1; font-size: 12px; font-weight: 800; }
+.medical-specialty-filter select { width: 100%; min-height: 40px; border: 1px solid #386579; border-radius: 9px; padding: 7px 10px; color: #e7f7fa; background: #0c2a3b; font: inherit; font-size: 13px; }
+.medical-specialties-preview, .medical-specialty-links { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+.medical-specialty-tag, .medical-specialty-more, .medical-specialty-unlisted { display: inline-flex; align-items: center; max-width: 100%; border: 1px solid #6e60a8; border-radius: 999px; padding: 3px 8px; color: #eee9ff; background: #30294e; font-size: 11px; font-weight: 800; line-height: 1.35; overflow-wrap: anywhere; text-decoration: none; }
+.medical-specialty-links a:hover, .medical-specialty-links a:focus-visible { border-color: #b7a7ff; background: #453a70; }
+.medical-specialty-more { color: #d2caff; }
+.medical-specialty-unlisted { border-color: #496171; color: #c4d3da; background: #1b3441; font-weight: 650; }
+.medical-specialty-detail .medical-specialty-links { margin-top: 8px; }
+.medical-queue-section > p { margin: 0 0 10px; line-height: 1.5; }
+.medical-official-links { display: flex; flex-wrap: wrap; gap: 8px; }
+.medical-official-links .secondary-action { flex: 1 1 150px; text-align: center; }
+@media (max-width: 900px) {
+  .medical-specialty-filter { margin-bottom: 10px; }
+  .medical-specialty-filter select { min-height: 44px; }
+  .medical-specialty-tag, .medical-specialty-more, .medical-specialty-unlisted { font-size: 12px; }
+}
+
+.medical-map-popup-specialties { display: block; margin-top: 3px; color: #514185; font-weight: 750; line-height: 1.4; white-space: normal; }
+.medical-map-popup-specialties.is-unlisted { color: #687782; font-weight: 600; }

@@ -197,8 +197,10 @@ export interface MedicalLocation {
   booking_app_url_android?: string;
   booking_notes?: string;
   relocation_note?: string;
+  specialty_codes?: string[];
   source_url: string;
   source_checked_at: string;
+  coordinate_source_url?: string;
   eligibility_basis?: string;
 }
 
