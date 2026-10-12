@@ -974,7 +974,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .settings-button:focus-visible { outline: 2px solid #57dfd1; outline-offset: 2px; }
 .settings-icon { display: block; width: 19px; height: 19px; }
 .settings-popover { position: absolute; z-index: 1300; top: calc(100% + 6px); right: 0; display: grid; gap: 7px; width: min(190px, calc(100vw - 32px)); padding: 9px; border: 1px solid #2f556b; border-radius: 12px; color: #d7f5f0; background: #0b263d; box-shadow: 0 12px 30px #0008; }
-.settings-popover .text-tools { display: grid; grid-column: auto; grid-row: auto; grid-template-rows: auto; gap: 6px; }
+.settings-popover .text-tools { display: grid; min-width: 0; grid-column: auto; grid-row: auto; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto; gap: 6px; }
 .settings-popover .text-size-control,
 .settings-popover .language-switcher { display: flex; align-items: center; width: 100%; min-height: 32px; height: 32px; padding: 3px; border: 1px solid #2f556b; border-radius: 8px; background: #0d2b43; }
 .settings-popover .text-size-control { justify-content: space-between; gap: 3px; }
@@ -983,8 +983,8 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .settings-popover .language-switcher button { min-width: 0; min-height: 24px; flex: 1; padding: 0 6px; font-size: 12px; }
 .settings-popover .help-button { display: flex; justify-content: flex-start; width: 100%; min-height: 32px; padding: 0 8px; font-size: 12px; }
 .settings-popover .help-button > span:last-child { display: inline; }
-.filter-mode-switch.is-compact { width: 148px; gap: 2px; padding: 3px; border-radius: 10px; }
-.filter-mode-switch.is-compact .filter-mode-button { min-height: 28px; padding: 2px 4px; border-radius: 7px; font-size: 10px; line-height: 1.1; }
+.filter-mode-switch.is-compact { width: 140px; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 2px; padding: 3px; border-radius: 10px; }
+.filter-mode-switch.is-compact .filter-mode-button { min-height: 36px; padding: 3px 4px; border-radius: 7px; font-size: 13px; line-height: 1.1; }
 
 @media (max-width: 720px) {
   .topbar { gap: 8px; }
@@ -995,6 +995,6 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
   .top-actions .refresh-button,
   .top-actions .locate-button { width: 30px; height: 30px; min-height: 30px; }
   .settings-icon { width: 17px; height: 17px; }
-  .filter-mode-switch.is-compact { width: 148px; }
+  .filter-mode-switch.is-compact { width: 140px; }
   .filters { margin-top: 6px; }
 }

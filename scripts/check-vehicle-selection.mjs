@@ -39,6 +39,7 @@ assert.match(app, /<FilterModeSwitch language=\{language\} section=\{filterSecti
 assert.doesNotMatch(app, /<Filters[^\n]*onSectionChange=/, 'Mode buttons are no longer in the full-width filter rows');
 assert.match(app, /className="settings-menu"/);
 assert.match(app, /className="settings-popover"/);
+assert.match(app, /<div className="settings-popover">[\s\S]*?<div className="language-switcher"/, 'Language toggle remains inside the gear menu');
 const actionsStart = app.indexOf('<div className="top-actions">');
 const gearButton = app.indexOf('<details className="settings-menu">', actionsStart);
 const refreshButton = app.indexOf("className={refreshBusy ? 'refresh-button", actionsStart);
@@ -54,17 +55,20 @@ const parkingOptionsStart = filters.indexOf('className="filter-scroll-row"', veh
 assert.ok(vehicleRowStart >= 0 && parkingOptionsStart > vehicleRowStart);
 assert.doesNotMatch(filters.slice(vehicleRowStart, parkingOptionsStart), /height-select/, 'Vehicle row contains only vehicle choices');
 assert.ok(filters.indexOf('className="height-select"') > parkingOptionsStart, 'Vehicle-height control stays on the parking options row');
-assert.match(filters, /className="filter-scroll-row"[^>]*>\s*\{scopeControl\}\s*<div className="filter-scroll-track">/, 'Scope button stays fixed before each horizontal scrolling track');
+assert.equal((filters.match(/<div className="filter-scroll-track">\s*\{scopeControl\}/g) ?? []).length, 2, 'Search scope can scroll in both parking and facilities sections');
+assert.doesNotMatch(filters, /className="filter-scroll-row"[^>]*>\s*\{scopeControl\}\s*<div className="filter-scroll-track">/, 'Scope button is not pinned outside the scroll track');
 
 for (const value of ['泊車', '附近設施', '設定', "settings: 'Settings'", '請在上方選擇洗手間、AED、油站等附近設施。', '請選擇車種以查看附近停車場空位。', 'Parking', 'Nearby facilities', 'Choose a nearby facility above—washrooms, AEDs, fuel and more.', 'Select a vehicle type to view nearby parking availability.']) {
   assert.ok(copy.includes(value), `Missing bilingual navigation or empty-state copy: ${value}`);
 }
 assert.match(styles, /\.filter-mode-switch/);
 assert.match(styles, /\.header-tools\s*\{[^}]*flex-direction:\s*column/);
-assert.match(styles, /\.filter-mode-switch\.is-compact\s*\{[^}]*width:\s*148px/);
+assert.match(styles, /\.filter-mode-switch\.is-compact\s*\{[^}]*width:\s*140px/);
+assert.match(styles, /\.filter-mode-switch\.is-compact \.filter-mode-button\s*\{[^}]*min-height:\s*36px[^}]*font-size:\s*13px/);
 assert.match(styles, /\.settings-popover\s*\{[^}]*position:\s*absolute/);
+assert.match(styles, /\.settings-popover \.text-tools\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\);[^}]*grid-template-rows:\s*auto auto/);
 assert.match(styles, /\.filters\s*\{\s*margin-top:\s*6px;\s*\}/);
 assert.match(styles, /\.filter-scroll-track\s*\{[^}]*overflow-x:\s*auto/);
 assert.match(styles, /\.filter-scroll-track \.chip, \.filter-scroll-track \.height-select\s*\{[^}]*white-space:\s*nowrap/);
 
-console.log('Gear menu retains text, language and help controls; mode tabs are compact beneath gear/refresh/location, with parking and facility rows unchanged.');
+console.log('Gear menu exposes language controls; larger compact mode tabs and horizontally scrollable search scope work in both sections.');

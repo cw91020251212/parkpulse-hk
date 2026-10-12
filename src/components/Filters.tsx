@@ -69,8 +69,8 @@ export function Filters({ language, section, vehicleType, filters, evLoading, fa
             </div>
           </div>
           <div className="filter-scroll-row" role="group" aria-label={text(language, 'filterConditions')}>
-            {scopeControl}
             <div className="filter-scroll-track">
+              {scopeControl}
               {vehicleType && !isMotorcycle && <label className="height-select"><span>{text(language, 'height')}</span><select value={filters.minHeight} onChange={(event) => update({ minHeight: Number(event.target.value) })}><option value={0}>{text(language, 'unlimited')}</option><option value={1.8}>≥ 1.8m</option><option value={2}>≥ 2.0m</option><option value={2.2}>≥ 2.2m</option></select></label>}
               {vehicleType && !isMotorcycleRoadside && <button className={filters.availableOnly ? 'chip is-on' : 'chip'} type="button" aria-pressed={filters.availableOnly} onClick={() => update({ availableOnly: !filters.availableOnly })}>{text(language, 'availableOnly')}</button>}
               {vehicleType && !isMotorcycleRoadside && <button className={filters.includeNoLiveData ? 'chip is-on' : 'chip'} type="button" aria-pressed={filters.includeNoLiveData} title={text(language, 'includeNoLiveDataHelp')} onClick={() => update({ includeNoLiveData: !filters.includeNoLiveData, availableOnly: filters.includeNoLiveData ? filters.availableOnly : false })}>{text(language, 'includeNoLiveData')}</button>}
@@ -84,8 +84,8 @@ export function Filters({ language, section, vehicleType, filters, evLoading, fa
       ) : (
         <>
           <div className="filter-scroll-row" role="group" aria-label={text(language, 'nearbyFacilitiesMode')}>
-            {scopeControl}
             <div className="filter-scroll-track">
+              {scopeControl}
               {FACILITY_MODES.map((mode) => <button key={mode} className={facilityMode === mode ? 'chip is-on' : 'chip'} type="button" aria-pressed={facilityMode === mode} onClick={() => onFacilityModeChange(facilityMode === mode ? null : mode)}>{facilityLoading && facilityMode === mode ? text(language, 'dataLoading') : facilityText(mode)}</button>)}
             </div>
           </div>
