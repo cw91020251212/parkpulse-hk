@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import L from 'leaflet';
 import { Circle, MapContainer, Marker, Popup, TileLayer, Tooltip, useMap } from 'react-leaflet';
 import { publicAsset } from '../api/site';
@@ -7,8 +7,9 @@ import { borderWaitSummary, formatBorderSnapshotTime } from '../domain/borderWai
 import { formatDistance } from '../domain/distance';
 import { emergencyWaitSummary, formatHaUpdateTime } from '../domain/emergencyWait';
 import { googleMapsPlaceUrl } from '../domain/placeLinks';
+import { MEDICAL_CATEGORY_LABEL_KEYS, medicalCoordinateKey, medicalIconFile } from '../domain/medicalLocations';
 import { text, vacancyLabel, type Language } from '../i18n';
-import type { Coordinates, MapViewport, NearbyFacility, NearbyFacilityViewModel, OnStreetParkingGroup, OnStreetParkingViewModel, ParkViewModel, PublicToilet, PublicToiletViewModel, SearchScope } from '../types';
+import type { Coordinates, MapViewport, MedicalCategory, MedicalLocationViewModel, NearbyFacility, NearbyFacilityViewModel, OnStreetParkingGroup, OnStreetParkingViewModel, ParkViewModel, PublicToilet, PublicToiletViewModel, SearchScope } from '../types';
 import { washroomSymbolMarkup } from './WashroomSymbol';
 
 type Props = {
@@ -16,6 +17,7 @@ type Props = {
   showCurrentLocation: boolean;
   showManualCenter: boolean;
   nearbyItems: Array<PublicToiletViewModel | NearbyFacilityViewModel | OnStreetParkingViewModel>;
+  medicalItems: MedicalLocationViewModel[];
   selectedId: string | null; viewedMarkerId: string | null;
   onSelect: (id: string) => void; onSelectOnStreet: (id: string) => void; onSelectToilet: (id: string) => void; onViewPopup: (markerKey: string) => void;
   onBeginManualPositionEdit: (id: string) => void; onManualPositionChange: (id: string, coordinates: Coordinates) => void; onCompleteManualPositionEdit: (id: string, coordinates: Coordinates) => void; onCancelManualPositionEdit: () => void;
@@ -242,10 +244,14 @@ function nearbyIcon(kind?: PublicToilet['kind'] | NearbyFacility['kind'] | OnStr
   return L.divIcon({ className: 'toilet-marker-shell', html: `<span${editTarget} class="toilet-marker${tone}${unconfirmedVenue ? ' is-location-unconfirmed' : ''}${brandIcon ? ' is-brand' : ''}${viewed ? ' is-viewed' : ''}${manualEditing ? ' is-being-adjusted' : ''}${firstPrizeBadge ? ' has-first-prize' : ''}">${content}${firstPrizeBadge}</span>`, iconSize: [34, 34], iconAnchor: [17, 34] });
 }
 
+function medicalMarkerIcon(category: MedicalCategory | null, count: number, viewed: boolean) { const file = medicalIconFile(category); const badge = count > 1 ? `<b class="medical-marker-count">${count}</b>` : ''; return L.divIcon({ className: 'medical-marker-shell', html: `<span class="medical-marker${category ? ` is-${category}` : ' is-mixed'}${viewed ? ' is-viewed' : ''}"><img src="${publicAsset(`icons/medical/${file}`)}" alt=""/>${badge}</span>`, iconSize: [40, 40], iconAnchor: [20, 20] }); }
+
+function groupMedicalLocations(items: MedicalLocationViewModel[]) { const groups = new Map<string, MedicalLocationViewModel[]>(); for (const item of items) { const key = medicalCoordinateKey(item.location.latitude, item.location.longitude); const group = groups.get(key) ?? []; group.push(item); groups.set(key, group); } return [...groups.entries()].map(([key, group]) => { const categories = new Set(group.map(({ location }) => location.category)); return { key, items: group, category: categories.size === 1 ? group[0].location.category : null }; }); }
+
 function MapFocusIcon({ expanded }: { expanded: boolean }) { return expanded ? <svg className="map-focus-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 3 3 3 3-3M9 21l3-3 3 3M3 9l3 3-3 3M21 9l-3 3 3 3" /></svg> : <svg className="map-focus-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3H3v6m0-6 7 7M15 3h6v6m0-6-7 7M9 21H3v-6m0 6 7-7m5 7h6v-6m0 6-7-7" /></svg>; }
 
-export function MapView({ language, position, showCurrentLocation, showManualCenter, parks, nearbyItems, selectedId, viewedMarkerId, onSelect, onSelectOnStreet, onSelectToilet, onViewPopup, onBeginManualPositionEdit, onManualPositionChange, onCompleteManualPositionEdit, onCancelManualPositionEdit, manualPositionEditorId, onLocationSelect, recenterRequest, startupLocating, startupRecenter, expanded, searchScope, onViewportChange, onToggleExpanded, onShowResults, resultsLabel }: Props) {
-  const selected = parks.find((park) => park.info.park_Id === selectedId); const visibleResultCount = parks.length + nearbyItems.length;
+export function MapView({ language, position, showCurrentLocation, showManualCenter, parks, nearbyItems, medicalItems, selectedId, viewedMarkerId, onSelect, onSelectOnStreet, onSelectToilet, onViewPopup, onBeginManualPositionEdit, onManualPositionChange, onCompleteManualPositionEdit, onCancelManualPositionEdit, manualPositionEditorId, onLocationSelect, recenterRequest, startupLocating, startupRecenter, expanded, searchScope, onViewportChange, onToggleExpanded, onShowResults, resultsLabel }: Props) {
+  const selected = parks.find((park) => park.info.park_Id === selectedId); const medicalGroups = useMemo(() => groupMedicalLocations(medicalItems), [medicalItems]); const visibleResultCount = parks.length + nearbyItems.length + medicalItems.length;
   const showPositionMarker = searchScope === 'radius' || showCurrentLocation || showManualCenter;
   const positionMarkerIcon = showCurrentLocation ? currentLocationIcon : selectedCenterIcon;
   const label = (kind?: PublicToilet['kind'] | NearbyFacility['kind'] | OnStreetParkingGroup['kind']) => kind === 'hadCommunityToilet' ? text(language, 'hadCommunityWashroom') : kind === 'afcdLongValleyTemporaryToilets' ? text(language, 'afcdLongValleyTemporaryWashrooms') : kind === 'afcdNatureCentreToilet' ? text(language, 'afcdNatureCentreWashroom') : kind === 'lcsdVenue' ? text(language, 'venueWashroom') : kind === 'lcsdParkToilet' ? text(language, 'lcsdParkWashroom') : kind === 'afcdCountryParkToilet' ? text(language, 'afcdCountryParkWashroom') : kind === 'landsdMapToilet' ? text(language, 'landsdMapToilet') : kind === 'fuel' ? (language === 'en' ? 'Consumer Council fuel station' : '消委會油站') : kind === 'atm' ? (language === 'en' ? 'HKMA ATM' : '金管局 ATM') : kind === 'aed' ? text(language, 'aed') : kind === 'emergency' ? text(language, 'emergencyDepartment') : kind === 'border' ? text(language, 'borderControlPoints') : kind === 'hkjc' ? text(language, 'hkjcOutlets') : kind === 'metered' ? text(language, 'meteredParking') : kind === 'nonMetered' ? text(language, 'nonMeteredTrial') : kind === 'motorcycle' ? text(language, 'motorcycleOnStreet') : text(language, 'publicToilet');
@@ -296,6 +302,13 @@ export function MapView({ language, position, showCurrentLocation, showManualCen
             {selectFacility && <button className="map-popup-detail-button" type="button" onClick={selectFacility}>{text(language, 'viewFacilityDetails')}</button>}
             <a className="map-popup-directions" href={`https://www.google.com/maps/dir/?api=1&destination=${place.latitude},${place.longitude}${travel}`} target="_blank" rel="noreferrer">{directions}</a>
           </div></Popup>}
+        </Marker>;
+      })}
+      {medicalGroups.map((group) => {
+        const markerKey = `medical-site:${group.key}`;
+        const viewed = viewedMarkerId === markerKey || group.items.some((item) => viewedMarkerId === `medical:${item.location.id}`);
+        return <Marker key={markerKey} position={[group.items[0].location.latitude, group.items[0].location.longitude]} icon={medicalMarkerIcon(group.category, group.items.length, viewed)} zIndexOffset={viewed ? 650 : 350} eventHandlers={{ popupopen: () => onViewPopup(markerKey) }}>
+          <Popup><div className="medical-map-popup">{group.items.length > 1 && <small className="medical-map-group-count">{text(language, 'medicalCoLocatedCount', { count: group.items.length })}</small>}{group.items.map((item) => { const location = item.location; const name = language === 'en' && location.name_en ? location.name_en : location.name_tc; return <button key={location.id} type="button" onClick={() => item.onSelect?.()}><strong>{name}</strong><small>{text(language, MEDICAL_CATEGORY_LABEL_KEYS[location.category])} · {formatDistance(item.distanceKm)}</small></button>; })}</div></Popup>
         </Marker>;
       })}
     </MapContainer>

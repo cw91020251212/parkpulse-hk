@@ -12,7 +12,9 @@ const [appSource, mapSource, detailSource, styles, borderIcon, facilityCard, fil
 ]);
 
 assert.match(appSource, /const mapParks = \(startupLocationPending && searchScope === 'radius'\) \|\| facilityMode \? \[\] : displayedParks;/);
-assert.match(appSource, /const mapNearbyItems = \(startupLocationPending && searchScope === 'radius'\) \|\| !facilityMode \? \[\] : activeNearbyResults;/);
+assert.match(appSource, /const mapNearbyItems = \(startupLocationPending && searchScope === 'radius'\) \|\| !facilityMode \|\| facilityMode === 'medical' \? \[\] : activeNearbyResults;/);
+assert.match(appSource, /const mapMedicalItems = \(startupLocationPending && searchScope === 'radius'\) \|\| facilityMode !== 'medical' \? \[\] : nearbyMedical;/);
+assert.match(appSource, /medicalItems=\{mapMedicalItems\}/);
 assert.match(appSource, /legend-aed-symbol/);
 assert.match(appSource, /aedSnapshotGeneratedAt/);
 assert.match(appSource, /legend-emergency-symbol/);
