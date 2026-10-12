@@ -81,4 +81,19 @@ assert.match(styles, /\.filters\s*\{\s*margin-top:\s*6px;\s*\}/);
 assert.match(styles, /\.filter-scroll-track\s*\{[^}]*overflow-x:\s*auto/);
 assert.match(styles, /\.filter-scroll-track \.chip, \.filter-scroll-track \.height-select\s*\{[^}]*white-space:\s*nowrap/);
 
+assert.match(app, /const showResults = \(\) => setResultsExpanded\(true\)/, 'Map result shortcut opens the full-screen list');
+assert.match(app, /className=\{`results-panel\$\{resultsExpanded \? ' is-fullscreen' : ''\}`\}/);
+assert.match(app, /className="results-fullscreen-close"/);
+assert.match(app, /text\(language, 'returnToMap'\)/);
+assert.match(app, /document\.body\.style\.overflow = 'hidden'/);
+assert.match(app, /event\.key === 'Escape'/);
+assert.match(copy, /showResults: '全畫面清單：\{count\} ↓'/);
+assert.match(copy, /showResults: 'Full-screen list: \{count\} ↓'/);
+assert.match(copy, /returnToMap: '返回地圖'/);
+assert.match(copy, /returnToMap: 'Back to map'/);
+assert.match(styles, /\.results-panel \.card-heading h3\s*\{[^}]*font-size:\s*17px/);
+assert.match(styles, /\.results-panel \.toilet-facts\s*\{[^}]*font-size:\s*14px/);
+assert.match(styles, /\.results-panel\.is-fullscreen\s*\{[^}]*position:\s*fixed/);
+assert.match(styles, /\.results-panel\.is-fullscreen \.results-list\s*\{[^}]*overflow-y:\s*auto/);
+
 console.log('Gear menu exposes language controls; larger compact mode tabs and horizontally scrollable search scope work in both sections.');
