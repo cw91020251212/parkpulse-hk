@@ -72,5 +72,11 @@ assert.match(facilityCard, /hkjcFirstPrizeRankCount/, 'Cards should show rank an
 assert.match(detailSource, /hkjcFirstPrizeAsOf/, 'The outlet detail should show the statistics cutoff date');
 assert.match(detailSource, /hkjcFirstPrizeSource/, 'The outlet detail should link to the official statistics');
 assert.match(styles, /\.hkjc-first-prize-marker-badge/);
+assert.match(mapSource, /hkjc-first-prize-marker-badge" aria-hidden="true"><svg viewBox="0 0 48 36"/, 'Map count should sit inside a crown-shaped SVG');
+assert.match(mapSource, /<text x="24" y="25"[^>]*>\$\{firstPrizeCount\}<\/text>/, 'Map crown should contain the count directly');
+assert.match(facilityCard, /hkjc-first-prize-card-badge"><svg viewBox="0 0 48 36"/, 'Card badge should use the same crown shape');
+assert.match(facilityCard, /<text x="24" y="25"[^>]*>\{facility\.hkjcFirstPrizeTicketCount\}<\/text>/, 'Card crown should contain its count directly');
+assert.match(styles, /\.hkjc-first-prize-marker-badge, \.hkjc-first-prize-card-badge \{[^}]*background: transparent/, 'Crown badges must not have a round backing');
+assert.doesNotMatch(styles, /\.hkjc-first-prize-marker-badge \{[^}]*border-radius/, 'The map badge itself must not be circular');
 
 console.log('Verified AED, emergency-department, border and HKJC outlet controls, markers, legends, sources and location precision across map and detail views.');
