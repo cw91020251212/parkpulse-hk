@@ -8,8 +8,8 @@ const [appSource, mapSource, detailSource, styles] = await Promise.all([
   readFile(new URL('../src/styles.css', import.meta.url), 'utf8'),
 ]);
 
-assert.match(appSource, /const mapParks = startupLocationPending \|\| facilityMode \? \[\] : displayedParks;/);
-assert.match(appSource, /const mapNearbyItems = startupLocationPending \|\| !facilityMode \? \[\] : activeNearbyResults;/);
+assert.match(appSource, /const mapParks = \(startupLocationPending && searchScope === 'radius'\) \|\| facilityMode \? \[\] : displayedParks;/);
+assert.match(appSource, /const mapNearbyItems = \(startupLocationPending && searchScope === 'radius'\) \|\| !facilityMode \? \[\] : activeNearbyResults;/);
 assert.match(appSource, /legend-aed-symbol/);
 assert.match(appSource, /aedSnapshotGeneratedAt/);
 assert.match(appSource, /legend-emergency-symbol/);

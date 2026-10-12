@@ -1,4 +1,4 @@
-import { VEHICLE_TYPES, type NearbyMode, type ParkFilters, type VehicleType } from '../types';
+import { VEHICLE_TYPES, type NearbyMode, type ParkFilters, type SearchScope, type VehicleType } from '../types';
 import { text, vehicleLabel, type Language } from '../i18n';
 
 type Props = {
@@ -8,16 +8,19 @@ type Props = {
   evLoading: boolean;
   facilityMode: NearbyMode | null;
   facilityLoading: boolean;
+  searchScope: SearchScope;
+  onSearchScopeChange: (scope: SearchScope) => void;
   onFacilityModeChange: (mode: NearbyMode | null) => void;
   onVehicleChange: (vehicle: VehicleType | null) => void;
   onFiltersChange: (filters: ParkFilters) => void;
 };
 
-export function Filters({ language, vehicleType, filters, evLoading, facilityMode, facilityLoading, onVehicleChange, onFiltersChange, onFacilityModeChange }: Props) {
+export function Filters({ language, vehicleType, filters, evLoading, facilityMode, facilityLoading, searchScope, onSearchScopeChange, onVehicleChange, onFiltersChange, onFacilityModeChange }: Props) {
   const update = (patch: Partial<ParkFilters>) => onFiltersChange({ ...filters, ...patch });
   const isMotorcycle = vehicleType === 'motorCycle';
   const isMotorcycleRoadside = isMotorcycle && facilityMode === 'onStreet';
   const facilityText = (mode: NearbyMode) => mode === 'toilets' ? text(language, 'washrooms') : mode === 'fuel' ? text(language, 'fuel') : mode === 'aed' ? text(language, 'aed') : mode === 'emergency' ? text(language, 'emergencyDepartment') : mode === 'border' ? text(language, 'borderControlPoints') : mode === 'onStreet' ? (isMotorcycle ? text(language, 'motorcycleOnStreet') : text(language, 'onStreet')) : 'ATM';
+  const scopeLabel = text(language, searchScope === 'viewport' ? 'scopeViewport' : 'scopeRadius');
 
   return (
     <section className="filters" aria-label={text(language, 'filterParking')}>
@@ -30,6 +33,7 @@ export function Filters({ language, vehicleType, filters, evLoading, facilityMod
         {vehicleType && !isMotorcycle && <label className="height-select"><span>{text(language, 'height')}</span><select value={filters.minHeight} onChange={(event) => update({ minHeight: Number(event.target.value) })}><option value={0}>{text(language, 'unlimited')}</option><option value={1.8}>≥ 1.8m</option><option value={2}>≥ 2.0m</option><option value={2.2}>≥ 2.2m</option></select></label>}
       </div>
       <div className="filter-row" aria-label={text(language, 'filterConditions')}>
+        <button className={searchScope === 'viewport' ? 'chip scope-chip is-on' : 'chip scope-chip'} type="button" aria-pressed={searchScope === 'viewport'} aria-label={text(language, 'searchScopeToggle', { scope: scopeLabel })} title={text(language, searchScope === 'viewport' ? 'switchToRadiusScope' : 'switchToViewportScope')} onClick={() => onSearchScopeChange(searchScope === 'viewport' ? 'radius' : 'viewport')}>{text(language, 'searchRange')}: {scopeLabel}</button>
         {vehicleType && !isMotorcycleRoadside && <button className={filters.availableOnly ? 'chip is-on' : 'chip'} type="button" aria-pressed={filters.availableOnly} onClick={() => update({ availableOnly: !filters.availableOnly })}>{text(language, 'availableOnly')}</button>}
         {vehicleType && !isMotorcycleRoadside && <button className={filters.includeNoLiveData ? 'chip is-on' : 'chip'} type="button" aria-pressed={filters.includeNoLiveData} title={text(language, 'includeNoLiveDataHelp')} onClick={() => update({ includeNoLiveData: !filters.includeNoLiveData, availableOnly: filters.includeNoLiveData ? filters.availableOnly : false })}>{text(language, 'includeNoLiveData')}</button>}
         {(vehicleType || facilityMode === 'onStreet') && <button className={facilityMode === 'onStreet' ? 'chip is-on' : 'chip'} type="button" aria-pressed={facilityMode === 'onStreet'} title={isMotorcycle ? text(language, 'motorcycleOnStreetTitle') : undefined} onClick={() => onFacilityModeChange(facilityMode === 'onStreet' ? null : 'onStreet')}>{facilityLoading && facilityMode === 'onStreet' ? text(language, 'dataLoading') : facilityText('onStreet')}</button>}

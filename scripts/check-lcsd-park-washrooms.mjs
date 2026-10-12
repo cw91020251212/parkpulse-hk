@@ -137,7 +137,7 @@ const [lcsdApi, app, mapView, toiletCard] = await Promise.all([
   readFile(new URL('../src/components/ToiletCard.tsx', import.meta.url), 'utf8'),
 ]);
 assert.match(lcsdApi, /pages-data\/lcsd-park-washrooms\.json/);
-assert.ok(app.includes('toilet.distanceKm <= NEARBY_RADIUS_KM'), 'park washrooms must use the existing 2 km result filter');
+assert.ok(app.includes('isWithinSearchScope'), 'park washrooms must support the selected radius or visible-map scope');
 assert.ok(mapView.includes("kind === 'lcsdParkToilet'") && mapView.includes('lcsdParkWashroom'));
 assert.ok(toiletCard.includes("toilet.kind === 'lcsdParkToilet'") && toiletCard.includes('lcsdParkWashroom'));
 assert.ok(toiletCard.includes("toilet.locationPrecision === 'venue-uncertain'"), 'uncertain LCSD venue coordinates must use the gray precision treatment');

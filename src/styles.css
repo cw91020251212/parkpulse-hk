@@ -44,6 +44,8 @@ h1 { margin: 1px 0 0; font-size: 26px; line-height: 1.08; letter-spacing: .02em;
 .motorcycle-on-street-link { text-decoration: none; }
 .vehicle-tabs .chip.is-active { background: #d8fffa; border-color: #d8fffa; color: #073345; }
 .chip.is-on { background: #0e4e54; border-color: #16a89a; color: #e4fffb; }
+.scope-chip { border-color: #467080; color: #d7eeed; }
+.scope-chip[aria-pressed="true"] { border-color: #26b5a8; }
 .height-select { display: inline-flex; align-items: center; gap: 7px; padding-right: 8px; }
 .height-select select { color: #d9edef; background: transparent; border: 0; outline: 0; font-size: 12px; font-weight: 800; }
 .height-select option { background: #0c2940; }

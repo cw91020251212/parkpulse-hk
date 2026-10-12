@@ -18,6 +18,9 @@ export const VEHICLE_LABELS: Record<VehicleType, string> = {
 
 export type Coordinates = { lat: number; lng: number };
 
+export type SearchScope = 'radius' | 'viewport';
+export type MapViewport = { north: number; south: number; east: number; west: number; center: Coordinates };
+
 export interface ManualToiletPosition {
   toiletId: string;
   latitude: number;

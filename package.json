@@ -16,6 +16,7 @@
     "test:startup-location": "node scripts/check-startup-location.mjs",
     "test:map-markers": "node scripts/check-map-facility-markers.mjs",
     "test:map-zoom-style": "node scripts/check-map-zoom-style.mjs",
+    "test:map-viewport": "node --experimental-strip-types scripts/check-map-viewport-scope.mjs",
     "test:toilet-map-detail": "node scripts/check-toilet-map-detail.mjs",
     "test:manual-toilet-positions": "node --experimental-strip-types scripts/check-manual-toilet-positions.mjs",
     "test:vehicle-selection": "node scripts/check-vehicle-selection.mjs",
