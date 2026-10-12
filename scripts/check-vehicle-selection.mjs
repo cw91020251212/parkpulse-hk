@@ -74,7 +74,7 @@ for (const value of ['泊車', '附近設施', '設定', "settings: 'Settings'",
 assert.match(styles, /\.filter-mode-switch/);
 assert.match(styles, /\.header-tools\s*\{[^}]*flex-direction:\s*column/);
 assert.match(styles, /\.filter-mode-switch\.is-compact\s*\{[^}]*width:\s*140px/);
-assert.match(styles, /\.filter-mode-switch\.is-compact \.filter-mode-button\s*\{[^}]*min-height:\s*36px[^}]*font-size:\s*13px/);
+assert.match(styles, /\.filter-mode-switch\.is-compact \.filter-mode-button\s*\{[^}]*min-height:\s*30px[^}]*font-size:\s*13px/);
 assert.match(styles, /\.settings-popover\s*\{[^}]*position:\s*absolute/);
 assert.match(styles, /\.settings-popover \.text-tools\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\);[^}]*grid-template-rows:\s*auto auto/);
 assert.match(styles, /\.filters\s*\{\s*margin-top:\s*6px;\s*\}/);

@@ -984,7 +984,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .settings-popover .help-button { display: flex; justify-content: flex-start; width: 100%; min-height: 32px; padding: 0 8px; font-size: 12px; }
 .settings-popover .help-button > span:last-child { display: inline; }
 .filter-mode-switch.is-compact { width: 140px; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 2px; padding: 3px; border-radius: 10px; }
-.filter-mode-switch.is-compact .filter-mode-button { min-height: 36px; padding: 3px 4px; border-radius: 7px; font-size: 13px; line-height: 1.1; }
+.filter-mode-switch.is-compact .filter-mode-button { min-height: 30px; padding: 3px 4px; border-radius: 7px; font-size: 13px; line-height: 1.1; }
 
 @media (max-width: 720px) {
   .topbar { gap: 8px; }
