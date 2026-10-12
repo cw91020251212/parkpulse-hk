@@ -1489,7 +1489,6 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .medical-category-chip:hover, .medical-category-chip.is-active { border-color: #35cbb8; color: #e9fffa; background: #10504f; }
 .medical-category-chip img { width: 17px; height: 17px; object-fit: contain; }
 .medical-category-chip b { min-width: 19px; border-radius: 999px; padding: 1px 5px; color: #cce7ec; background: #173e51; text-align: center; }
-.medical-benefit-notice { margin: 0 0 12px; border-left: 3px solid #43c4ad; border-radius: 0 8px 8px 0; padding: 9px 11px; color: #c5e8e4; background: #103b43; font-size: 12px; font-weight: 650; line-height: 1.5; }
 .medical-location-card { border-left: 3px solid #49d9bb; }
 .medical-location-card.is-ha-hospital-institution { border-left-color: #53c6ef; }
 .medical-location-card.is-ha-specialist-outpatient-clinic { border-left-color: #a28df4; }
