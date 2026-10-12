@@ -914,8 +914,10 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .hkjc-first-prize-marker-badge text, .hkjc-first-prize-card-badge text { font-family: Inter, system-ui, sans-serif; letter-spacing: -.7px; paint-order: stroke; stroke: #fff1ae; stroke-width: .7px; }
 .toilet-card-icon.is-hkjc { position: relative; overflow: visible; }
 .hkjc-first-prize-summary { display: inline-flex; align-items: center; gap: 4px; border: 1px solid #e8c55e; border-radius: 8px; padding: 3px 6px; color: #604900; background: #fff5d2; font-size: 11px; font-weight: 900; line-height: 1.35; }
-.hkjc-first-prize-section { border: 1px solid #e9ca70; border-radius: 10px; padding: 9px 11px; background: #fff9e7; }
-.hkjc-first-prize-section h3 { display: flex; align-items: center; gap: 5px; }
+.hkjc-first-prize-section { border: 1px solid #e9ca70; border-radius: 10px; padding: 9px 11px; background: #fff9e7; color: #4b3100; }
+.hkjc-first-prize-section h3 { display: flex; align-items: center; gap: 5px; color: #4b3100; }
+.hkjc-first-prize-section p { color: #4b3100; }
+.hkjc-first-prize-section a { color: #174f48; font-weight: 800; text-decoration: underline; text-underline-offset: 2px; }
 .hkjc-first-prize-section h3 > span, .hkjc-first-prize-legend-crown { color: #bd8700; }
 .hkjc-first-prize-legend-crown { font-size: 12px; }
 

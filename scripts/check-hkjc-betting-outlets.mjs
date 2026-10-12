@@ -82,6 +82,10 @@ assert.match(facilityCard, /hkjcFirstPrizeRankCount/, 'Cards should show the off
 assert.match(facilityDetail, /hkjcFirstPrizeAsOf/, 'Details should show the statistics cutoff date');
 assert.match(facilityDetail, /hkjcFirstPrizeSource/, 'Details should link to the official HKJC ranking');
 assert.match(styles, /hkjc-first-prize-marker-badge/, 'Crown/count badge styling should be present');
+assert.match(styles, /\.hkjc-first-prize-section\s*\{[^}]*background:\s*#fff9e7;\s*color:\s*#4b3100/, 'First-prize panel body text must contrast with its pale background');
+assert.match(styles, /\.hkjc-first-prize-section h3\s*\{[^}]*color:\s*#4b3100/, 'First-prize panel heading must use a readable dark color');
+assert.match(styles, /\.hkjc-first-prize-section p\s*\{[^}]*color:\s*#4b3100/, 'First-prize statistics must use a readable dark color');
+assert.match(styles, /\.hkjc-first-prize-section a\s*\{[^}]*color:\s*#174f48/, 'First-prize source link must remain visible on the pale panel');
 
 const multiCandidateRecord = source.records.find(({ id }) => id === 'hkjc-038');
 const selected = selectHkjcLocation(multiCandidateRecord, [
