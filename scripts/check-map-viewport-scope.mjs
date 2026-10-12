@@ -41,7 +41,7 @@ assert.match(map, /moveend zoomend resize/);
 assert.match(map, /searchScope === 'radius'/);
 assert.match(map, /showCurrentLocation: boolean/, 'the map accepts a GPS-location flag');
 assert.match(map, /const showPositionMarker = searchScope === 'radius' \|\| showCurrentLocation;/, 'the current-location pin remains visible in viewport mode after GPS succeeds');
-assert.match(map, /showPositionMarker && <Marker position=\{\[position\.lat, position\.lng\]\} icon=\{selectedCenterIcon\}/, 'the location pin is rendered independently of the 2 km circle');
+assert.match(map, /showPositionMarker && <Marker position=\{\[position\.lat, position\.lng\]\} icon=\{positionMarkerIcon\} zIndexOffset=\{showCurrentLocation \? 10_000 : 1_000\}/, 'the location pin is rendered independently of the 2 km circle and stays above dense facility markers');
 assert.match(filters, /searchScope === 'viewport'/);
 assert.match(filters, /aria-pressed=\{searchScope === 'viewport'\}/);
 assert.match(filters, /switchToViewportScope/);

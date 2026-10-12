@@ -78,5 +78,11 @@ assert.match(facilityCard, /hkjc-first-prize-card-badge"><svg viewBox="0 0 48 36
 assert.match(facilityCard, /<text x="24" y="25"[^>]*>\{facility\.hkjcFirstPrizeTicketCount\}<\/text>/, 'Card crown should contain its count directly');
 assert.match(styles, /\.hkjc-first-prize-marker-badge, \.hkjc-first-prize-card-badge \{[^}]*background: transparent/, 'Crown badges must not have a round backing');
 assert.doesNotMatch(styles, /\.hkjc-first-prize-marker-badge \{[^}]*border-radius/, 'The map badge itself must not be circular');
+assert.match(mapSource, /currentLocationIcon = L\.divIcon\(\{ className: 'selected-center-marker-shell is-current-location'.*iconSize: \[36, 40\], iconAnchor: \[18, 40\]/, 'GPS positions use a slightly larger current-location pin');
+assert.match(mapSource, /const positionMarkerIcon = showCurrentLocation \? currentLocationIcon : selectedCenterIcon;/, 'manual centres keep the original static pin');
+assert.match(mapSource, /zIndexOffset=\{showCurrentLocation \? 10_000 : 1_000\}/, 'GPS location pin stays above dense AED and facility markers');
+assert.match(styles, /\.selected-center-marker\.is-current-location \{[^}]*width: 36px; height: 40px; font-size: 31px;[^}]*drop-shadow/, 'GPS pin is slightly enlarged and red-highlighted');
+assert.match(styles, /\.selected-center-marker\.is-current-location::before \{[^}]*current-location-pulse 2\.8s ease-in-out infinite/, 'GPS pin head has a slow pulsing red glow');
+assert.match(styles, /@keyframes current-location-pulse/, 'GPS pulse animation is defined');
 
 console.log('Verified AED, emergency-department, border and HKJC outlet controls, markers, legends, sources and location precision across map and detail views.');
