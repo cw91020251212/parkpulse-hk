@@ -64,5 +64,13 @@ assert.match(styles, /\.toilet-card-icon\.is-hkjc:not\(\.is-brand\), \.legend-hk
 assert.match(mapSource, /hkjc \? '<span class="hkjc-horse-icon">♞<\/span>'/);
 assert.match(facilityCard, /hkjc \? <span className="hkjc-horse-icon">♞<\/span>/);
 assert.match(appSource, /legend-hkjc" aria-hidden="true"><span className="hkjc-horse-icon">♞<\/span>/);
+assert.match(appSource, /legendHkjcFirstPrize/, 'The legend should explain the gold first-prize crown');
+assert.match(mapSource, /hkjc-first-prize-marker-badge/, 'Map markers should show the official first-prize count badge');
+assert.match(mapSource, /hkjcFirstPrizeTicketCount/, 'Map markers should use official outlet counts');
+assert.match(facilityCard, /hkjc-first-prize-card-badge/, 'The top-ten crown should appear on list cards');
+assert.match(facilityCard, /hkjcFirstPrizeRankCount/, 'Cards should show rank and ticket count');
+assert.match(detailSource, /hkjcFirstPrizeAsOf/, 'The outlet detail should show the statistics cutoff date');
+assert.match(detailSource, /hkjcFirstPrizeSource/, 'The outlet detail should link to the official statistics');
+assert.match(styles, /\.hkjc-first-prize-marker-badge/);
 
 console.log('Verified AED, emergency-department, border and HKJC outlet controls, markers, legends, sources and location precision across map and detail views.');

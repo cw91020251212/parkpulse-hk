@@ -184,3 +184,10 @@
 - **位置來源：** [地政總署位置搜尋 API](https://www.map.gov.hk/gs/api/v1.0.0/locationSearch) 與[香港測繪處座標轉換 API](https://www.geodetic.gov.hk/transform/v2/)。82 個官方名錄地址配對到地政總署「香港賽馬會」位置點並轉換為 WGS84；黃大仙環鳳街一筆沒有個別投注處點，僅有「華頌樓」大廈點。該點以灰色虛線樣式標示，詳情明確提醒它不是投注處入口，不能稱為精確店舖位置。
 - **來源／快照檔案：** `data/hkjc-betting-outlets-directory.json` 保存從官方 PDF 整理的雙語名錄及例外說明；`scripts/refresh-hkjc-betting-outlets.mjs` 重新查詢地政總署並產生 `public/pages-data/hkjc-betting-outlets.json`；`lib/hkjc-betting-outlets.mjs` 執行配對、模糊度檢查、香港範圍檢查及座標轉換。只有全部 83 筆成功且精度數量維持 82 個店舖點／1 個大廈點才會覆寫快照；更新時執行 `pnpm refresh:hkjc-betting-outlets`，驗收執行 `pnpm test:hkjc-betting-outlets`。一般 `pnpm build:pages` 不會自動重新查詢地政總署，避免外部來源短暫故障覆蓋整份已核實資料。
 - **前端位置：** `src/api/nearbyFacilities.ts` 載入雙語靜態快照；`src/components/Filters.tsx` 開啟「馬會投注站」模式；`src/components/MapView.tsx`、`NearbyFacilityCard.tsx` 及 `NearbyFacilityDetail.tsx` 呈現圖示、地址、導航、位置精度與官方來源。GitHub Pages 使用靜態快照，不要標示即時營業狀態。
+
+
+## 賽馬會六合彩幸運投注站頭獎次數
+
+- **官方統計：** [繁中「十大幸運投注處中六合彩頭獎次數統計」](https://special.hkjc.com/e-win/zh-HK/betting-info/marksix/lucky-ocb/)及[英文榜單](https://special.hkjc.com/e-win/en-US/betting-info/marksix/lucky-ocb/)。本次榜單截止日期為 2026-06-30；只儲存官方公開的十個分店名次及頭獎獎券售出次數。
+- **來源與更新：** 榜單對應到 83 間官方場外投注處名錄的固定分店 ID，資料存於 `data/hkjc-betting-outlets-directory.json` 的 `firstPrizeStats`，由 `lib/hkjc-betting-outlets.mjs` 驗證和附加到 `public/pages-data/hkjc-betting-outlets.json`。更新榜單時重新讀取官方頁面、更新統計截止日和十個名次／數字，並核實每個 ID 仍對應正確的官方投注站名稱；目錄座標刷新不可刪除榜單資料。
+- **前端與檢查：** `src/api/nearbyFacilities.ts` 讀取次數、名次、統計日期和官方來源；地圖皇冠、卡片及詳情位於 `src/components/MapView.tsx`、`src/components/NearbyFacilityCard.tsx`、`src/components/NearbyFacilityDetail.tsx`，繁中／英文標籤位於 `src/i18n.ts`。執行 `pnpm test:hkjc-betting-outlets` 及 `pnpm test:map-markers` 核對十筆榜單、ID 對應、皇冠、排名、次數和來源連結。

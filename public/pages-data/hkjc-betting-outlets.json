@@ -34,7 +34,9 @@
       "sourcePdfTc": "https://is.hkjc.com/ocb/ocbbizhour_ch.pdf",
       "sourcePdfEn": "https://is.hkjc.com/ocb/ocbbizhour_en.pdf",
       "locationSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-development-location-search-api",
-      "coordinateTransformSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-coordinates-transformation-api"
+      "coordinateTransformSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-coordinates-transformation-api",
+      "firstPrizeRank": 2,
+      "firstPrizeTicketCount": 48
     },
     {
       "id": "hkjc-002",
@@ -58,7 +60,9 @@
       "sourcePdfTc": "https://is.hkjc.com/ocb/ocbbizhour_ch.pdf",
       "sourcePdfEn": "https://is.hkjc.com/ocb/ocbbizhour_en.pdf",
       "locationSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-development-location-search-api",
-      "coordinateTransformSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-coordinates-transformation-api"
+      "coordinateTransformSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-coordinates-transformation-api",
+      "firstPrizeRank": 5,
+      "firstPrizeTicketCount": 41
     },
     {
       "id": "hkjc-003",
@@ -586,7 +590,9 @@
       "sourcePdfTc": "https://is.hkjc.com/ocb/ocbbizhour_ch.pdf",
       "sourcePdfEn": "https://is.hkjc.com/ocb/ocbbizhour_en.pdf",
       "locationSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-development-location-search-api",
-      "coordinateTransformSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-coordinates-transformation-api"
+      "coordinateTransformSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-coordinates-transformation-api",
+      "firstPrizeRank": 7,
+      "firstPrizeTicketCount": 36
     },
     {
       "id": "hkjc-025",
@@ -658,7 +664,9 @@
       "sourcePdfTc": "https://is.hkjc.com/ocb/ocbbizhour_ch.pdf",
       "sourcePdfEn": "https://is.hkjc.com/ocb/ocbbizhour_en.pdf",
       "locationSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-development-location-search-api",
-      "coordinateTransformSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-coordinates-transformation-api"
+      "coordinateTransformSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-coordinates-transformation-api",
+      "firstPrizeRank": 6,
+      "firstPrizeTicketCount": 38
     },
     {
       "id": "hkjc-028",
@@ -1236,7 +1244,9 @@
       "sourcePdfTc": "https://is.hkjc.com/ocb/ocbbizhour_ch.pdf",
       "sourcePdfEn": "https://is.hkjc.com/ocb/ocbbizhour_en.pdf",
       "locationSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-development-location-search-api",
-      "coordinateTransformSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-coordinates-transformation-api"
+      "coordinateTransformSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-coordinates-transformation-api",
+      "firstPrizeRank": 4,
+      "firstPrizeTicketCount": 41
     },
     {
       "id": "hkjc-052",
@@ -1572,7 +1582,9 @@
       "sourcePdfTc": "https://is.hkjc.com/ocb/ocbbizhour_ch.pdf",
       "sourcePdfEn": "https://is.hkjc.com/ocb/ocbbizhour_en.pdf",
       "locationSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-development-location-search-api",
-      "coordinateTransformSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-coordinates-transformation-api"
+      "coordinateTransformSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-coordinates-transformation-api",
+      "firstPrizeRank": 9,
+      "firstPrizeTicketCount": 35
     },
     {
       "id": "hkjc-066",
@@ -1764,7 +1776,9 @@
       "sourcePdfTc": "https://is.hkjc.com/ocb/ocbbizhour_ch.pdf",
       "sourcePdfEn": "https://is.hkjc.com/ocb/ocbbizhour_en.pdf",
       "locationSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-development-location-search-api",
-      "coordinateTransformSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-coordinates-transformation-api"
+      "coordinateTransformSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-coordinates-transformation-api",
+      "firstPrizeRank": 10,
+      "firstPrizeTicketCount": 30
     },
     {
       "id": "hkjc-074",
@@ -1788,7 +1802,9 @@
       "sourcePdfTc": "https://is.hkjc.com/ocb/ocbbizhour_ch.pdf",
       "sourcePdfEn": "https://is.hkjc.com/ocb/ocbbizhour_en.pdf",
       "locationSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-development-location-search-api",
-      "coordinateTransformSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-coordinates-transformation-api"
+      "coordinateTransformSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-coordinates-transformation-api",
+      "firstPrizeRank": 8,
+      "firstPrizeTicketCount": 35
     },
     {
       "id": "hkjc-075",
@@ -1812,7 +1828,9 @@
       "sourcePdfTc": "https://is.hkjc.com/ocb/ocbbizhour_ch.pdf",
       "sourcePdfEn": "https://is.hkjc.com/ocb/ocbbizhour_en.pdf",
       "locationSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-development-location-search-api",
-      "coordinateTransformSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-coordinates-transformation-api"
+      "coordinateTransformSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-coordinates-transformation-api",
+      "firstPrizeRank": 3,
+      "firstPrizeTicketCount": 43
     },
     {
       "id": "hkjc-076",
@@ -1908,7 +1926,9 @@
       "sourcePdfTc": "https://is.hkjc.com/ocb/ocbbizhour_ch.pdf",
       "sourcePdfEn": "https://is.hkjc.com/ocb/ocbbizhour_en.pdf",
       "locationSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-development-location-search-api",
-      "coordinateTransformSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-coordinates-transformation-api"
+      "coordinateTransformSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-coordinates-transformation-api",
+      "firstPrizeRank": 1,
+      "firstPrizeTicketCount": 48
     },
     {
       "id": "hkjc-080",
@@ -2006,5 +2026,65 @@
       "locationSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-development-location-search-api",
       "coordinateTransformSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-coordinates-transformation-api"
     }
-  ]
+  ],
+  "firstPrizeStats": {
+    "asOf": "2026-06-30",
+    "checkedAt": "2026-10-12",
+    "titleTc": "十大幸運投注處中六合彩頭獎次數統計",
+    "titleEn": "Top 10 Best-selling 1st Prize Mark Six Tickets OCB Branches",
+    "sourceUrlTc": "https://special.hkjc.com/e-win/zh-HK/betting-info/marksix/lucky-ocb/",
+    "sourceUrlEn": "https://special.hkjc.com/e-win/en-US/betting-info/marksix/lucky-ocb/",
+    "records": [
+      {
+        "outletId": "hkjc-079",
+        "rank": 1,
+        "ticketCount": 48
+      },
+      {
+        "outletId": "hkjc-001",
+        "rank": 2,
+        "ticketCount": 48
+      },
+      {
+        "outletId": "hkjc-075",
+        "rank": 3,
+        "ticketCount": 43
+      },
+      {
+        "outletId": "hkjc-051",
+        "rank": 4,
+        "ticketCount": 41
+      },
+      {
+        "outletId": "hkjc-002",
+        "rank": 5,
+        "ticketCount": 41
+      },
+      {
+        "outletId": "hkjc-027",
+        "rank": 6,
+        "ticketCount": 38
+      },
+      {
+        "outletId": "hkjc-024",
+        "rank": 7,
+        "ticketCount": 36
+      },
+      {
+        "outletId": "hkjc-074",
+        "rank": 8,
+        "ticketCount": 35
+      },
+      {
+        "outletId": "hkjc-065",
+        "rank": 9,
+        "ticketCount": 35
+      },
+      {
+        "outletId": "hkjc-073",
+        "rank": 10,
+        "ticketCount": 30
+      }
+    ]
+  }
 }

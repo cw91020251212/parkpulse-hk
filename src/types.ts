@@ -200,6 +200,10 @@ export interface NearbyFacility {
   sourceDataCheckedAt?: string;
   locationPrecision?: 'outlet' | 'building';
   locationNote?: string;
+  hkjcFirstPrizeRank?: number;
+  hkjcFirstPrizeTicketCount?: number;
+  hkjcFirstPrizeAsOf?: string;
+  hkjcFirstPrizeSourceUrl?: string;
   emergencyWait?: EmergencyWaitTime;
   borderWait?: BorderWaitingTime;
 }

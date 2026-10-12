@@ -76,6 +76,12 @@ export function NearbyFacilityDetail({ language, item: { facility, distanceKm },
       {border && <p className="border-location-note">{text(language, 'borderLocationNote')}</p>}
       {hkjc && <p className={`hkjc-location-note${facility.locationPrecision === 'building' ? ' is-location-unconfirmed' : ''}`}>{facility.locationNote || text(language, 'hkjcLocationPrecision')}</p>}
     </section>
+    {hkjc && facility.hkjcFirstPrizeRank && facility.hkjcFirstPrizeTicketCount && <section className="detail-section hkjc-first-prize-section">
+      <h3><span aria-hidden="true">👑</span> {text(language, 'hkjcFirstPrizeTitle')}</h3>
+      <p className="hkjc-first-prize-summary">{text(language, 'hkjcFirstPrizeRankCount', { rank: facility.hkjcFirstPrizeRank, count: facility.hkjcFirstPrizeTicketCount })}</p>
+      <p>{text(language, 'hkjcFirstPrizeAsOf', { value: facility.hkjcFirstPrizeAsOf || '—' })}</p>
+      {facility.hkjcFirstPrizeSourceUrl && <a href={facility.hkjcFirstPrizeSourceUrl} target="_blank" rel="noreferrer">{text(language, 'hkjcFirstPrizeSource')}</a>}
+    </section>}
     {emergency && <EmergencyWaitingTimes language={language} wait={facility.emergencyWait} />}
     {border && <BorderWaitingTimes language={language} wait={facility.borderWait} />}
     <dl className="detail-grid">

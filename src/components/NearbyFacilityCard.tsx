@@ -31,7 +31,7 @@ export function NearbyFacilityCard({ language, item }: Props) {
   return <article className={`toilet-card nearby-facility-card ${tone}${facility.locationPrecision === 'building' ? ' is-location-unconfirmed' : ''}`}>
     <div className="toilet-card-main nearby-facility-main" role={onSelect ? 'button' : undefined} tabIndex={onSelect ? 0 : undefined} aria-haspopup={onSelect ? 'dialog' : undefined} aria-label={onSelect ? `${text(language, 'viewFacilityDetails')}: ${facility.name}` : undefined} onClick={onSelect} onKeyDown={openDetailByKeyboard}>
       <div className="card-heading">
-        <span className={`toilet-card-icon ${tone}${brandIcon ? ' is-brand' : ''}${facility.locationPrecision === 'building' ? ' is-location-unconfirmed' : ''}`} aria-hidden="true">{brandIcon ? <img src={brandIcon.src} alt="" /> : aed ? <img className="aed-symbol" src={AED_SYMBOL_URL} alt="" /> : emergency ? <img className="emergency-pill-symbol" src={EMERGENCY_SYMBOL_URL} alt="" /> : border ? <img className="border-control-symbol" src={BORDER_SYMBOL_URL} alt="" /> : hkjc ? <span className="hkjc-horse-icon">♞</span> : fuel ? '⛽' : '🏧'}</span>
+        <span className={`toilet-card-icon ${tone}${brandIcon ? ' is-brand' : ''}${facility.locationPrecision === 'building' ? ' is-location-unconfirmed' : ''}`} aria-hidden="true">{brandIcon ? <img src={brandIcon.src} alt="" /> : aed ? <img className="aed-symbol" src={AED_SYMBOL_URL} alt="" /> : emergency ? <img className="emergency-pill-symbol" src={EMERGENCY_SYMBOL_URL} alt="" /> : border ? <img className="border-control-symbol" src={BORDER_SYMBOL_URL} alt="" /> : hkjc ? <span className="hkjc-horse-icon">♞</span> : fuel ? '⛽' : '🏧'}{hkjc && facility.hkjcFirstPrizeRank && facility.hkjcFirstPrizeTicketCount && <span className="hkjc-first-prize-card-badge"><span>👑</span><b>{facility.hkjcFirstPrizeTicketCount}</b></span>}</span>
         <div><h3>{facility.name}</h3><p>{facility.address}</p></div>
         <span className="distance">{formatDistance(distanceKm)}</span>
       </div>
@@ -44,6 +44,7 @@ export function NearbyFacilityCard({ language, item }: Props) {
         {border && <span>{text(language, 'borderSnapshot', { value: formatBorderSnapshotTime(language, facility.borderWait?.snapshotGeneratedAt) })}</span>}
         {border && <span className="border-location-note">{text(language, 'borderLocationNote')}</span>}
         {hkjc && <span className="hkjc-source-label">{text(language, 'hkjcSources')}</span>}
+        {hkjc && facility.hkjcFirstPrizeRank && facility.hkjcFirstPrizeTicketCount && <span className="hkjc-first-prize-summary">👑 {text(language, 'hkjcFirstPrizeRankCount', { rank: facility.hkjcFirstPrizeRank, count: facility.hkjcFirstPrizeTicketCount })}</span>}
         {hkjc && <span className="hkjc-location-note">{facility.locationNote || text(language, 'hkjcLocationPrecision')}</span>}
         {facility.openingHours && <span>{text(language, 'serviceHours', { value: facility.openingHours })}</span>}
         {facility.remarks && <span>{facility.remarks}</span>}

@@ -1,17 +1,18 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { addressMatchScore, selectHkjcLocation } from '../lib/hkjc-betting-outlets.mjs';
+import { addressMatchScore, attachHkjcFirstPrizeStats, selectHkjcLocation } from '../lib/hkjc-betting-outlets.mjs';
 
 const root = process.cwd();
 const source = JSON.parse(await readFile(path.join(root, 'data/hkjc-betting-outlets-directory.json'), 'utf8'));
 const snapshot = JSON.parse(await readFile(path.join(root, 'public/pages-data/hkjc-betting-outlets.json'), 'utf8'));
-const [app, filters, mapView, facilityCard, facilityDetail] = await Promise.all([
+const [app, filters, mapView, facilityCard, facilityDetail, styles] = await Promise.all([
   readFile(path.join(root, 'src/App.tsx'), 'utf8'),
   readFile(path.join(root, 'src/components/Filters.tsx'), 'utf8'),
   readFile(path.join(root, 'src/components/MapView.tsx'), 'utf8'),
   readFile(path.join(root, 'src/components/NearbyFacilityCard.tsx'), 'utf8'),
   readFile(path.join(root, 'src/components/NearbyFacilityDetail.tsx'), 'utf8'),
+  readFile(path.join(root, 'src/styles.css'), 'utf8'),
 ]);
 assert.equal(source.records.length, 83, 'The official HKJC directory should contain 83 outlet records');
 assert.equal(snapshot.records.length, 83, 'The static snapshot should contain all 83 outlets');
@@ -23,6 +24,28 @@ assert.match(snapshot.sourcePdfTc, /^https:\/\//);
 assert.match(snapshot.sourcePdfEn, /^https:\/\//);
 assert.match(snapshot.locationSourceUrl, /^https:\/\//);
 assert.match(snapshot.coordinateTransformSourceUrl, /^https:\/\//);
+  const officialPrizeStats = source.firstPrizeStats;
+  assert.equal(officialPrizeStats.asOf, '2026-06-30');
+  assert.equal(officialPrizeStats.records.length, 10, 'Only the official top-ten statistics should be loaded');
+  const expectedOfficialStats = [
+    ['hkjc-079', 1, 48], ['hkjc-001', 2, 48], ['hkjc-075', 3, 43], ['hkjc-051', 4, 41], ['hkjc-002', 5, 41],
+    ['hkjc-027', 6, 38], ['hkjc-024', 7, 36], ['hkjc-074', 8, 35], ['hkjc-065', 9, 35], ['hkjc-073', 10, 30],
+  ].map(([outletId, rank, ticketCount]) => ({ outletId, rank, ticketCount }));
+  assert.deepEqual([...officialPrizeStats.records].sort((a, b) => a.rank - b.rank), expectedOfficialStats, 'Official outlet ranks and first-prize ticket counts should stay intact');
+  assert.match(officialPrizeStats.sourceUrlTc, /^https:\/\//);
+  assert.match(officialPrizeStats.sourceUrlEn, /^https:\/\//);
+assert.deepEqual(snapshot.firstPrizeStats, officialPrizeStats);
+const prizeStatsByOutlet = new Map(officialPrizeStats.records.map((entry) => [entry.outletId, entry]));
+assert.equal(snapshot.records.filter(({ firstPrizeRank }) => firstPrizeRank !== undefined).length, 10);
+for (const record of snapshot.records) {
+  const expected = prizeStatsByOutlet.get(record.id);
+  assert.equal(record.firstPrizeRank, expected?.rank);
+  assert.equal(record.firstPrizeTicketCount, expected?.ticketCount);
+}
+const simulatedSnapshot = attachHkjcFirstPrizeStats({ records: source.records.map(({ id }) => ({ id })) }, officialPrizeStats);
+assert.equal(simulatedSnapshot.records.filter(({ firstPrizeRank }) => firstPrizeRank !== undefined).length, 10);
+assert.equal(simulatedSnapshot.records.find(({ id }) => id === 'hkjc-079').firstPrizeTicketCount, 48);
+assert.throws(() => attachHkjcFirstPrizeStats({ records: [{ id: 'unmatched' }] }, officialPrizeStats), /不在官方現行名錄/);
 
 for (const [index, record] of snapshot.records.entries()) {
   const official = source.records[index];
@@ -52,6 +75,13 @@ assert.match(mapView, /kind === 'hkjc'/, 'The map should render HKJC outlet mark
 assert.match(mapView, /locationPrecision === 'building'/, 'The building-level point should be identified as unconfirmed');
 assert.match(facilityCard, /hkjcLocationPrecision/, 'Cards should disclose outlet point precision');
 assert.match(facilityDetail, /hkjcNoLiveStatus/, 'Details should not claim a live opening status');
+assert.match(app, /legendHkjcFirstPrize/, 'The map legend should explain the gold crown');
+assert.match(mapView, /hkjc-first-prize-marker-badge/, 'Ranked outlets should have a corner crown/count marker');
+assert.match(mapView, /hkjcFirstPrizeTicketCount/, 'The map should receive the official ticket count');
+assert.match(facilityCard, /hkjcFirstPrizeRankCount/, 'Cards should show the official rank and count');
+assert.match(facilityDetail, /hkjcFirstPrizeAsOf/, 'Details should show the statistics cutoff date');
+assert.match(facilityDetail, /hkjcFirstPrizeSource/, 'Details should link to the official HKJC ranking');
+assert.match(styles, /hkjc-first-prize-marker-badge/, 'Crown/count badge styling should be present');
 
 const multiCandidateRecord = source.records.find(({ id }) => id === 'hkjc-038');
 const selected = selectHkjcLocation(multiCandidateRecord, [

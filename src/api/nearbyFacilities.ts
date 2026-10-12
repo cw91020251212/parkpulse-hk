@@ -29,11 +29,13 @@ type BorderSnapshot = { records?: BorderLocation[]; source?: string; generatedAt
 type HkjcLocation = {
   id: string; kind: 'hkjc'; nameTc: string; nameEn: string; addressTc: string; addressEn: string;
   latitude: number; longitude: number; locationPrecision: 'outlet' | 'building'; locationNoteTc?: string; locationNoteEn?: string;
+  firstPrizeRank?: number; firstPrizeTicketCount?: number;
   sourceUrl: string; locationSourceUrl: string; coordinateTransformSourceUrl: string;
 };
 type HkjcSnapshot = {
   records?: HkjcLocation[]; source?: Record<Language, string>; generatedAt?: string; directoryUpdatedAt?: string; sourceCheckedAt?: string;
   sourceUrl?: string; sourcePdfTc?: string; sourcePdfEn?: string; locationSourceUrl?: string; coordinateTransformSourceUrl?: string;
+  firstPrizeStats?: { asOf: string; sourceUrlTc: string; sourceUrlEn: string };
 };
 
 function normalized(value: string | undefined) {
@@ -139,6 +141,10 @@ async function fetchHkjcBettingOutlets(language: Language, signal: AbortSignal) 
     snapshotGeneratedAt: snapshot.generatedAt,
     sourceDirectoryUpdatedAt: snapshot.directoryUpdatedAt,
     sourceDataCheckedAt: snapshot.sourceCheckedAt,
+    hkjcFirstPrizeRank: location.firstPrizeRank,
+    hkjcFirstPrizeTicketCount: location.firstPrizeTicketCount,
+    hkjcFirstPrizeAsOf: snapshot.firstPrizeStats?.asOf,
+    hkjcFirstPrizeSourceUrl: language === 'en' ? snapshot.firstPrizeStats?.sourceUrlEn : snapshot.firstPrizeStats?.sourceUrlTc,
   } satisfies NearbyFacility));
   return { records, source: snapshot.source?.[language] };
 }

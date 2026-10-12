@@ -895,3 +895,19 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .hkjc-location-note { color: #667c72; font-size: 11px; line-height: 1.4; white-space: normal; }
 .hkjc-location-note.is-location-unconfirmed { border: 1px dashed #9ca8ad; border-radius: 7px; padding: 5px 7px; color: #53616a; background: #e7eaec; }
 .hkjc-snapshot-note { margin: 0 0 8px; border: 1px solid #329274; border-radius: 10px; padding: 8px 10px; color: #e3fff2; background: #155e49; font-size: 12px; font-weight: 800; line-height: 1.4; }
+
+
+/* HKJC official first-prize outlet ranking badge. */
+.toilet-marker.is-hkjc.has-first-prize { overflow: visible; }
+.hkjc-first-prize-marker-badge { position: absolute; z-index: 5; top: -8px; right: -11px; display: inline-flex; align-items: center; justify-content: center; gap: 1px; min-width: 23px; height: 18px; padding: 0 2px; border: 1px solid #9a6b00; border-radius: 10px; color: #573c00; background: linear-gradient(135deg, #fff0a5, #f4be36); box-shadow: 0 1px 3px rgba(16, 36, 48, .5); font-size: 8px; line-height: 1; }
+.hkjc-first-prize-marker-badge > span { font-size: 9px; }
+.hkjc-first-prize-marker-badge > b { font-size: 7px; font-weight: 1000; }
+.toilet-card-icon.is-hkjc { position: relative; overflow: visible; }
+.hkjc-first-prize-card-badge { position: absolute; top: -7px; right: -10px; display: inline-flex; align-items: center; justify-content: center; gap: 1px; min-width: 24px; height: 19px; padding: 0 2px; border: 1px solid #9a6b00; border-radius: 10px; color: #573c00; background: linear-gradient(135deg, #fff0a5, #f4be36); box-shadow: 0 1px 3px rgba(16, 36, 48, .32); font-size: 8px; line-height: 1; }
+.hkjc-first-prize-card-badge > span { font-size: 10px; }
+.hkjc-first-prize-card-badge > b { font-size: 7px; font-weight: 1000; }
+.hkjc-first-prize-summary { display: inline-flex; align-items: center; gap: 4px; border: 1px solid #e8c55e; border-radius: 8px; padding: 3px 6px; color: #604900; background: #fff5d2; font-size: 11px; font-weight: 900; line-height: 1.35; }
+.hkjc-first-prize-section { border: 1px solid #e9ca70; border-radius: 10px; padding: 9px 11px; background: #fff9e7; }
+.hkjc-first-prize-section h3 { display: flex; align-items: center; gap: 5px; }
+.hkjc-first-prize-section h3 > span, .hkjc-first-prize-legend-crown { color: #bd8700; }
+.hkjc-first-prize-legend-crown { font-size: 12px; }
