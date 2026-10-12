@@ -1481,3 +1481,62 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
   min-height: 0;
   white-space: normal;
 }
+
+
+/* Public medical locations: category controls, cards and grouped map markers. */
+.medical-category-filters { display: flex; gap: 8px; max-width: 100%; margin: 0 0 12px; padding: 2px 2px 8px; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; }
+.medical-category-chip { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 7px; min-height: 38px; border: 1px solid #31596d; border-radius: 999px; padding: 6px 11px; color: #d7eaf0; background: #0c2a3b; font: inherit; font-size: 12px; font-weight: 800; white-space: nowrap; cursor: pointer; }
+.medical-category-chip:hover, .medical-category-chip.is-active { border-color: #35cbb8; color: #e9fffa; background: #10504f; }
+.medical-category-chip img { width: 17px; height: 17px; object-fit: contain; }
+.medical-category-chip b { min-width: 19px; border-radius: 999px; padding: 1px 5px; color: #cce7ec; background: #173e51; text-align: center; }
+.medical-benefit-notice { margin: 0 0 12px; border-left: 3px solid #43c4ad; border-radius: 0 8px 8px 0; padding: 9px 11px; color: #c5e8e4; background: #103b43; font-size: 12px; font-weight: 650; line-height: 1.5; }
+.medical-location-card { border-left: 3px solid #49d9bb; }
+.medical-location-card.is-ha-hospital-institution { border-left-color: #53c6ef; }
+.medical-location-card.is-ha-specialist-outpatient-clinic { border-left-color: #a28df4; }
+.medical-location-card.is-ha-family-medicine-clinic { border-left-color: #49d9bb; }
+.medical-location-card.is-dh-civil-servants-clinic, .medical-location-card.is-dh-civil-servants-referral-centre { border-left-color: #ffd166; }
+.medical-location-card.is-civil-service-chinese-medicine-clinic { border-left-color: #f7a76f; }
+.medical-location-card.is-cmhhk-designated-civil-service-services { border-left-color: #e879a4; }
+.toilet-card-icon.medical-category-icon { display: grid; place-items: center; flex: 0 0 38px; width: 38px; height: 38px; border: 1px solid #51849a; border-radius: 10px; background: #c9eff5; }
+.medical-category-icon img { display: block; width: 25px; height: 25px; object-fit: contain; }
+.medical-location-facts { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 6px; }
+.medical-location-facts > span { max-width: 100%; overflow-wrap: anywhere; }
+.medical-category-badge { border: 1px solid #38788d; border-radius: 6px; padding: 2px 7px; color: #bcecf4; background: #113e51; font-size: 11px; font-weight: 850; }
+.medical-category-badge.is-ha-specialist-outpatient-clinic { border-color: #7567ba; color: #e5ddff; background: #342c5c; }
+.medical-category-badge.is-ha-family-medicine-clinic { border-color: #358f7e; color: #d1fff2; background: #124c45; }
+.medical-category-badge.is-dh-civil-servants-clinic, .medical-category-badge.is-dh-civil-servants-referral-centre { border-color: #a78235; color: #fff0c7; background: #54411d; }
+.medical-category-badge.is-civil-service-chinese-medicine-clinic { border-color: #a96c43; color: #ffe2ca; background: #54331e; }
+.medical-category-badge.is-cmhhk-designated-civil-service-services { border-color: #9e4e70; color: #ffd9e8; background: #51263a; }
+.medical-relocation-note { color: #ffd987 !important; font-weight: 800; }
+.medical-detail-panel { padding-top: 52px; }
+.medical-detail-icon { display: inline-block; width: 20px; height: 20px; margin-right: 6px; vertical-align: -5px; object-fit: contain; }
+.medical-booking-notes { border: 1px solid #345f72; border-radius: 10px; padding: 10px 12px; background: #0e3041; }
+.medical-booking-notes p { margin: 0; line-height: 1.55; }
+.medical-marker-shell { border: 0; background: transparent; }
+.medical-marker { position: relative; display: grid; place-items: center; width: 36px; height: 36px; border: 2px solid #123d52; border-radius: 50% 50% 50% 8px; background: linear-gradient(145deg, #e5f8ff, #a9dded); box-shadow: 0 2px 7px rgb(0 0 0 / 35%), 0 0 0 2px rgb(255 255 255 / 88%); transform: rotate(-45deg); }
+.medical-marker img { display: block; width: 23px; height: 23px; object-fit: contain; transform: rotate(45deg); }
+.medical-marker.is-ha-hospital-institution { background: linear-gradient(145deg, #e5f8ff, #9edcf1); }
+.medical-marker.is-ha-specialist-outpatient-clinic { background: linear-gradient(145deg, #f0ecff, #c4b9ff); }
+.medical-marker.is-ha-family-medicine-clinic { background: linear-gradient(145deg, #e5fff7, #a2ead5); }
+.medical-marker.is-dh-civil-servants-clinic, .medical-marker.is-dh-civil-servants-referral-centre { background: linear-gradient(145deg, #fff8df, #f2d58d); }
+.medical-marker.is-civil-service-chinese-medicine-clinic { background: linear-gradient(145deg, #fff1e4, #efbd95); }
+.medical-marker.is-cmhhk-designated-civil-service-services { background: linear-gradient(145deg, #ffedf4, #e5a5c0); }
+.medical-marker.is-mixed { background: linear-gradient(145deg, #e3f6f7, #abd4db); }
+.medical-marker.is-viewed { box-shadow: 0 2px 7px rgb(0 0 0 / 35%), 0 0 0 3px #ff3b78; }
+.medical-marker-count { position: absolute; top: -7px; right: -9px; display: grid; place-items: center; min-width: 17px; height: 17px; border: 1px solid #f5ffff; border-radius: 999px; padding: 0 3px; color: #fff; background: #124b5c; font-size: 10px; line-height: 1; transform: rotate(45deg); }
+.medical-map-popup { display: grid; gap: 5px; min-width: 180px; max-width: 290px; }
+.medical-map-group-count { color: #436c79; font-size: 11px; font-weight: 800; }
+.medical-map-popup button { display: grid; gap: 3px; width: 100%; border: 1px solid #c2dbe1; border-radius: 7px; padding: 7px 9px; color: #173b4c; background: #f4fbfc; text-align: left; cursor: pointer; }
+.medical-map-popup button:hover, .medical-map-popup button:focus-visible { border-color: #168a7d; background: #e1f8f3; }
+.medical-map-popup button strong { font-size: 12px; line-height: 1.35; }
+.medical-map-popup button small { color: #416b78; font-size: 10px; }
+.medical-legend-icon { display: inline-grid; place-items: center; width: 22px; height: 22px; margin-right: 4px; border: 1px solid #558093; border-radius: 7px; background: #d8f1f4; vertical-align: middle; }
+.medical-legend-icon img { width: 16px; height: 16px; object-fit: contain; }
+@media (max-width: 900px) {
+  .medical-category-filters { margin-bottom: 10px; }
+  .medical-category-chip { min-height: 42px; font-size: 13px; }
+  .medical-map-popup { min-width: 200px; }
+}
+
+/* Keep every medical category discoverable without requiring horizontal scrolling. */
+.medical-category-filters { flex-wrap: wrap; overflow-x: visible; }

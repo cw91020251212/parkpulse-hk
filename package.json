@@ -48,6 +48,7 @@
     "test:emergency": "node --experimental-strip-types scripts/check-emergency-departments.mjs",
     "test:border": "node --experimental-strip-types scripts/check-border-control-points.mjs",
     "test:nearby-facilities": "node scripts/check-nearby-facilities.mjs",
+    "test:medical-locations": "node scripts/check-medical-locations.mjs",
     "test:atm-crosscheck": "node scripts/check-atm-crosscheck.mjs",
     "test:on-street": "node scripts/check-on-street-parking.mjs",
     "test:on-street-limit": "node --experimental-strip-types scripts/check-on-street-render-limit.mjs",

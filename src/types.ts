@@ -171,7 +171,44 @@ export interface PublicToiletViewModel {
   manualPositionSource?: 'shared' | 'local';
 }
 
-export type NearbyMode = 'toilets' | 'fuel' | 'atm' | 'aed' | 'emergency' | 'border' | 'hkjc' | 'onStreet';
+export type MedicalCategory = 'ha-hospital-institution' | 'ha-specialist-outpatient-clinic' | 'ha-family-medicine-clinic' | 'dh-civil-servants-clinic' | 'dh-civil-servants-referral-centre' | 'civil-service-chinese-medicine-clinic' | 'cmhhk-designated-civil-service-services';
+export type MedicalCategoryFilter = MedicalCategory | 'all';
+
+export interface MedicalLocation {
+  id: string;
+  category: MedicalCategory;
+  name_tc: string;
+  name_en?: string;
+  address_tc: string;
+  address_en?: string;
+  cluster_tc?: string;
+  cluster_en?: string;
+  district_tc?: string;
+  district_en?: string;
+  latitude: number;
+  longitude: number;
+  coordinate_precision: string;
+  booking_phone?: string;
+  contact_text?: string;
+  clinic_hours_text?: string;
+  booking_url?: string;
+  booking_app_url?: string;
+  booking_app_url_ios?: string;
+  booking_app_url_android?: string;
+  booking_notes?: string;
+  relocation_note?: string;
+  source_url: string;
+  source_checked_at: string;
+  eligibility_basis?: string;
+}
+
+export interface MedicalLocationViewModel {
+  location: MedicalLocation;
+  distanceKm: number;
+  onSelect?: () => void;
+}
+
+export type NearbyMode = 'toilets' | 'fuel' | 'atm' | 'aed' | 'emergency' | 'border' | 'hkjc' | 'medical' | 'onStreet';
 
 export interface GoogleMapsRating {
   rating: number;
