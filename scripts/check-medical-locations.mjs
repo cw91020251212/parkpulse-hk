@@ -21,12 +21,14 @@ assert.equal(records.length, 181, 'medical location snapshot record count change
 assert.deepEqual(snapshot.category_counts, expectedCounts, 'official category counts changed');
 assert.equal(Object.values(expectedCounts).reduce((sum, value) => sum + value, 0), records.length);
 assert.equal(new Set(records.map(({ id }) => id)).size, records.length, 'record IDs must be unique');
+assert.equal(records.filter(({ booking_notes }) => booking_notes).length, 88, 'only categories with practical booking information should carry notes');
 for (const record of records) {
   assert.ok(record.name_tc && record.address_tc, `record ${record.id} needs a Traditional Chinese name and address`);
   assert.ok(record.source_url?.startsWith('https://'), `record ${record.id} needs an official HTTPS source`);
   assert.ok(record.latitude >= 22.1 && record.latitude <= 22.6, `record ${record.id} latitude is outside Hong Kong bounds`);
   assert.ok(record.longitude >= 113.8 && record.longitude <= 114.5, `record ${record.id} longitude is outside Hong Kong bounds`);
   assert.ok(expectedCounts[record.category] > 0, `unknown category: ${record.category}`);
+  assert.doesNotMatch(record.booking_notes ?? '', /福利資格須核證|不代表每個地點|不能當作一般 walk-in/i, `generic disclaimer returned in ${record.id}`);
 }
 
 const coordinateGroups = new Map();
@@ -55,11 +57,15 @@ for (const icon of [
 const app = fs.readFileSync(path.join(root, 'src/App.tsx'), 'utf8');
 const filters = fs.readFileSync(path.join(root, 'src/components/Filters.tsx'), 'utf8');
 const map = fs.readFileSync(path.join(root, 'src/components/MapView.tsx'), 'utf8');
+const medicalCard = fs.readFileSync(path.join(root, 'src/components/MedicalLocationCard.tsx'), 'utf8');
+const translations = fs.readFileSync(path.join(root, 'src/i18n.ts'), 'utf8');
 assert.match(app, /facilityMode === 'medical'/, 'medical mode must be isolated in the app');
 assert.match(app, /medicalItems=\{mapMedicalItems\}/, 'medical results must use a separate map prop');
 assert.match(app, /MedicalLocationCard/, 'medical results must render dedicated location cards');
 assert.match(filters, /'medical'/, 'medical mode must be selectable');
 assert.match(map, /groupMedicalLocations/, 'co-located medical facilities must be grouped on the map');
 assert.match(app, /facilityMode === 'medical' \? \[\] : activeNearbyResults/, 'medical data must not leak into existing facility results');
+assert.doesNotMatch(app + medicalCard + translations, /medicalEligibilityNotice|medicalBookingDisclaimer/, 'long medical disclaimers should not return');
+assert.match(app, /medicalDataSnapshot/, 'show a concise medical data update date');
 
 console.log(`Medical snapshot OK: ${records.length} records, ${coordinateGroups.size} map pins, 41 co-located pins, 7 categories.`);

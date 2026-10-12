@@ -7,6 +7,13 @@ import type { MedicalCategory, MedicalCategoryFilter, MedicalLocationViewModel }
 
 const iconUrl = (category: MedicalCategory) => publicAsset(`icons/medical/${medicalIconFile(category)}`);
 const categoryLabel = (language: Language, category: MedicalCategory) => text(language, MEDICAL_CATEGORY_LABEL_KEYS[category]);
+const BOOKING_NOTE_KEYS: Partial<Record<MedicalCategory, string>> = {
+  'ha-family-medicine-clinic': 'medicalBookingFamilyNote',
+  'dh-civil-servants-clinic': 'medicalBookingDhClinicNote',
+  'dh-civil-servants-referral-centre': 'medicalBookingReferralNote',
+  'civil-service-chinese-medicine-clinic': 'medicalBookingChineseMedicineNote',
+  'cmhhk-designated-civil-service-services': 'medicalBookingCmhhkNote',
+};
 
 export function MedicalCategoryFilters({ language, selected, counts, onChange }: { language: Language; selected: MedicalCategoryFilter; counts: Partial<Record<MedicalCategory, number>>; onChange: (category: MedicalCategoryFilter) => void }) {
   const total = Object.values(counts).reduce((sum, count) => sum + (count ?? 0), 0);
@@ -60,21 +67,21 @@ export function MedicalLocationDetail({ language, item, onClose }: { language: L
   const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${location.latitude},${location.longitude}&travelmode=walking`;
   const bookingUrl = location.booking_url || location.booking_app_url;
   const sourceUrl = location.source_url;
+  const bookingNoteKey = BOOKING_NOTE_KEYS[location.category];
   return <aside className="detail-panel medical-detail-panel" role="dialog" aria-modal="true" aria-label={`${name} ${text(language, 'details')}`}>
     <button className="close-detail" type="button" onClick={onClose} aria-label={text(language, 'closeDetails')}>×</button>
     <p className="eyebrow"><img className="medical-detail-icon" src={iconUrl(location.category)} alt="" />{text(language, 'medicalFacilities')} · {category} · {formatDistance(distanceKm)}</p>
     <h2>{name}</h2>
-    <p className="medical-benefit-notice" role="note">{text(language, 'medicalEligibilityNotice')}</p>
     {location.relocation_note && <p className="medical-relocation-note">{language === 'en' ? 'Temporary relocation: ' : '臨時搬遷：'}{location.relocation_note}</p>}
     <section className="detail-section"><h3>{text(language, 'fullAddress')}</h3><p className="detail-address"><a href={placeUrl} target="_blank" rel="noreferrer">{address || text(language, 'addressUnavailable')}</a></p></section>
     {location.booking_phone && <section className="detail-section"><h3>{text(language, 'medicalContact')}</h3><p><a href={`tel:${location.booking_phone.replace(/[^+\d]/g, '')}`}>{location.booking_phone}</a>{location.contact_text ? ` · ${location.contact_text}` : ''}</p></section>}
     <dl className="detail-grid"><div><dt>{text(language, 'medicalCategory')}</dt><dd>{category}</dd></div>{(location.district_tc || location.cluster_tc) && <div><dt>{text(language, 'medicalDistrict')}</dt><dd>{language === 'en' ? (location.district_en || location.cluster_en || location.cluster_tc) : (location.district_tc || location.cluster_tc)}</dd></div>}<div><dt>{text(language, 'medicalChecked')}</dt><dd>{location.source_checked_at}</dd></div></dl>
-    {location.booking_notes && <section className="detail-section medical-booking-notes"><h3>{text(language, 'medicalBooking')}</h3><p>{language === 'en' ? text(language, 'medicalBookingDisclaimer') : location.booking_notes}</p></section>}
+    {bookingNoteKey && location.booking_notes && <section className="detail-section medical-booking-notes"><h3>{text(language, 'medicalBooking')}</h3><p>{text(language, bookingNoteKey)}</p></section>}
     <div className="detail-actions nearby-facility-actions">
       <a className="primary-action" href={directionsUrl} target="_blank" rel="noreferrer">{text(language, 'walkingNavigation')}</a>
       {bookingUrl && <a className="secondary-action" href={bookingUrl} target="_blank" rel="noreferrer">{text(language, 'medicalOfficialBooking')}</a>}
       <a className="secondary-action" href={placeUrl} target="_blank" rel="noreferrer">{text(language, 'openPlaceOnMap')}</a>
     </div>
-    <p className="data-note">{text(language, 'medicalDataSnapshot', { date: location.source_checked_at })}{sourceUrl && <> · <a href={sourceUrl} target="_blank" rel="noreferrer">{text(language, 'medicalOfficialSource')}</a></>}</p>
+    {sourceUrl && <p className="data-note"><a href={sourceUrl} target="_blank" rel="noreferrer">{text(language, 'medicalOfficialSource')}</a></p>}
   </aside>;
 }
