@@ -78,14 +78,13 @@ assert.match(facilityCard, /hkjc-first-prize-card-badge"><svg viewBox="0 0 48 36
 assert.match(facilityCard, /<text x="24" y="25"[^>]*>\{facility\.hkjcFirstPrizeTicketCount\}<\/text>/, 'Card crown should contain its count directly');
 assert.match(styles, /\.hkjc-first-prize-marker-badge, \.hkjc-first-prize-card-badge \{[^}]*background: transparent/, 'Crown badges must not have a round backing');
 assert.doesNotMatch(styles, /\.hkjc-first-prize-marker-badge \{[^}]*border-radius/, 'The map badge itself must not be circular');
-assert.match(mapSource, /selectedCenterIcon = L\.divIcon\(\{ className: 'selected-center-marker-shell', html: '<span class="selected-center-marker"/, 'manual centre pins use the shared glowing centre-marker class');
+assert.match(mapSource, /selectedCenterIcon = L\.divIcon\(\{ className: 'selected-center-marker-shell', html: '<span class="selected-center-marker"/, 'manual centre pins use the shared static centre-marker class');
 assert.match(mapSource, /currentLocationIcon = L\.divIcon\(\{ className: 'selected-center-marker-shell is-current-location'.*html: '<span class="selected-center-marker is-current-location".*iconSize: \[36, 40\], iconAnchor: \[18, 40\]/, 'GPS positions use a slightly larger current-location pin');
 assert.match(mapSource, /const positionMarkerIcon = showCurrentLocation \? currentLocationIcon : selectedCenterIcon;/, 'manual centres keep the original static pin');
 assert.match(mapSource, /zIndexOffset=\{showCurrentLocation \? 10_000 : 1_000\}/, 'GPS location pin stays above dense AED and facility markers');
 assert.match(mapSource, /showManualMarker: true/, 'a long press requests a visible static search-centre pin');
-assert.match(styles, /\.selected-center-marker\.is-current-location \{[^}]*width: 36px; height: 40px; font-size: 31px;[^}]*255 213 72/, 'GPS pin is slightly enlarged and yellow-highlighted');
-assert.match(styles, /\.selected-center-marker::before \{[^}]*255 220 88[^}]*255 207 54[^}]*current-location-pulse 2\.8s ease-in-out infinite/, 'every centre pin, including a manual pin, has a slow pulsing yellow glow');
-assert.doesNotMatch(styles, /\.selected-center-marker\.is-current-location::before/, 'the pulsing glow is not limited to GPS pins');
-assert.match(styles, /@keyframes current-location-pulse/, 'GPS pulse animation is defined');
+assert.match(styles, /\.selected-center-marker\.is-current-location \{[^}]*width: 36px; height: 40px; font-size: 31px;\s*\}/, 'GPS pin remains slightly enlarged without a yellow highlight');
+assert.doesNotMatch(styles, /\.selected-center-marker::before|\.selected-center-marker\.is-current-location::before/, 'manual and GPS centre pins have no glow pseudo-element');
+assert.doesNotMatch(styles, /current-location-pulse|255\s+220\s+88|255\s+207\s+54|255\s+213\s+72/, 'centre pins have no yellow pulse animation or glow colors');
 
 console.log('Verified AED, emergency-department, border and HKJC outlet controls, markers, legends, sources and location precision across map and detail views.');

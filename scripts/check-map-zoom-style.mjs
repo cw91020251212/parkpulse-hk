@@ -19,7 +19,7 @@ assert.match(i18n, /showMapLegend: '顯示地圖圖例'/);
 assert.match(i18n, /hideMapLegend: 'Hide map legend'/);
 assert.doesNotMatch(styles, /\.map-marker-legend\s*\{[^}]*position: absolute;/);
 assert.match(styles, /\.map-legend-toggle\s*\{[^}]*position: static;[^}]*margin-left: auto;/);
-assert.match(styles, /\.map-column \{ height: max\(407px, calc\(100dvh - 173px\)\); \}/);
+assert.match(styles, /\.desktop-layout > \.desktop-sidebar > \.workspace \{\s*height: max\(407px, calc\(100dvh - 173px\)\);/);
 assert.match(mapSource, /const LANDSD_MIN_NATIVE_ZOOM = 10;/);
 assert.match(mapSource, /const LANDSD_MAX_NATIVE_ZOOM = 20;/);
 assert.match(mapSource, /const MAP_MAX_ZOOM = 22;/);
@@ -48,6 +48,9 @@ assert.match(styles, /\.toilet-marker[\s\S]*?border: 1px solid var\(--marker-out
 assert.match(styles, /\.toilet-marker\.is-brand \{ --marker-outline: #7b8790;/);
 assert.match(styles, /\.selected-center-marker \{ position: relative; z-index: 1;[\s\S]*?filter: none;/);
 assert.doesNotMatch(styles, /\.selected-center-marker \{[^}]*drop-shadow/);
+assert.doesNotMatch(styles, /\.selected-center-marker::before/);
+assert.doesNotMatch(styles, /\.selected-center-marker\.is-current-location \{[^}]*drop-shadow/);
+assert.doesNotMatch(styles, /current-location-pulse|255\s+220\s+88|255\s+207\s+54|255\s+213\s+72/);
 assert.doesNotMatch(styles, /border: 1px solid #0a3341/);
 
-console.log('LandsD tiles remain native from zoom 10 to 20, scale cleanly to zoom 22, and every marker including the grounded centre pin has an independently aligned flat projection.');
+console.log('LandsD tiles remain native from zoom 10 to 20, scale cleanly to zoom 22, and centre pins stay free of pulsing yellow glow.');
