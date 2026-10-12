@@ -452,7 +452,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 }
 
 
-/* 2026-10-09：把文字、語言與教學控制收納到右上角兩個垂直工具欄。 */
+/* 2026-10-12：把文字、語言與教學控制收納到齒輪選單。 */
 .top-actions {
   display: grid;
   grid-template-columns: 100px 34px 34px;
@@ -877,7 +877,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
   .landsd-map { min-height: 450px; height: 450px; }
 }
 @media (max-width: 720px) {
-  .filters { margin-top: 16px; }
+  .filters { margin-top: 6px; }
   .map-column { height: max(407px, calc(100dvh - 173px)); }
   .map-column > .map-wrap { flex: 1 1 auto; height: auto; min-height: 360px; }
   .map-wrap,
@@ -953,4 +953,48 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 
 @media (max-width: 560px) {
   .filter-mode-switch { width: 100%; }
+}
+
+
+/* 2026-10-12：将设置收进齿轮菜单，模式按钮紧贴工具列下方。 */
+.brand { flex: 1 1 auto; min-width: 0; }
+.header-tools { position: relative; z-index: 20; display: flex; flex: 0 0 auto; flex-direction: column; align-items: flex-end; gap: 4px; }
+.top-actions { display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
+.settings-menu { display: block; width: 34px; height: 34px; }
+.settings-menu > summary { list-style: none; }
+.settings-menu > summary::-webkit-details-marker { display: none; }
+.settings-button,
+.top-actions .refresh-button,
+.top-actions .locate-button { display: grid; place-items: center; width: 34px; height: 34px; min-height: 34px; margin: 0; padding: 0; border: 1px solid #2f556b; border-radius: 50%; color: #d7f5f0; background: #0d2b43; transition: .2s ease; }
+.settings-button { cursor: pointer; }
+.settings-button:hover,
+.settings-menu[open] > .settings-button,
+.top-actions .refresh-button:hover,
+.top-actions .locate-button:hover { border-color: #14b8a6; background: #12364f; }
+.settings-button:focus-visible { outline: 2px solid #57dfd1; outline-offset: 2px; }
+.settings-icon { display: block; width: 19px; height: 19px; }
+.settings-popover { position: absolute; z-index: 1300; top: calc(100% + 6px); right: 0; display: grid; gap: 7px; width: min(190px, calc(100vw - 32px)); padding: 9px; border: 1px solid #2f556b; border-radius: 12px; color: #d7f5f0; background: #0b263d; box-shadow: 0 12px 30px #0008; }
+.settings-popover .text-tools { display: grid; grid-column: auto; grid-row: auto; grid-template-rows: auto; gap: 6px; }
+.settings-popover .text-size-control,
+.settings-popover .language-switcher { display: flex; align-items: center; width: 100%; min-height: 32px; height: 32px; padding: 3px; border: 1px solid #2f556b; border-radius: 8px; background: #0d2b43; }
+.settings-popover .text-size-control { justify-content: space-between; gap: 3px; }
+.settings-popover .text-size-control button { min-width: 34px; min-height: 26px; padding: 0; font-size: 13px; }
+.settings-popover .text-size-control span { display: inline; padding: 0 5px; font-size: 11px; }
+.settings-popover .language-switcher button { min-width: 0; min-height: 24px; flex: 1; padding: 0 6px; font-size: 12px; }
+.settings-popover .help-button { display: flex; justify-content: flex-start; width: 100%; min-height: 32px; padding: 0 8px; font-size: 12px; }
+.settings-popover .help-button > span:last-child { display: inline; }
+.filter-mode-switch.is-compact { width: 148px; gap: 2px; padding: 3px; border-radius: 10px; }
+.filter-mode-switch.is-compact .filter-mode-button { min-height: 28px; padding: 2px 4px; border-radius: 7px; font-size: 10px; line-height: 1.1; }
+
+@media (max-width: 720px) {
+  .topbar { gap: 8px; }
+  .header-tools { gap: 3px; }
+  .top-actions { gap: 5px; }
+  .settings-menu { width: 30px; height: 30px; }
+  .settings-button,
+  .top-actions .refresh-button,
+  .top-actions .locate-button { width: 30px; height: 30px; min-height: 30px; }
+  .settings-icon { width: 17px; height: 17px; }
+  .filter-mode-switch.is-compact { width: 148px; }
+  .filters { margin-top: 6px; }
 }

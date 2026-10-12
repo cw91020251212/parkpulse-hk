@@ -13,6 +13,8 @@ assert.match(filters, /onClick=\{\(\) => onVehicleChange\(type === vehicleType \
 assert.match(filters, /aria-pressed=\{type === vehicleType\}/);
 assert.match(filters, /section === 'parking' \?/);
 assert.match(filters, /section === 'facilities'/);
+assert.match(filters, /export function FilterModeSwitch/);
+assert.match(filters, /className="filter-mode-switch is-compact"/);
 assert.match(filters, /FACILITY_MODES = \['toilets', 'fuel', 'atm', 'aed', 'emergency', 'border', 'hkjc'\] as const/);
 assert.doesNotMatch(filters, /!vehicleType && \(\['toilets'/, 'Facility choices are not mixed into the parking filters');
 assert.match(filters, /onClick=\{\(\) => onSectionChange\('facilities'\)\}/);
@@ -33,6 +35,15 @@ assert.match(app, /useOnStreetParking\(facilityMode === 'onStreet' && vehicleTyp
 assert.match(app, /facilityMode !== 'onStreet' \|\| !vehicleType \|\| activeVehicleType === 'motorCycle'/);
 assert.match(app, /onVehicleChange=\{updateVehicleType\}/);
 assert.match(app, /onSectionChange=\{changeFilterSection\}/);
+assert.match(app, /<FilterModeSwitch language=\{language\} section=\{filterSection\} onSectionChange=\{changeFilterSection\} \/>/);
+assert.doesNotMatch(app, /<Filters[^\n]*onSectionChange=/, 'Mode buttons are no longer in the full-width filter rows');
+assert.match(app, /className="settings-menu"/);
+assert.match(app, /className="settings-popover"/);
+const actionsStart = app.indexOf('<div className="top-actions">');
+const gearButton = app.indexOf('<details className="settings-menu">', actionsStart);
+const refreshButton = app.indexOf("className={refreshBusy ? 'refresh-button", actionsStart);
+const locationButton = app.indexOf("className={manualLocationPending ? 'locate-button", actionsStart);
+assert.ok(gearButton >= 0 && gearButton < refreshButton && refreshButton < locationButton, 'Gear, refresh and location controls remain in that left-to-right order');
 
 assert.equal((filters.match(/className="filter-row vehicle-tabs"/g) ?? []).length, 1, 'Parking keeps a dedicated vehicle-selection row');
 assert.equal((filters.match(/className="filter-scroll-row"/g) ?? []).length, 2, 'Parking and facilities each use one options row');
@@ -45,11 +56,15 @@ assert.doesNotMatch(filters.slice(vehicleRowStart, parkingOptionsStart), /height
 assert.ok(filters.indexOf('className="height-select"') > parkingOptionsStart, 'Vehicle-height control stays on the parking options row');
 assert.match(filters, /className="filter-scroll-row"[^>]*>\s*\{scopeControl\}\s*<div className="filter-scroll-track">/, 'Scope button stays fixed before each horizontal scrolling track');
 
-for (const value of ['泊車', '附近設施', '請在上方選擇洗手間、AED、油站等附近設施。', '請選擇車種以查看附近停車場空位。', 'Parking', 'Nearby facilities', 'Choose a nearby facility above—washrooms, AEDs, fuel and more.', 'Select a vehicle type to view nearby parking availability.']) {
+for (const value of ['泊車', '附近設施', '設定', "settings: 'Settings'", '請在上方選擇洗手間、AED、油站等附近設施。', '請選擇車種以查看附近停車場空位。', 'Parking', 'Nearby facilities', 'Choose a nearby facility above—washrooms, AEDs, fuel and more.', 'Select a vehicle type to view nearby parking availability.']) {
   assert.ok(copy.includes(value), `Missing bilingual navigation or empty-state copy: ${value}`);
 }
 assert.match(styles, /\.filter-mode-switch/);
+assert.match(styles, /\.header-tools\s*\{[^}]*flex-direction:\s*column/);
+assert.match(styles, /\.filter-mode-switch\.is-compact\s*\{[^}]*width:\s*148px/);
+assert.match(styles, /\.settings-popover\s*\{[^}]*position:\s*absolute/);
+assert.match(styles, /\.filters\s*\{\s*margin-top:\s*6px;\s*\}/);
 assert.match(styles, /\.filter-scroll-track\s*\{[^}]*overflow-x:\s*auto/);
 assert.match(styles, /\.filter-scroll-track \.chip, \.filter-scroll-track \.height-select\s*\{[^}]*white-space:\s*nowrap/);
 
-console.log('Parking uses a vehicle row plus a fixed-scope horizontal options row; facilities use one fixed-scope horizontal row.');
+console.log('Gear menu retains text, language and help controls; mode tabs are compact beneath gear/refresh/location, with parking and facility rows unchanged.');

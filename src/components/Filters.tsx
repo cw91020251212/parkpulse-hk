@@ -14,14 +14,28 @@ type Props = {
   facilityMode: NearbyMode | null;
   facilityLoading: boolean;
   searchScope: SearchScope;
-  onSectionChange: (section: FilterSection) => void;
   onSearchScopeChange: (scope: SearchScope) => void;
   onFacilityModeChange: (mode: NearbyMode | null) => void;
   onVehicleChange: (vehicle: VehicleType | null) => void;
   onFiltersChange: (filters: ParkFilters) => void;
 };
 
-export function Filters({ language, section, vehicleType, filters, evLoading, facilityMode, facilityLoading, searchScope, onSectionChange, onSearchScopeChange, onVehicleChange, onFiltersChange, onFacilityModeChange }: Props) {
+type FilterModeSwitchProps = {
+  language: Language;
+  section: FilterSection;
+  onSectionChange: (section: FilterSection) => void;
+};
+
+export function FilterModeSwitch({ language, section, onSectionChange }: FilterModeSwitchProps) {
+  return (
+    <div className="filter-mode-switch is-compact" role="group" aria-label={text(language, 'searchCategory')}>
+      <button className="filter-mode-button" type="button" aria-pressed={section === 'parking'} onClick={() => onSectionChange('parking')}>{text(language, 'parkingMode')}</button>
+      <button className="filter-mode-button" type="button" aria-pressed={section === 'facilities'} onClick={() => onSectionChange('facilities')}>{text(language, 'nearbyFacilitiesMode')}</button>
+    </div>
+  );
+}
+
+export function Filters({ language, section, vehicleType, filters, evLoading, facilityMode, facilityLoading, searchScope, onSearchScopeChange, onVehicleChange, onFiltersChange, onFacilityModeChange }: Props) {
   const update = (patch: Partial<ParkFilters>) => onFiltersChange({ ...filters, ...patch });
   const isMotorcycle = vehicleType === 'motorCycle';
   const isMotorcycleRoadside = isMotorcycle && facilityMode === 'onStreet';
@@ -45,11 +59,6 @@ export function Filters({ language, section, vehicleType, filters, evLoading, fa
 
   return (
     <section className="filters" aria-label={text(language, 'searchCategory')}>
-      <div className="filter-mode-switch" role="group" aria-label={text(language, 'searchCategory')}>
-        <button className="filter-mode-button" type="button" aria-pressed={section === 'parking'} onClick={() => onSectionChange('parking')}>{text(language, 'parkingMode')}</button>
-        <button className="filter-mode-button" type="button" aria-pressed={section === 'facilities'} onClick={() => onSectionChange('facilities')}>{text(language, 'nearbyFacilitiesMode')}</button>
-      </div>
-
       {section === 'parking' ? (
         <>
           <div className="filter-row vehicle-tabs" aria-label={!vehicleType || isMotorcycle ? text(language, 'vehicleType') : `${text(language, 'vehicleType')} / ${text(language, 'height')}`}>
