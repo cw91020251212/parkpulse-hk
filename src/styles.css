@@ -1015,3 +1015,8 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .results-panel.is-fullscreen .results-list { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding-bottom: max(20px, env(safe-area-inset-bottom)); }
 .results-fullscreen-close { position: fixed; z-index: 1001; top: max(10px, env(safe-area-inset-top)); right: max(10px, env(safe-area-inset-right)); min-height: 44px; border: 1px solid #62d7c9; border-radius: 11px; padding: 8px 14px; color: #062e3b; background: #a3f2e7; box-shadow: 0 3px 14px #0005; font-size: 16px; font-weight: 850; }
 .results-fullscreen-close:focus-visible { outline: 3px solid #ffe17a; outline-offset: 3px; }
+
+/* 結果字級加大後，讓長標題／地址按內容增高，不再溢出相鄰資料或操作鈕。 */
+.results-panel .toilet-card { grid-template-columns: minmax(0, 1fr) var(--result-action-width); }
+.results-panel .toilet-card-main { grid-template-rows: auto auto; align-content: start; }
+.results-panel .card-heading > div { min-width: 0; }

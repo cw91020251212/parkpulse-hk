@@ -95,5 +95,8 @@ assert.match(styles, /\.results-panel \.card-heading h3\s*\{[^}]*font-size:\s*19
 assert.match(styles, /\.results-panel \.toilet-facts\s*\{[^}]*font-size:\s*16px/);
 assert.match(styles, /\.results-panel\.is-fullscreen\s*\{[^}]*position:\s*fixed/);
 assert.match(styles, /\.results-panel\.is-fullscreen \.results-list\s*\{[^}]*overflow-y:\s*auto/);
+assert.match(styles, /\.results-panel \.toilet-card\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\) var\(--result-action-width\)/);
+assert.match(styles, /\.results-panel \.toilet-card-main\s*\{[^}]*grid-template-rows:\s*auto auto/);
+assert.match(styles, /\.results-panel \.card-heading > div\s*\{[^}]*min-width:\s*0/);
 
 console.log('Gear menu exposes language controls; larger compact mode tabs and horizontally scrollable search scope work in both sections.');
