@@ -1209,3 +1209,224 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
     min-height: calc(max(407px, calc(100dvh - 173px)) + 42px);
   }
 }
+
+
+/* Desktop sidebar scrolls as one continuous column; only the map stays pinned. */
+@media (min-width: 901px) {
+  .app-shell {
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow: visible;
+    padding: 0;
+  }
+  .desktop-layout {
+    display: block;
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+  .desktop-sidebar {
+    display: flex;
+    width: 380px;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100dvh;
+    flex-direction: column;
+    gap: 12px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scrollbar-gutter: stable;
+    padding: 18px 16px 12px;
+    border-right: 1px solid #1d455f;
+    background: linear-gradient(160deg, #0d2b43, #071b2e 72%);
+  }
+  .desktop-controls,
+  .desktop-sidebar > .workspace { display: contents; }
+  .desktop-sidebar > .desktop-controls > * {
+    flex-shrink: 0;
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+  }
+  .desktop-sidebar > .desktop-controls > .filters { margin-top: 0; overflow: visible; }
+  .desktop-sidebar > .desktop-controls > .atm-bank-filter,
+  .desktop-sidebar > .desktop-controls > .error-banner { margin-top: 0; }
+  .desktop-sidebar .filter-row,
+  .desktop-sidebar .vehicle-type-tabs,
+  .desktop-sidebar .filter-scroll-row,
+  .desktop-sidebar .filter-scroll-track {
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+  .desktop-sidebar .filter-scroll-row { align-items: flex-start; }
+  .desktop-sidebar .filter-scroll-track { touch-action: auto; }
+  .desktop-sidebar .filter-scroll-track .chip { white-space: normal; }
+  .desktop-sidebar > .workspace > .map-column {
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 380px;
+    right: 0;
+    width: auto;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    max-width: none;
+    border-left: 1px solid #1d455f;
+  }
+  .desktop-sidebar > .workspace > .map-column > .map-wrap { border-radius: 0; }
+  .desktop-sidebar > .workspace > .map-bottom-tools {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    border: 1px solid #20475f;
+    border-radius: 13px;
+    padding: 11px;
+  }
+  .desktop-sidebar > .workspace > .map-bottom-tools .area-tools-row { flex-wrap: wrap; }
+  .desktop-sidebar > .workspace > .map-bottom-tools .map-gesture-note { flex: 1 1 135px; }
+  .desktop-sidebar > .results-panel {
+    display: flex;
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: none;
+    min-height: 0;
+    height: auto;
+    overflow: visible;
+    border-top: 1px solid #1d455f;
+    padding: 13px 13px 9px;
+  }
+  .desktop-sidebar > .results-panel .results-heading { flex: 0 0 auto; position: static; }
+  .desktop-sidebar > .results-panel .results-list {
+    flex: 0 0 auto;
+    min-height: auto;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+  .desktop-sidebar .card-heading h3,
+  .desktop-sidebar .card-heading p {
+    display: -webkit-box;
+    overflow: hidden;
+    white-space: normal;
+    text-overflow: clip;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+  .desktop-sidebar > footer {
+    display: flex;
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: none;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    margin: 0;
+    border-top: 1px solid #1d455f;
+    padding: 9px 16px 13px;
+    font-size: 10px;
+  }
+  .map-focus { padding: 0; }
+  .map-focus .desktop-sidebar {
+    width: 100%;
+    height: 100dvh;
+    min-height: 100dvh;
+    overflow: hidden;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+  .map-focus .desktop-sidebar > .workspace > .map-column {
+    left: 0;
+    right: 0;
+    width: auto;
+    height: 100vh;
+    height: 100dvh;
+  }
+  .map-focus .desktop-sidebar > .workspace > .map-bottom-tools,
+  .map-focus .desktop-sidebar > .results-panel,
+  .map-focus .desktop-sidebar > footer { display: none; }
+}
+
+@media (max-width: 900px) {
+  .desktop-sidebar { display: contents; }
+  .desktop-layout > .desktop-sidebar > .workspace {
+    order: 5;
+    display: flex;
+    width: 100%;
+    max-width: 1440px;
+    height: auto;
+    flex-direction: column;
+    margin: 3px auto 0;
+    border-radius: 17px;
+  }
+  .desktop-layout > .desktop-sidebar > .workspace > .map-column {
+    position: relative;
+    z-index: auto;
+    inset: auto;
+    flex: 1 1 auto;
+    width: auto;
+    height: auto;
+    max-width: none;
+    border-left: 0;
+  }
+  .desktop-layout > .desktop-sidebar > .results-panel {
+    order: 7;
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+  .desktop-layout > .desktop-sidebar > footer {
+    order: 8;
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+  .map-focus .desktop-layout > .desktop-sidebar > .workspace { display: flex; }
+}
+
+@media (max-width: 720px) {
+  .desktop-layout > .desktop-sidebar > .workspace {
+    height: max(407px, calc(100dvh - 173px));
+    min-height: max(407px, calc(100dvh - 173px));
+  }
+  .desktop-layout > .desktop-sidebar > .workspace.is-facility-mode {
+    height: calc(max(407px, calc(100dvh - 173px)) + 42px);
+    min-height: calc(max(407px, calc(100dvh - 173px)) + 42px);
+  }
+}
+
+
+@media (min-width: 901px) {
+  .desktop-sidebar .card-heading { grid-template-columns: auto minmax(0, 1fr); }
+  .desktop-sidebar .card-heading .distance { grid-column: 2; justify-self: start; }
+  .desktop-sidebar > .results-panel.is-fullscreen {
+    position: fixed;
+    z-index: 1000;
+    inset: 0;
+    box-sizing: border-box;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+    overscroll-behavior: contain;
+    padding: 64px 14px max(14px, env(safe-area-inset-bottom));
+    border: 0;
+    border-radius: 0;
+  }
+  .desktop-sidebar > .results-panel.is-fullscreen .results-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+  }
+}
