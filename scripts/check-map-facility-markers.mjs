@@ -58,5 +58,8 @@ assert.match(facilityCard, /facility\.kind === 'hkjc'/);
 assert.match(facilityCard, /hkjcSources/);
 assert.match(detailSource, /hkjcNoLiveStatus/);
 assert.match(styles, /\.toilet-marker\.is-hkjc/);
+assert.match(styles, /\.toilet-marker\.is-hkjc \{ --marker-outline: #123854; background: linear-gradient\(to top right, #123854, #168fc2\); \}/);
+assert.match(styles, /\.toilet-card-icon\.is-hkjc:not\(\.is-brand\).*linear-gradient\(to top right, #123854, #168fc2\)/);
+assert.match(styles, /\.legend-hkjc.*linear-gradient\(to top right, #123854, #168fc2\)/);
 
 console.log('Verified AED, emergency-department, border and HKJC outlet controls, markers, legends, sources and location precision across map and detail views.');

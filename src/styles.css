@@ -882,11 +882,11 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .toilet-marker.is-being-adjusted:active { cursor: grabbing !important; }
 
 /* HKJC off-course betting outlets: clearly distinct and explicit about building-level points. */
-.toilet-marker.is-hkjc { --marker-outline: #0d5949; background: linear-gradient(135deg, #0d765c, #25a77e); }
-.toilet-card-icon.is-hkjc { color: #fff; background: linear-gradient(135deg, #0d765c, #45bd91); }
-.nearby-facility-card.is-hkjc { border-left: 3px solid #2e9c79; }
-.washroom-source.is-hkjc { color: #e3fff2; background: #155e49; }
-.legend-hkjc { display: inline-grid; place-items: center; color: #fff; background: linear-gradient(135deg, #0d765c, #45bd91); }
+.toilet-marker.is-hkjc { --marker-outline: #123854; background: linear-gradient(to top right, #123854, #168fc2); }
+.toilet-card-icon.is-hkjc:not(.is-brand) { color: #fff; background: linear-gradient(to top right, #123854, #168fc2); }
+.nearby-facility-card.is-hkjc { border-left: 3px solid #168fc2; }
+.washroom-source.is-hkjc { color: #e5f7ff; background: #164b6b; }
+.legend-hkjc { display: inline-grid; place-items: center; color: #fff; background: linear-gradient(to top right, #123854, #168fc2); }
 .hkjc-popup-heading { display: flex; align-items: center; gap: 5px; }
 .hkjc-popup-heading > span { font-size: 18px; line-height: 1; }
 .hkjc-detail-symbol { display: inline-block; margin-right: 3px; vertical-align: -3px; font-size: 18px; }
