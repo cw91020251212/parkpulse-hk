@@ -39,7 +39,8 @@ assert.match(app, /showManualCenter=\{hasManualMapMarker\}/, 'the manual map-mar
 assert.match(styles, /\.map-column \{ height: max\(407px, calc\(100dvh - 173px\)\); \}/, 'parking mode retains its original mobile map height');
 assert.match(styles, /@media \(max-width: 900px\).*?\.workspace \{[^}]*height: auto;/s, 'mobile workspace remains content-sized so it can contain the map and bottom controls');
 assert.doesNotMatch(styles, /\.workspace\.is-facility-mode\s*\{[^}]*height:/, 'nearby facilities mode does not constrain its workspace and clip the map footer');
-assert.match(styles, /\.workspace\.is-facility-mode \.map-column \{ height: calc\(max\(407px, calc\(100dvh - 173px\)\) \+ 42px\); \}/, 'nearby facilities mode adds exactly one filter-row of map height');
+assert.match(styles, /\.workspace\.is-facility-mode \{ grid-template-rows: auto; \}/, 'nearby facilities grid row grows with the extended map column');
+assert.match(styles, /\.workspace\.is-facility-mode \.map-column \{ height: calc\(max\(407px, calc\(100dvh - 173px\)\) \+ 42px\); min-height: calc\(max\(407px, calc\(100dvh - 173px\)\) \+ 42px\); \}/, 'nearby facilities mode forces the map column height and minimum height to extend exactly one filter-row');
 assert.match(app, /className="map-column">.*?className="area-tools map-bottom-tools"/s, 'search and legend controls remain inside the content-sized map column');
 assert.match(app, /onSearchScopeChange=\{changeSearchScope\}/, 'choosing viewport mode releases the startup location gate');
 assert.match(app, /startupLocationPending && searchScope === 'radius'/, 'startup location loading only blocks the original radius mode');
