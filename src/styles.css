@@ -878,9 +878,8 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 }
 @media (max-width: 720px) {
   .filters { margin-top: 6px; }
-  .map-column { height: max(407px, calc(100dvh - 173px)); }
-  .workspace.is-facility-mode { grid-template-rows: auto; }
-  .workspace.is-facility-mode .map-column { height: calc(max(407px, calc(100dvh - 173px)) + 42px); min-height: calc(max(407px, calc(100dvh - 173px)) + 42px); }
+  .desktop-layout > .workspace { height: max(407px, calc(100dvh - 173px)); min-height: max(407px, calc(100dvh - 173px)); }
+  .desktop-layout > .workspace.is-facility-mode { height: calc(max(407px, calc(100dvh - 173px)) + 42px); min-height: calc(max(407px, calc(100dvh - 173px)) + 42px); }
   .map-column > .map-wrap { flex: 1 1 auto; height: auto; min-height: 360px; }
   .map-wrap,
   .landsd-map { height: 100%; min-height: 0; }
@@ -1027,3 +1026,186 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .results-panel .toilet-card { grid-template-columns: minmax(0, 1fr) var(--result-action-width); }
 .results-panel .toilet-card-main { grid-template-rows: auto auto; align-content: start; }
 .results-panel .card-heading > div { min-width: 0; }
+
+
+/* Desktop: pin all controls/results in a left rail and let the map own the full-height right pane. */
+@media (min-width: 901px) {
+  .app-shell {
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  .desktop-layout {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    grid-template-columns: minmax(320px, 380px) minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+    overflow: hidden;
+  }
+  .desktop-controls {
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+    padding: 18px 16px 12px;
+    border-right: 1px solid #1d455f;
+    background: linear-gradient(160deg, #0d2b43, #071b2e 72%);
+  }
+  .desktop-controls > .topbar,
+  .desktop-controls > .filters,
+  .desktop-controls > .atm-bank-filter,
+  .desktop-controls > .error-banner,
+  .desktop-controls > .map-bottom-tools {
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+  }
+  .desktop-controls > .filters { margin-top: 0; overflow: visible; }
+  .desktop-controls > .atm-bank-filter,
+  .desktop-controls > .error-banner { margin-top: 0; }
+  .desktop-layout > .workspace > .map-bottom-tools {
+    grid-column: 1;
+    grid-row: 2;
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+    flex: 0 0 auto;
+    border: 1px solid #20475f;
+    border-radius: 13px;
+    padding: 11px;
+  }
+  .desktop-controls .filter-row,
+  .desktop-controls .vehicle-type-tabs,
+  .desktop-controls .filter-scroll-row,
+  .desktop-controls .filter-scroll-track {
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+  .desktop-controls .filter-scroll-row { align-items: flex-start; }
+  .desktop-controls .filter-scroll-track { touch-action: auto; }
+  .desktop-controls .filter-scroll-track .chip { white-space: normal; }
+  .desktop-layout > .workspace > .map-bottom-tools .area-tools-row { flex-wrap: wrap; }
+  .desktop-layout > .workspace > .map-bottom-tools .map-gesture-note { flex: 1 1 135px; }
+  .desktop-layout > .workspace { display: contents; }
+  .desktop-layout > .workspace > .map-column {
+    grid-column: 2;
+    grid-row: 1 / 5;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    max-width: none;
+    border-left: 1px solid #1d455f;
+  }
+  .desktop-layout > .workspace > .map-column > .map-wrap { border-radius: 0; }
+  .desktop-layout > .results-panel {
+    grid-column: 1;
+    grid-row: 3;
+    min-height: 0;
+    overflow: hidden;
+    border-top: 1px solid #1d455f;
+    padding: 13px 13px 9px;
+  }
+  .desktop-layout > .results-panel .results-heading { flex: 0 0 auto; }
+  .desktop-layout > .results-panel .results-list { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+  .desktop-layout > footer {
+    grid-column: 1;
+    grid-row: 4;
+    display: flex;
+    width: 100%;
+    max-width: none;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    margin: 0;
+    border-top: 1px solid #1d455f;
+    padding: 9px 16px 13px;
+    font-size: 10px;
+  }
+  .map-focus { padding: 0; }
+  .map-focus .desktop-controls,
+  .map-focus .desktop-layout > .results-panel,
+  .map-focus .desktop-layout > footer { display: none; }
+  .map-focus .desktop-layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+  }
+  .map-focus .desktop-layout > .workspace > .map-column {
+    grid-column: 1;
+    grid-row: 1;
+    height: 100%;
+  }
+}
+
+/* Keep the familiar stacked layout on tablet and phone; only the wide-screen shell is rearranged. */
+@media (max-width: 900px) {
+  .app-shell {
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow: visible;
+    padding: 14px 12px 9px;
+  }
+  .desktop-layout {
+    display: flex;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    flex-direction: column;
+    overflow: visible;
+  }
+  .desktop-controls { display: contents; }
+  .desktop-controls > .topbar { order: 1; }
+  .desktop-controls > .filters { order: 2; }
+  .desktop-controls > .atm-bank-filter { order: 3; }
+  .desktop-controls > .error-banner { order: 4; }
+  .desktop-layout > .workspace {
+    order: 5;
+    display: flex;
+    width: 100%;
+    max-width: 1440px;
+    height: auto;
+    flex-direction: column;
+    margin: 3px auto 0;
+    border-radius: 17px;
+  }
+  .desktop-layout > .workspace > .map-column {
+    flex: 1 1 auto;
+    width: auto;
+    max-width: none;
+    border-left: 0;
+  }
+  .desktop-layout > .workspace > .map-bottom-tools { width: 100%; }
+  .desktop-layout > .results-panel {
+    order: 7;
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+  .desktop-layout > footer {
+    order: 8;
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+  .map-focus .desktop-layout > .workspace { display: flex; }
+}
+
+
+@media (max-width: 720px) {
+  .desktop-layout > .workspace {
+    height: max(407px, calc(100dvh - 173px));
+    min-height: max(407px, calc(100dvh - 173px));
+  }
+  .desktop-layout > .workspace.is-facility-mode {
+    height: calc(max(407px, calc(100dvh - 173px)) + 42px);
+    min-height: calc(max(407px, calc(100dvh - 173px)) + 42px);
+  }
+}
