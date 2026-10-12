@@ -295,6 +295,6 @@ export function MapView({ language, position, parks, nearbyItems, selectedId, vi
     {startupLocating && <div className="map-startup-location-state" role="status" aria-live="polite"><span className="loader" /><span>{text(language, 'startupLocationLoading')}</span></div>}
     <button className="map-focus-toggle" type="button" onClick={onToggleExpanded} aria-pressed={expanded} aria-label={expanded ? text(language, 'mapCollapse') : text(language, 'mapExpand')} title={expanded ? text(language, 'mapCollapse') : text(language, 'mapExpand')}><MapFocusIcon expanded={expanded} /></button>
     {!expanded && visibleResultCount > 0 && <button className="map-results-link" type="button" onClick={onShowResults}>{text(language, 'showResults', { count: resultsLabel })}</button>}
-    <a className="landsd-credit" href="https://api.portal.hkmapservice.gov.hk/disclaimer" target="_blank" rel="noreferrer"><span>{text(language, 'landsdCredit')}</span><img src={LANDSD_LOGO_URL} alt={text(language, 'landsdLogo')} /></a>
+    <a className="landsd-credit" href="https://www.map.gov.hk/gm/" target="_blank" rel="noreferrer"><span>{text(language, 'landsdCredit')}</span><img src={LANDSD_LOGO_URL} alt={text(language, 'landsdLogo')} /></a>
   </div>;
 }
