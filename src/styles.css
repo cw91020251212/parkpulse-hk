@@ -38,6 +38,11 @@ h1 { margin: 1px 0 0; font-size: 26px; line-height: 1.08; letter-spacing: .02em;
 .filters { margin-top: 14px; display: grid; gap: 9px; overflow: hidden; }
 .filter-row { display: flex; gap: 8px; overflow-x: auto; padding: 1px 1px 6px; scrollbar-width: none; }
 .filter-row::-webkit-scrollbar { display: none; }
+.filter-scroll-row { display: flex; align-items: center; gap: 8px; min-width: 0; padding: 1px; }
+.filter-scroll-track { display: flex; flex: 1 1 auto; align-items: center; min-width: 0; gap: 8px; overflow-x: auto; overflow-y: hidden; padding: 1px 1px 3px; overscroll-behavior-x: contain; touch-action: pan-x; scrollbar-width: thin; scrollbar-color: #355c70 transparent; }
+.filter-scroll-track::-webkit-scrollbar { height: 3px; }
+.filter-scroll-track::-webkit-scrollbar-thumb { border-radius: 999px; background: #355c70; }
+.filter-scroll-track .chip, .filter-scroll-track .height-select { flex: 0 0 auto; white-space: nowrap; }
 .vehicle-type-tabs { display: flex; flex: 0 0 auto; gap: 8px; }
 .chip, .height-select { flex: 0 0 auto; color: #b4c9d1; border: 1px solid #294c62; background: #0c2940; border-radius: 999px; min-height: 34px; padding: 7px 12px; font-size: 12px; font-weight: 700; transition: .18s ease; }
 .chip:hover { border-color: #61899a; }
@@ -946,25 +951,6 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .filter-mode-button[aria-pressed="true"] { border-color: #b7f2e7; color: #073345; background: #b7f2e7; }
 .filter-mode-button:focus-visible { outline: 2px solid #57dfd1; outline-offset: 2px; }
 
-.facility-mode-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 8px;
-  padding: 1px 1px 6px;
-}
-
-.facility-mode-grid .chip {
-  width: 100%;
-  min-width: 0;
-  height: auto;
-  min-height: 36px;
-  padding: 6px 8px;
-  line-height: 1.25;
-  white-space: normal;
-  text-align: center;
-}
-
 @media (max-width: 560px) {
   .filter-mode-switch { width: 100%; }
-  .facility-mode-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
 }

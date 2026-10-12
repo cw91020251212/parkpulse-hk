@@ -34,10 +34,22 @@ assert.match(app, /facilityMode !== 'onStreet' \|\| !vehicleType \|\| activeVehi
 assert.match(app, /onVehicleChange=\{updateVehicleType\}/);
 assert.match(app, /onSectionChange=\{changeFilterSection\}/);
 
+assert.equal((filters.match(/className="filter-row vehicle-tabs"/g) ?? []).length, 1, 'Parking keeps a dedicated vehicle-selection row');
+assert.equal((filters.match(/className="filter-scroll-row"/g) ?? []).length, 2, 'Parking and facilities each use one options row');
+assert.equal((filters.match(/\{scopeControl\}/g) ?? []).length, 2, 'Search scope stays present in both sections');
+assert.doesNotMatch(filters, /facility-mode-grid/, 'Nearby facilities must not expand into a multi-row grid');
+const vehicleRowStart = filters.indexOf('className="filter-row vehicle-tabs"');
+const parkingOptionsStart = filters.indexOf('className="filter-scroll-row"', vehicleRowStart);
+assert.ok(vehicleRowStart >= 0 && parkingOptionsStart > vehicleRowStart);
+assert.doesNotMatch(filters.slice(vehicleRowStart, parkingOptionsStart), /height-select/, 'Vehicle row contains only vehicle choices');
+assert.ok(filters.indexOf('className="height-select"') > parkingOptionsStart, 'Vehicle-height control stays on the parking options row');
+assert.match(filters, /className="filter-scroll-row"[^>]*>\s*\{scopeControl\}\s*<div className="filter-scroll-track">/, 'Scope button stays fixed before each horizontal scrolling track');
+
 for (const value of ['泊車', '附近設施', '請在上方選擇洗手間、AED、油站等附近設施。', '請選擇車種以查看附近停車場空位。', 'Parking', 'Nearby facilities', 'Choose a nearby facility above—washrooms, AEDs, fuel and more.', 'Select a vehicle type to view nearby parking availability.']) {
   assert.ok(copy.includes(value), `Missing bilingual navigation or empty-state copy: ${value}`);
 }
 assert.match(styles, /\.filter-mode-switch/);
-assert.match(styles, /\.facility-mode-grid/);
+assert.match(styles, /\.filter-scroll-track\s*\{[^}]*overflow-x:\s*auto/);
+assert.match(styles, /\.filter-scroll-track \.chip, \.filter-scroll-track \.height-select\s*\{[^}]*white-space:\s*nowrap/);
 
-console.log('Parking and nearby facilities use separate sections; section switches clear the other selection, while roadside parking stays with vehicles.');
+console.log('Parking uses a vehicle row plus a fixed-scope horizontal options row; facilities use one fixed-scope horizontal row.');
