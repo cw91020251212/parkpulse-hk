@@ -66,7 +66,7 @@ export function NearbyFacilityDetail({ language, item: { facility, distanceKm },
 
   return <aside className="detail-panel nearby-facility-detail-panel" role="dialog" aria-modal="true" aria-label={`${facility.name} ${text(language, 'details')}`}>
     <button className="close-detail" type="button" onClick={onClose} aria-label={text(language, 'closeDetails')}>×</button>
-    <p className="eyebrow">{aed && <img className="aed-detail-symbol" src={AED_SYMBOL_URL} alt="" />}{emergency && <img className="emergency-detail-symbol" src={EMERGENCY_SYMBOL_URL} alt="" />}{border && <img className="border-detail-symbol" src={BORDER_SYMBOL_URL} alt="" />}{hkjc && <span className="hkjc-detail-symbol" aria-hidden="true">🏇</span>} {typeLabel} · {formatDistance(distanceKm)}</p>
+    <p className="eyebrow">{aed && <img className="aed-detail-symbol" src={AED_SYMBOL_URL} alt="" />}{emergency && <img className="emergency-detail-symbol" src={EMERGENCY_SYMBOL_URL} alt="" />}{border && <img className="border-detail-symbol" src={BORDER_SYMBOL_URL} alt="" />}{hkjc && <span className="hkjc-detail-symbol" aria-hidden="true">♞</span>} {typeLabel} · {formatDistance(distanceKm)}</p>
     <h2>{facility.name}</h2>
     {emergency && <p className="emergency-urgent-notice" role="note">{text(language, 'emergencyUrgentNotice')}</p>}
     <section className="detail-section">

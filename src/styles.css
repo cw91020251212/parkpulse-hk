@@ -882,14 +882,16 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .toilet-marker.is-being-adjusted:active { cursor: grabbing !important; }
 
 /* HKJC off-course betting outlets: clearly distinct and explicit about building-level points. */
-.toilet-marker.is-hkjc { --marker-outline: #123854; background: linear-gradient(to top right, #123854, #168fc2); }
-.toilet-card-icon.is-hkjc:not(.is-brand) { color: #fff; background: linear-gradient(to top right, #123854, #168fc2); }
-.nearby-facility-card.is-hkjc { border-left: 3px solid #168fc2; }
+.toilet-marker.is-hkjc { --marker-outline: #ffd84a; background: linear-gradient(to top right, #176f9b, #49bde8); }
+.toilet-marker .hkjc-horse-icon, .toilet-card-icon .hkjc-horse-icon, .hkjc-popup-heading .hkjc-horse-icon, .hkjc-detail-symbol { color: #ffda44; font-family: Georgia, "Times New Roman", serif; font-size: 21px; font-weight: 900; line-height: 1; text-shadow: 0 1px 1px #123854; }
+.toilet-card-icon.is-hkjc:not(.is-brand), .legend-hkjc { color: #ffda44; background: linear-gradient(to top right, #176f9b, #49bde8); }
+.nearby-facility-card.is-hkjc { border-left: 3px solid #49bde8; }
 .washroom-source.is-hkjc { color: #e5f7ff; background: #164b6b; }
-.legend-hkjc { display: inline-grid; place-items: center; color: #fff; background: linear-gradient(to top right, #123854, #168fc2); }
+.legend-hkjc { display: inline-grid; place-items: center; }
+.legend-hkjc .hkjc-horse-icon { font-size: 18px; }
 .hkjc-popup-heading { display: flex; align-items: center; gap: 5px; }
-.hkjc-popup-heading > span { font-size: 18px; line-height: 1; }
-.hkjc-detail-symbol { display: inline-block; margin-right: 3px; vertical-align: -3px; font-size: 18px; }
+.hkjc-popup-heading > .hkjc-horse-icon { font-size: 21px; }
+.hkjc-detail-symbol { display: inline-block; margin-right: 3px; vertical-align: -3px; }
 .hkjc-location-note { color: #667c72; font-size: 11px; line-height: 1.4; white-space: normal; }
 .hkjc-location-note.is-location-unconfirmed { border: 1px dashed #9ca8ad; border-radius: 7px; padding: 5px 7px; color: #53616a; background: #e7eaec; }
 .hkjc-snapshot-note { margin: 0 0 8px; border: 1px solid #329274; border-radius: 10px; padding: 8px 10px; color: #e3fff2; background: #155e49; font-size: 12px; font-weight: 800; line-height: 1.4; }
