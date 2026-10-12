@@ -9,7 +9,7 @@ import type { BorderQueue, BorderWaitingTime, EmergencyWaitTime, NearbyFacilityV
 type Props = { language: Language; item: NearbyFacilityViewModel; onClose: () => void };
 const AED_SYMBOL_URL = `${publicAsset('icons/iso-7010-e010-aed.svg')}?v=20261011d`;
 const EMERGENCY_SYMBOL_URL = publicAsset('icons/emergency-pill.svg');
-const BORDER_SYMBOL_URL = publicAsset('icons/border-control.svg');
+const BORDER_SYMBOL_URL = `${publicAsset('icons/border-control.svg')}?v=20261012`;
 
 function formatSnapshotTime(language: Language, value: string) {
   const date = new Date(value);

@@ -1,8 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Border control">
-  <g fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="7">
-    <path d="M14 40h36"/>
-    <path d="M17 23h30"/>
-    <path d="m15 23 8-8m-8 8 8 8m34 0-8 8m8-8-8-8"/>
-    <path d="M22 40v10m20-10v10"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Border crossing">
+  <circle cx="32" cy="32" r="29" fill="none" stroke="#15384b" stroke-width="3.5" />
+  <g fill="none" stroke="#15384b" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 35h54" stroke-width="3.5" />
+    <path d="M25 35 31 11h2l6 24M23 36h18" stroke-width="4" />
+    <path d="m7 35 24-20M15 35l17-17m10 17L32 15m25 20L33 15" stroke-width="1.8" />
   </g>
+  <path d="M7 40c9-4 20-3 29 1 10 4 18 10 21 18H35c1-5-2-8-8-10-7-3-14-3-20 0Z" fill="#18a8cb" />
+  <path d="M10 43c8-2 15-1 22 2 6 3 10 7 10 12" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2.2" stroke-dasharray="5 4" />
 </svg>

@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const [appSource, mapSource, detailSource, styles] = await Promise.all([
+const [appSource, mapSource, detailSource, styles, borderIcon] = await Promise.all([
   readFile(new URL('../src/App.tsx', import.meta.url), 'utf8'),
   readFile(new URL('../src/components/MapView.tsx', import.meta.url), 'utf8'),
   readFile(new URL('../src/components/NearbyFacilityDetail.tsx', import.meta.url), 'utf8'),
   readFile(new URL('../src/styles.css', import.meta.url), 'utf8'),
+  readFile(new URL('../public/icons/border-control.svg', import.meta.url), 'utf8'),
 ]);
 
 assert.match(appSource, /const mapParks = \(startupLocationPending && searchScope === 'radius'\) \|\| facilityMode \? \[\] : displayedParks;/);
@@ -39,5 +40,9 @@ assert.match(styles, /\.toilet-marker \.aed-symbol \{ width: 30px; height: 30px;
 assert.match(styles, /\.toilet-marker\.is-emergency/);
 assert.match(styles, /\.emergency-pill-symbol/);
 assert.match(styles, /\.border-control-symbol/);
+assert.match(borderIcon, /<circle[^>]+fill="none"/);
+assert.match(borderIcon, /<path[^>]+fill="#18a8cb"/);
+assert.match(borderIcon, /stroke-dasharray="5 4"/);
+assert.doesNotMatch(borderIcon, /<rect[^>]+fill="(?!none|transparent)/);
 
 console.log('Facility cards, Leaflet markers, map legend, popup and detail cover AED, emergency-department and border-control symbols with matching source and safety text.');
