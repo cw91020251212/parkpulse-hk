@@ -6,7 +6,7 @@ type Copy = Record<string, string>;
 
 const COPY: Record<Language, Copy> = {
   'zh-Hant': {
-    brandKicker: 'PARKPULSE HK · HONG KONG PARKING',
+    brandKicker: 'PARKPULSE HK',
     brandTitle: '泊邊度',
     textSize: '文字',
     shrinkText: '縮小文字',
@@ -319,7 +319,7 @@ const COPY: Record<Language, Copy> = {
     disclaimerPrivacy: '定位只在你授權瀏覽器後用作本機搜尋中心；本站不設帳戶、不收款、不在伺服器端儲存精確位置。語言、文字大小、車種、篩選和 ATM 銀行偏好只儲存在同一瀏覽器。',
   },
   en: {
-    brandKicker: 'PARKPULSE HK · HONG KONG PARKING',
+    brandKicker: 'PARKPULSE HK',
     brandTitle: 'Find Parking',
     textSize: 'Text',
     shrinkText: 'Decrease text size',
