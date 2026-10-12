@@ -30,7 +30,7 @@ assert.match(app, /const searchScopeRef = useRef\(searchScope\)/, 'late startup 
 assert.match(app, /const \[hasGpsPosition, setHasGpsPosition\] = useState\(false\)/, 'GPS success is tracked separately from a manual map centre');
 assert.match(app, /const \[hasManualMapMarker, setHasManualMapMarker\] = useState\(false\)/, 'a long-press marker is tracked separately from GPS');
 assert.doesNotMatch(app, /useLayoutEffect|mapColumnRef|visualViewport/, 'map height does not dynamically fill the remaining screen');
-assert.match(app, /facilityMode && facilityMode !== 'onStreet' \? ' is-facility-mode' : ''/, 'only nearby facilities, not vehicle-specific roadside parking, receive the facility layout');
+assert.match(app, /filterSection === 'facilities' \? ' is-facility-mode' : ''/, 'the nearby-facilities section activates the extended layout even before a facility subtype is selected; parking stays unchanged');
 assert.match(app, /setPosition\(\{ lat: coords\.latitude, lng: coords\.longitude \}\);\s*setHasGpsPosition\(true\);/s, 'a successful geolocation result enables the current-location marker');
 assert.match(app, /setHasGpsPosition\(true\);\s*setHasManualMapMarker\(false\);/s, 'GPS success replaces an older manual map marker');
 assert.match(app, /const selectArea = .*setPosition\(coordinates\); setHasGpsPosition\(false\); setHasManualMapMarker\(behavior\.showManualMarker === true\);/s, 'only an explicit long-press centre keeps a manual marker without masquerading as GPS');
