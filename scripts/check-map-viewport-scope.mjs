@@ -46,6 +46,10 @@ assert.match(styles, /\.desktop-sidebar \{[^}]*height: 100dvh;[^}]*overflow-x: h
 assert.match(styles, /\.desktop-sidebar > \.results-panel \{[^}]*height: auto;\s*overflow: visible;/s, 'desktop results grow naturally instead of being trapped in a short panel');
 assert.match(styles, /\.desktop-sidebar > \.results-panel \.results-list \{[^}]*max-height: none;\s*overflow: visible;/s, 'desktop results no longer use a nested, clipped scrolling viewport');
 assert.match(styles, /\.desktop-sidebar \.card-heading h3,\s*\.desktop-sidebar \.card-heading p \{[^}]*-webkit-line-clamp: 2;/s, 'desktop result titles and subtitles can wrap to two readable lines');
+assert.match(styles, /\.desktop-sidebar \.park-card-select \{\s*grid-template-rows: none;[^}]*min-height: 0;/s, 'desktop parking card rows grow with their content instead of overlaying fixed rows');
+assert.match(styles, /\.desktop-sidebar \.park-card \.card-heading \.distance \{\s*grid-column: 2;\s*grid-row: 2;/s, 'parking distance gets a separate row instead of colliding with the name and district');
+assert.match(styles, /\.desktop-sidebar \.park-card \.availability-line \{\s*min-height: 0;\s*flex-wrap: wrap;\s*overflow: visible;/s, 'vacancy count and vehicle label wrap without hiding the district line');
+assert.match(styles, /\.desktop-sidebar \.park-card \.card-facts \{\s*min-height: 0;\s*flex-wrap: wrap;\s*overflow: visible;/s, 'height, pricing and charging facts wrap and remain visible on desktop');
 assert.match(styles, /\.desktop-sidebar > \.results-panel\.is-fullscreen \.results-list \{[^}]*overflow-y: auto;/s, 'the explicit full-screen results view keeps its own list scrolling');
 assert.match(styles, /\.desktop-sidebar > \.workspace > \.map-column \{[^}]*position: fixed;[^}]*left: 380px;\s*right: 0;[^}]*height: 100dvh;/s, 'the full-height map stays pinned while the entire sidebar scrolls');
 assert.match(styles, /@media \(max-width: 900px\) \{\s*\.desktop-sidebar \{ display: contents; \}/s, 'the sidebar wrapper disappears from the phone flow, preserving the stacked layout');
