@@ -1002,15 +1002,15 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 
 /* 易讀結果文字，以及一鍵展開的全畫面清單 */
 .results-panel .results-heading h2 { font-size: 28px; line-height: 1.25; font-weight: 850; }
-.results-panel .results-heading > p { color: #9cece2; font-size: 14px; line-height: 1.55; font-weight: 700; white-space: normal; }
-.results-panel .card-heading h3 { font-size: 17px; line-height: 1.45; font-weight: 800; }
-.results-panel .card-heading p { color: #c3d9df; font-size: 14px; line-height: 1.5; font-weight: 600; }
-.results-panel .distance { font-size: 15px; font-weight: 800; }
-.results-panel .availability-line, .results-panel .card-facts, .results-panel .toilet-facts { color: #d2e3e8; font-size: 14px; line-height: 1.55; font-weight: 600; }
-.results-panel .availability { font-size: 19px; }
-.results-panel .updated, .results-panel .card-note, .results-panel .toilet-card .distance-scope, .results-panel .toilet-photo figcaption { color: #a9c3cb; font-size: 12px; line-height: 1.5; }
-.results-panel .nav-link, .results-panel .toilet-photo-toggle, .results-panel .toilet-photo-unavailable, .results-panel .toilet-retry { min-height: 44px; font-size: 14px; }
-.map-results-link { min-height: 44px; padding: 9px 12px; font-size: 14px; }
+.results-panel .results-heading > p { color: #9cece2; font-size: 16px; line-height: 1.55; font-weight: 700; white-space: normal; }
+.results-panel .card-heading h3 { font-size: 19px; line-height: 1.45; font-weight: 800; }
+.results-panel .card-heading p { color: #c3d9df; font-size: 16px; line-height: 1.5; font-weight: 600; }
+.results-panel .distance { font-size: 16px; font-weight: 800; }
+.results-panel .availability-line, .results-panel .card-facts, .results-panel .toilet-facts { color: #d2e3e8; font-size: 16px; line-height: 1.55; font-weight: 600; }
+.results-panel .availability { font-size: 21px; }
+.results-panel .updated, .results-panel .card-note, .results-panel .toilet-card .distance-scope, .results-panel .toilet-photo figcaption { color: #a9c3cb; font-size: 14px; line-height: 1.5; }
+.results-panel .nav-link, .results-panel .toilet-photo-toggle, .results-panel .toilet-photo-unavailable, .results-panel .toilet-retry { min-height: 48px; font-size: 16px; }
+.map-results-link { min-height: 48px; padding: 10px 14px; font-size: 16px; }
 .results-panel.is-fullscreen { position: fixed; z-index: 1000; inset: 0; box-sizing: border-box; width: 100vw; height: 100vh; height: 100dvh; min-height: 0; overflow: hidden; overscroll-behavior: contain; padding: 64px 14px max(14px, env(safe-area-inset-bottom)); border: 0; border-radius: 0; }
 .results-panel.is-fullscreen .results-list { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding-bottom: max(20px, env(safe-area-inset-bottom)); }
 .results-fullscreen-close { position: fixed; z-index: 1001; top: max(10px, env(safe-area-inset-top)); right: max(10px, env(safe-area-inset-right)); min-height: 44px; border: 1px solid #62d7c9; border-radius: 11px; padding: 8px 14px; color: #062e3b; background: #a3f2e7; box-shadow: 0 3px 14px #0005; font-size: 16px; font-weight: 850; }

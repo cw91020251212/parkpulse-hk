@@ -91,8 +91,8 @@ assert.match(copy, /showResults: '全畫面清單：\{count\} ↓'/);
 assert.match(copy, /showResults: 'Full-screen list: \{count\} ↓'/);
 assert.match(copy, /returnToMap: '返回地圖'/);
 assert.match(copy, /returnToMap: 'Back to map'/);
-assert.match(styles, /\.results-panel \.card-heading h3\s*\{[^}]*font-size:\s*17px/);
-assert.match(styles, /\.results-panel \.toilet-facts\s*\{[^}]*font-size:\s*14px/);
+assert.match(styles, /\.results-panel \.card-heading h3\s*\{[^}]*font-size:\s*19px/);
+assert.match(styles, /\.results-panel \.toilet-facts\s*\{[^}]*font-size:\s*16px/);
 assert.match(styles, /\.results-panel\.is-fullscreen\s*\{[^}]*position:\s*fixed/);
 assert.match(styles, /\.results-panel\.is-fullscreen \.results-list\s*\{[^}]*overflow-y:\s*auto/);
 
