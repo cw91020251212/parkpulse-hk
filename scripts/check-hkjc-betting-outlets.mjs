@@ -86,6 +86,9 @@ assert.match(styles, /\.hkjc-first-prize-section\s*\{[^}]*background:\s*#fff9e7;
 assert.match(styles, /\.hkjc-first-prize-section h3\s*\{[^}]*color:\s*#4b3100/, 'First-prize panel heading must use a readable dark color');
 assert.match(styles, /\.hkjc-first-prize-section p\s*\{[^}]*color:\s*#4b3100/, 'First-prize statistics must use a readable dark color');
 assert.match(styles, /\.hkjc-first-prize-section a\s*\{[^}]*color:\s*#174f48/, 'First-prize source link must remain visible on the pale panel');
+assert.match(styles, /\.toilet-facts \.hkjc-first-prize-summary\s*\{[^}]*color:\s*#4b3100;[^}]*background:\s*#fff5d2;[^}]*font-size:\s*14px/, 'Card prize summaries must override generic fact-chip styling with readable gold contrast and larger text');
+assert.match(styles, /\.toilet-facts \.hkjc-location-note:not\(\.is-location-unconfirmed\)\s*\{[^}]*color:\s*#d5e7ed;[^}]*font-size:\s*14px/, 'Confirmed outlet location notes must be readable on dark cards');
+assert.match(styles, /\.toilet-facts \.hkjc-location-note\.is-location-unconfirmed\s*\{[^}]*color:\s*#36454e;[^}]*font-size:\s*14px/, 'Building-level location notes must remain readable on their pale warning background');
 
 const multiCandidateRecord = source.records.find(({ id }) => id === 'hkjc-038');
 const selected = selectHkjcLocation(multiCandidateRecord, [
