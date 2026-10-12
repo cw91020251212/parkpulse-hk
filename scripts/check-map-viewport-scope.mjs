@@ -29,13 +29,22 @@ assert.match(app, /startupLocationDisplayReleased = useRef\(searchScope === 'vie
 assert.match(app, /const searchScopeRef = useRef\(searchScope\)/, 'late startup GPS reads the current scope instead of the initial render');
 assert.match(app, /const \[hasGpsPosition, setHasGpsPosition\] = useState\(false\)/, 'GPS success is tracked separately from a manual map centre');
 assert.match(app, /const \[hasManualMapMarker, setHasManualMapMarker\] = useState\(false\)/, 'a long-press marker is tracked separately from GPS');
+assert.match(app, /const mapColumnRef = useRef<HTMLDivElement>\(null\)/, 'the map column can be measured against the visible mobile viewport');
+assert.match(app, /viewportHeight - bounds\.top - 8/, 'nearby-mode map fills only the remaining visible space and leaves the bottom controls in view');
+assert.match(app, /facilityMode === 'onStreet'/, 'vehicle-specific roadside parking is excluded from facility-only expansion');
+assert.match(app, /column\.style\.removeProperty\('height'\)/, 'the measured height is removed outside the supported mobile facility state');
 assert.match(app, /setPosition\(\{ lat: coords\.latitude, lng: coords\.longitude \}\);\s*setHasGpsPosition\(true\);/s, 'a successful geolocation result enables the current-location marker');
 assert.match(app, /setHasGpsPosition\(true\);\s*setHasManualMapMarker\(false\);/s, 'GPS success replaces an older manual map marker');
 assert.match(app, /const selectArea = .*setPosition\(coordinates\); setHasGpsPosition\(false\); setHasManualMapMarker\(behavior\.showManualMarker === true\);/s, 'only an explicit long-press centre keeps a manual marker without masquerading as GPS');
 assert.match(app, /showCurrentLocation=\{hasGpsPosition\}/, 'the GPS state is provided to the map');
 assert.match(app, /showManualCenter=\{hasManualMapMarker\}/, 'the manual map-marker state is provided to the map');
 assert.match(app, /className=\{`workspace\$\{facilityMode \? ' is-facility-mode' : ''\}`\}/, 'nearby facilities mode is identified for its taller mobile map');
-assert.match(styles, /@media \(max-width: 720px\)[\s\S]*?\.map-column \{ height: max\(407px, calc\(100dvh - 173px\)\); \}[\s\S]*?\.workspace\.is-facility-mode \.map-column \{ height: max\(447px, calc\(100dvh - 133px\)\); \}/, 'only nearby facilities mode uses the extra 40px map row on mobile');
+assert.match(styles, /@media \(max-width: 720px\)[\s\S]*?\.map-column \{ height: max\(407px, calc\(100dvh - 173px\)\); \}/, 'parking mode retains its original mobile map height');
+assert.doesNotMatch(styles, /\.workspace\.is-facility-mode \.map-column \{ height:/, 'facility mode no longer uses a fixed extra map height');
+for (const { viewportHeight, top, scale } of [{ viewportHeight: 844, top: 132, scale: 1 }, { viewportHeight: 900, top: 154, scale: 1.25 }]) {
+  const height = Math.max(0, (viewportHeight - top - 8) / scale);
+  assert.ok(Math.abs(top + height * scale - (viewportHeight - 8)) < 0.01, 'the map column ends inside the visible viewport at supported zoom levels');
+}
 assert.match(app, /onSearchScopeChange=\{changeSearchScope\}/, 'choosing viewport mode releases the startup location gate');
 assert.match(app, /startupLocationPending && searchScope === 'radius'/, 'startup location loading only blocks the original radius mode');
 assert.match(app, /searchScope === 'radius' && !resultsVerified && !startupLocationFallbackActive/, 'unverified park results may render in viewport mode without waiting for location fallback');
