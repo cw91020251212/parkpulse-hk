@@ -1404,8 +1404,6 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 
 
 @media (min-width: 901px) {
-  .desktop-sidebar .card-heading { grid-template-columns: auto minmax(0, 1fr); }
-  .desktop-sidebar .card-heading .distance { grid-column: 2; justify-self: start; }
   .desktop-sidebar > .results-panel.is-fullscreen {
     position: fixed;
     z-index: 1000;
@@ -1429,4 +1427,61 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
     -webkit-overflow-scrolling: touch;
     padding-bottom: max(20px, env(safe-area-inset-bottom));
   }
+}
+
+/* Parking cards grow naturally on desktop and mobile so vacancy never covers the district. */
+.desktop-sidebar .park-card-main {
+  display: block;
+  min-height: 0;
+}
+.desktop-sidebar .park-card-select {
+  grid-template-rows: none;
+  align-content: start;
+  gap: 8px;
+  min-height: 0;
+  padding: 13px 11px 13px 13px;
+}
+.desktop-sidebar .park-card .card-heading {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  min-height: 0;
+}
+.desktop-sidebar .park-card .card-heading .distance {
+  grid-column: 2;
+  grid-row: 2;
+  justify-self: start;
+}
+.desktop-sidebar .park-card .card-heading h3,
+.desktop-sidebar .park-card .card-heading p {
+  display: -webkit-box;
+  overflow: hidden;
+  white-space: normal;
+  text-overflow: clip;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.desktop-sidebar .park-card .availability-line {
+  min-height: 0;
+  flex-wrap: wrap;
+  overflow: visible;
+  white-space: normal;
+  line-height: 1.4;
+}
+.desktop-sidebar .park-card .card-facts {
+  min-height: 0;
+  flex-wrap: wrap;
+  overflow: visible;
+  align-items: flex-start;
+  gap: 6px;
+}
+.desktop-sidebar .park-card .card-facts span {
+  flex: 0 1 auto;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.desktop-sidebar .park-card .card-facts .total-spaces { flex-basis: auto; }
+.desktop-sidebar .park-card .updated {
+  min-height: 0;
+  white-space: normal;
 }
