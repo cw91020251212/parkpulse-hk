@@ -24,6 +24,8 @@ const [app, map, filters, styles] = await Promise.all([
 assert.match(app, /searchScope/);
 assert.match(app, /isWithinSearchScope/);
 assert.match(app, /onViewportChange=\{updateMapViewport\}/);
+assert.match(app, /function LocateIcon\(\).*?<svg className="locate-icon"[^>]*><path fill="currentColor" fillRule="evenodd"/s, 'the location button uses a single-colour pin silhouette with a transparent centre');
+assert.match(styles, /\.locate-icon \{[^}]*color: #ef1d2d;/, 'the location pin is red while the button background remains independently styled');
 assert.match(app, /atmBank, language, searchScope/);
 assert.match(app, /startupLocationDisplayReleased = useRef\(searchScope === 'viewport'\)/, 'saved viewport mode is available before startup GPS finishes');
 assert.match(app, /const searchScopeRef = useRef\(searchScope\)/, 'late startup GPS reads the current scope instead of the initial render');
