@@ -878,6 +878,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 }
 @media (max-width: 720px) {
   .filters { margin-top: 6px; }
+  .workspace.is-facility-mode { height: calc(max(520px, calc(100dvh - 211px)) + 42px); }
   .map-column { height: max(407px, calc(100dvh - 173px)); }
   .workspace.is-facility-mode .map-column { height: calc(max(407px, calc(100dvh - 173px)) + 42px); }
   .map-column > .map-wrap { flex: 1 1 auto; height: auto; min-height: 360px; }

@@ -37,6 +37,7 @@ assert.match(app, /const selectArea = .*setPosition\(coordinates\); setHasGpsPos
 assert.match(app, /showCurrentLocation=\{hasGpsPosition\}/, 'the GPS state is provided to the map');
 assert.match(app, /showManualCenter=\{hasManualMapMarker\}/, 'the manual map-marker state is provided to the map');
 assert.match(styles, /\.map-column \{ height: max\(407px, calc\(100dvh - 173px\)\); \}/, 'parking mode retains its original mobile map height');
+assert.match(styles, /\.workspace\.is-facility-mode \{ height: calc\(max\(520px, calc\(100dvh - 211px\)\) \+ 42px\); \}/, 'nearby facilities mode extends the workspace by exactly one filter row so the map footer is not clipped');
 assert.match(styles, /\.workspace\.is-facility-mode \.map-column \{ height: calc\(max\(407px, calc\(100dvh - 173px\)\) \+ 42px\); \}/, 'nearby facilities mode adds exactly one filter-row of map height');
 assert.match(app, /onSearchScopeChange=\{changeSearchScope\}/, 'choosing viewport mode releases the startup location gate');
 assert.match(app, /startupLocationPending && searchScope === 'radius'/, 'startup location loading only blocks the original radius mode');
