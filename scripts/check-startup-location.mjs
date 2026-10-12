@@ -8,15 +8,16 @@ assert.match(source, /startupLocationRequested\.current = true; requestLocation\
 assert.match(source, /maximumAge: 0/);
 assert.match(source, /enableHighAccuracy: false/);
 assert.match(source, /const \[startupLocationPending, setStartupLocationPending\] = useState\(true\)/);
-assert.match(source, /startupLocationPending \? <section className="results-panel"/);
+assert.match(source, /startupLocationPending && searchScope === 'radius' \? <section className="results-panel"/);
 assert.match(source, /const STARTUP_LOCATION_FALLBACK_MS = 3_500/);
 assert.match(source, /const startupLocationSettled = useRef\(false\)/);
 assert.match(source, /window\.setTimeout\(\(\) => \{\s*if \(startupLocationSettled\.current\) return;\s*startupLocationDisplayReleased\.current = true;\s*setStartupLocationFallbackActive\(true\);\s*setStartupLocationPending\(false\);\s*setLocationState\(\(current\) => current === 'locating' \? 'default' : current\);/s);
-assert.match(source, /if \(!resultsVerified && !startupLocationFallbackActive\) return \[\];/);
+assert.match(source, /if \(searchScope === 'radius' && !resultsVerified && !startupLocationFallbackActive\) return \[\];/);
 assert.match(source, /disabled=\{manualLocationPending\}/);
 assert.match(source, /startupLocationFlight, setStartupLocationFlight/);
-assert.match(source, /startupLocating=\{startupLocationPending\} startupRecenter=\{startupLocationFlight\}/);
-assert.match(source, /if \(source === 'startup'\) \{\s*startupLocationSettled\.current = true;\s*clearStartupLocationFallback\(\);\s*if \(hasManualCentreSelection\.current\) return;\s*setStartupLocationFlight\(true\);/s);
+assert.match(source, /startupLocating=\{startupLocationPending && searchScope === 'radius'\} startupRecenter=\{startupLocationFlight && searchScope === 'radius'\}/);
+assert.match(source, /const shouldRecenter = source !== 'startup' \|\| !startupLocationDisplayReleased\.current \|\| searchScopeRef\.current === 'radius';/);
+assert.match(source, /if \(source === 'startup'\) \{\s*startupLocationSettled\.current = true;\s*clearStartupLocationFallback\(\);\s*if \(hasManualCentreSelection\.current\) return;\s*setStartupLocationFlight\(shouldRecenter\);/s);
 assert.match(source, /const selectArea = .*hasManualCentreSelection\.current = true; clearStartupLocationFallback\(\);/s);
 assert.doesNotMatch(source, /watchPosition/);
 
