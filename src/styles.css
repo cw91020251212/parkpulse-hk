@@ -880,3 +880,16 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .toilet-marker[data-manual-toilet-id] { touch-action: none; user-select: none; -webkit-user-select: none; }
 .toilet-marker.is-being-adjusted { cursor: grab !important; outline: 2px solid #39dac7; outline-offset: 3px; }
 .toilet-marker.is-being-adjusted:active { cursor: grabbing !important; }
+
+/* HKJC off-course betting outlets: clearly distinct and explicit about building-level points. */
+.toilet-marker.is-hkjc { --marker-outline: #0d5949; background: linear-gradient(135deg, #0d765c, #25a77e); }
+.toilet-card-icon.is-hkjc { color: #fff; background: linear-gradient(135deg, #0d765c, #45bd91); }
+.nearby-facility-card.is-hkjc { border-left: 3px solid #2e9c79; }
+.washroom-source.is-hkjc { color: #e3fff2; background: #155e49; }
+.legend-hkjc { display: inline-grid; place-items: center; color: #fff; background: linear-gradient(135deg, #0d765c, #45bd91); }
+.hkjc-popup-heading { display: flex; align-items: center; gap: 5px; }
+.hkjc-popup-heading > span { font-size: 18px; line-height: 1; }
+.hkjc-detail-symbol { display: inline-block; margin-right: 3px; vertical-align: -3px; font-size: 18px; }
+.hkjc-location-note { color: #667c72; font-size: 11px; line-height: 1.4; white-space: normal; }
+.hkjc-location-note.is-location-unconfirmed { border: 1px dashed #9ca8ad; border-radius: 7px; padding: 5px 7px; color: #53616a; background: #e7eaec; }
+.hkjc-snapshot-note { margin: 0 0 8px; border: 1px solid #329274; border-radius: 10px; padding: 8px 10px; color: #e3fff2; background: #155e49; font-size: 12px; font-weight: 800; line-height: 1.4; }

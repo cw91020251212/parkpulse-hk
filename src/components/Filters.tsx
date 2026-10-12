@@ -19,7 +19,7 @@ export function Filters({ language, vehicleType, filters, evLoading, facilityMod
   const update = (patch: Partial<ParkFilters>) => onFiltersChange({ ...filters, ...patch });
   const isMotorcycle = vehicleType === 'motorCycle';
   const isMotorcycleRoadside = isMotorcycle && facilityMode === 'onStreet';
-  const facilityText = (mode: NearbyMode) => mode === 'toilets' ? text(language, 'washrooms') : mode === 'fuel' ? text(language, 'fuel') : mode === 'aed' ? text(language, 'aed') : mode === 'emergency' ? text(language, 'emergencyDepartment') : mode === 'border' ? text(language, 'borderControlPoints') : mode === 'onStreet' ? (isMotorcycle ? text(language, 'motorcycleOnStreet') : text(language, 'onStreet')) : 'ATM';
+  const facilityText = (mode: NearbyMode) => mode === 'toilets' ? text(language, 'washrooms') : mode === 'fuel' ? text(language, 'fuel') : mode === 'aed' ? text(language, 'aed') : mode === 'emergency' ? text(language, 'emergencyDepartment') : mode === 'border' ? text(language, 'borderControlPoints') : mode === 'hkjc' ? text(language, 'hkjcOutlets') : mode === 'onStreet' ? (isMotorcycle ? text(language, 'motorcycleOnStreet') : text(language, 'onStreet')) : 'ATM';
   const scopeLabel = text(language, searchScope === 'viewport' ? 'scopeViewport' : 'scopeRadius');
 
   return (
@@ -40,7 +40,7 @@ export function Filters({ language, vehicleType, filters, evLoading, facilityMod
         {vehicleType && !isMotorcycleRoadside && <button className={filters.openOnly ? 'chip is-on' : 'chip'} type="button" aria-pressed={filters.openOnly} aria-label={text(language, 'openOnlyHelp')} onClick={() => update({ openOnly: !filters.openOnly })}>{text(language, 'openOnly')}</button>}
         {vehicleType && !isMotorcycle && <button className={filters.hasEv ? 'chip is-on' : 'chip'} type="button" aria-pressed={filters.hasEv} onClick={() => update({ hasEv: !filters.hasEv })}>{evLoading ? text(language, 'evLoading') : text(language, 'evFacilities')}</button>}
         {vehicleType && !isMotorcycle && <button className={filters.hasAccessible ? 'chip is-on' : 'chip'} type="button" aria-pressed={filters.hasAccessible} onClick={() => update({ hasAccessible: !filters.hasAccessible })}>{text(language, 'accessible')}</button>}
-        {(['toilets', 'fuel', 'atm', 'aed', 'emergency', 'border'] as const).map((mode) => <button key={mode} className={facilityMode === mode ? 'chip is-on' : 'chip'} type="button" aria-pressed={facilityMode === mode} onClick={() => onFacilityModeChange(facilityMode === mode ? null : mode)}>{facilityLoading && facilityMode === mode ? text(language, 'dataLoading') : facilityText(mode)}</button>)}
+        {(['toilets', 'fuel', 'atm', 'aed', 'emergency', 'border', 'hkjc'] as const).map((mode) => <button key={mode} className={facilityMode === mode ? 'chip is-on' : 'chip'} type="button" aria-pressed={facilityMode === mode} onClick={() => onFacilityModeChange(facilityMode === mode ? null : mode)}>{facilityLoading && facilityMode === mode ? text(language, 'dataLoading') : facilityText(mode)}</button>)}
       </div>
     </section>
   );

@@ -1,0 +1,597 @@
+{
+  "directoryUpdatedAt": "2026-10-09",
+  "sourceCheckedAt": "2026-10-12",
+  "sourceUrl": "https://entertainment.hkjc.com/zh-hk/visit-us/off-course-experience-shops",
+  "sourcePdfTc": "https://is.hkjc.com/ocb/ocbbizhour_ch.pdf",
+  "sourcePdfEn": "https://is.hkjc.com/ocb/ocbbizhour_en.pdf",
+  "locationSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-development-location-search-api",
+  "coordinateTransformSourceUrl": "https://data.gov.hk/tc-data/dataset/hk-landsd-openmap-coordinates-transformation-api",
+  "records": [
+    {
+      "id": "hkjc-001",
+      "nameTc": "中環士丹利街",
+      "nameEn": "Central, Stanley Street",
+      "addressTc": "士丹利街10-12號地下至三樓2號舖",
+      "addressEn": "Shop 2, UG-3/F, 10-12 Stanley Street"
+    },
+    {
+      "id": "hkjc-002",
+      "nameTc": "上環干諾道西",
+      "nameEn": "Sheung Wan, Connaught Road West",
+      "addressTc": "干諾道西3號億利商業大廈地下D - F及G1舖",
+      "addressEn": "Shop D- F and G1, G/F, Yardley Commercial Building, 3 Connaught Road West"
+    },
+    {
+      "id": "hkjc-003",
+      "nameTc": "西區卑路乍街",
+      "nameEn": "Western, Belcher's Street",
+      "addressTc": "卑路乍街35號A翡翠閣地下7A及8-17號舖",
+      "addressEn": "Shops 7A & 8 - 17, G/F, Jade Court, 35A Belcher's Street"
+    },
+    {
+      "id": "hkjc-004",
+      "nameTc": "西區德輔道西",
+      "nameEn": "Western, Des Voeux Road West",
+      "addressTc": "干諾道西118號地下6-8號舖",
+      "addressEn": "Shop 6-8, G/F, 118 Connaught Road West, No. 118 Connaught Road West"
+    },
+    {
+      "id": "hkjc-005",
+      "nameTc": "西區屈地街",
+      "nameEn": "Western, Whitty Street",
+      "addressTc": "屈地街3-7號光前大廈地下4號舖",
+      "addressEn": "Shop 4, G/F, Kong Chian Tower, 3-7 Whitty Street"
+    },
+    {
+      "id": "hkjc-006",
+      "nameTc": "柴灣常安街",
+      "nameEn": "Chai Wan, Sheung On Street",
+      "addressTc": "常安街77號發達中心地下至3樓",
+      "addressEn": "G/F-3/F Federal Centre, 77 Sheung On Street"
+    },
+    {
+      "id": "hkjc-007",
+      "nameTc": "北角電氣道",
+      "nameEn": "North Point, Electric Road",
+      "addressTc": "電氣道276-280號華凱大廈地下及1樓",
+      "addressEn": "G-1/F, Wah Hoi Building, 276-280 Electric Road"
+    },
+    {
+      "id": "hkjc-008",
+      "nameTc": "北角馬寶道",
+      "nameEn": "North Point, Marble Road",
+      "addressTc": "馬寶道76號華禮大廈地下",
+      "addressEn": "G/F, Wah Lai Mansion, 76 Marble Road"
+    },
+    {
+      "id": "hkjc-009",
+      "nameTc": "鰂魚涌英皇道",
+      "nameEn": "Quarry Bay, King's Road",
+      "addressTc": "英皇道989號新威園地下及2樓A2舖",
+      "addressEn": "Shop A2, G/F and 2/F, Sunway Garden, 989 King's Road"
+    },
+    {
+      "id": "hkjc-010",
+      "nameTc": "筲箕灣寶文街",
+      "nameEn": "Shau Kei Wan, Po Man Street",
+      "addressTc": "寶文街2號海峰中心地舖5-6號及1樓",
+      "addressEn": "Shops 5-6, G/F and Shop 6A, 1/F, Hoi Fung Centre, 2 Po Man Street"
+    },
+    {
+      "id": "hkjc-011",
+      "nameTc": "筲箕灣道",
+      "nameEn": "Shau Kei Wan Road",
+      "addressTc": "筲箕灣道334-338號華寶大廈地下",
+      "addressEn": "G/F, Wah Po Building, 334-338 Shau Kei Wan Road"
+    },
+    {
+      "id": "hkjc-012",
+      "nameTc": "香港仔田灣",
+      "nameEn": "Aberdeen, Tin Wan",
+      "addressTc": "田灣石排灣道56-62號仁勝大廈地下",
+      "addressEn": "LG/F, Yen Shing Mansion, 56-62 Shek Pai Wan Road"
+    },
+    {
+      "id": "hkjc-013",
+      "nameTc": "銅鑼灣謝斐道",
+      "nameEn": "Causeway Bay, Jaffe Road",
+      "addressTc": "謝斐道501-515號美漢大廈地下及1樓",
+      "addressEn": "G-1/F, Malahon Apartments, 501-515, Jaffe Road"
+    },
+    {
+      "id": "hkjc-014",
+      "nameTc": "銅鑼灣波斯富街",
+      "nameEn": "Causeway Bay, Percival Street",
+      "addressTc": "波斯富街78-82號麗園大廈地下及1樓",
+      "addressEn": "G-1/F, Lai Yuen Apartments, 78-82 Percival Street"
+    },
+    {
+      "id": "hkjc-015",
+      "nameTc": "跑馬地藍塘道",
+      "nameEn": "Happy Valley, Blue Pool Road",
+      "addressTc": "藍塘道12-22號友誼大廈地下",
+      "addressEn": "G/F, Sub-Division 3, Friendship Court, 12-22 Blue Pool Road"
+    },
+    {
+      "id": "hkjc-016",
+      "nameTc": "灣仔軒尼詩道",
+      "nameEn": "Wan Chai, Hennessy Road",
+      "addressTc": "軒尼詩道298號廣生行大廈地下A3鋪",
+      "addressEn": "Shop A3, G/F, Kwong Sang Hong Building, 298 Hennessy Road"
+    },
+    {
+      "id": "hkjc-017",
+      "nameTc": "灣仔謝斐道",
+      "nameEn": "Wan Chai, Jaffe Road",
+      "addressTc": "謝斐道130號建利大廈地下",
+      "addressEn": "G/F, Kin Lee Building, 130 Jaffe Road"
+    },
+    {
+      "id": "hkjc-018",
+      "nameTc": "灣仔春園街",
+      "nameEn": "Wan Chai, Spring Garden Lane",
+      "addressTc": "春園街59-65號新春園大廈地下A至D舖",
+      "addressEn": "Shop A-D, G/F, New Spring Garden Mansion, 59-65 Spring Garden Lane"
+    },
+    {
+      "id": "hkjc-019",
+      "nameTc": "紅磡民裕街",
+      "nameEn": "Hung Hom, Man Yue Street",
+      "addressTc": "民裕街37-39號凱旋工商中心第1期地下",
+      "addressEn": "G/F, Phase I, Kaiser Estate, 37-39 Man Yue Street"
+    },
+    {
+      "id": "hkjc-020",
+      "nameTc": "九龍城衙前塱道",
+      "nameEn": "Kowloon City, Nga Tsin Long Road",
+      "addressTc": "衙前塱道太子道西404-406號地下",
+      "addressEn": "G/F, 404-406 Prince Edward Road West"
+    },
+    {
+      "id": "hkjc-021",
+      "nameTc": "土瓜灣北帝街",
+      "nameEn": "To Kwa Wan, Pak Tai Street",
+      "addressTc": "北帝街79-83號地下",
+      "addressEn": "G/F, 79-83 Pak Tai Street"
+    },
+    {
+      "id": "hkjc-022",
+      "nameTc": "土瓜灣道",
+      "nameEn": "To Kwa Wan Road",
+      "addressTc": "土瓜灣道62A號唯一大廈地下",
+      "addressEn": "G/F, Wearbest Building, 62A To Kwa Wan Road"
+    },
+    {
+      "id": "hkjc-023",
+      "nameTc": "九龍灣麗晶",
+      "nameEn": "Kowloon Bay, Richland",
+      "addressTc": "麗晶花園商場1樓132號舖",
+      "addressEn": "Shop 132, 1/F, Richland Gardens Shopping Centre"
+    },
+    {
+      "id": "hkjc-024",
+      "nameTc": "九龍灣德福",
+      "nameEn": "Kowloon Bay, Telford",
+      "addressTc": "宏開道16號德福大廈1樓4號舖",
+      "addressEn": "Shop 4, 1/F, Telford House, 16 Wang Hoi Road"
+    },
+    {
+      "id": "hkjc-025",
+      "nameTc": "觀塘康寧道",
+      "nameEn": "Kwun Tong, Hong Ning Road",
+      "addressTc": "康寧道15-17號裕民大廈地下A舖",
+      "addressEn": "Shop A, G/F, Yue Man Mansion, 15-17 Hong Ling Road"
+    },
+    {
+      "id": "hkjc-026",
+      "nameTc": "觀塘嘉樂街",
+      "nameEn": "Kwun Tong, Ka Lok Street",
+      "addressTc": "嘉樂街35-43號瑞和樓地下",
+      "addressEn": "G/F, Shui Wo House, 35-43 Ka Lok Street"
+    },
+    {
+      "id": "hkjc-027",
+      "nameTc": "觀塘廣場",
+      "nameEn": "Kwun Tong Plaza",
+      "addressTc": "觀塘廣場地下G15及M20號舖",
+      "addressEn": "Shops G15 and M20, Kwun Tong Plaza"
+    },
+    {
+      "id": "hkjc-028",
+      "nameTc": "藍田啟田",
+      "nameEn": "Lam Tin, Kai Tin",
+      "addressTc": "啟田商場地下1B號舖",
+      "addressEn": "Shop 1B, G/F, Kai Tin Shopping Centre"
+    },
+    {
+      "id": "hkjc-029",
+      "nameTc": "牛頭角",
+      "nameEn": "Ngau Tau Kok",
+      "addressTc": "觀塘道257-269號永英樓地下",
+      "addressEn": "G/F, Wing Ying Building, 257-269 Kwun Tong Road"
+    },
+    {
+      "id": "hkjc-030",
+      "nameTc": "秀茂坪商場",
+      "nameEn": "Sau Mau Ping Shopping Centre",
+      "addressTc": "秀茂坪商場1樓113號舖",
+      "addressEn": "Shop 113, Level 1, Sau Mau Ping Shopping Centre"
+    },
+    {
+      "id": "hkjc-031",
+      "nameTc": "油塘中心",
+      "nameEn": "Yau Tong Centre",
+      "addressTc": "油塘中心G28-G52號舖",
+      "addressEn": "Shops G28- G52, Yau Tong Centre"
+    },
+    {
+      "id": "hkjc-032",
+      "nameTc": "長沙灣青山道",
+      "nameEn": "Cheung Sha Wan, Castle Peak Road",
+      "addressTc": "青山道459-463號美奇大廈地下",
+      "addressEn": "G/F, Mei Kei Mansion, 459-463 Castle Peak Road"
+    },
+    {
+      "id": "hkjc-033",
+      "nameTc": "長沙灣順寧道",
+      "nameEn": "Cheung Sha Wan, Shun Ning Road",
+      "addressTc": "順寧道300-306號順輝大廈地下3-11號舖",
+      "addressEn": "Shop 3-11, G/F, Shun Fai Building, 300-306 Shun Ning Road"
+    },
+    {
+      "id": "hkjc-034",
+      "nameTc": "美孚荔灣道",
+      "nameEn": "Mei Foo, Lai Wan Road",
+      "addressTc": "萬事達廣場1樓86-87號舖",
+      "addressEn": "Shops 86-87, 1/F, Mt. Sterling Mall"
+    },
+    {
+      "id": "hkjc-035",
+      "nameTc": "太子長沙灣道",
+      "nameEn": "Prince Edward, Cheung Sha Wan Road",
+      "addressTc": "長沙灣道31-35號鴻運大廈地下",
+      "addressEn": "G/F, Hung Wan Building, 31-35 Cheung Sha Wan Road"
+    },
+    {
+      "id": "hkjc-036",
+      "nameTc": "深水埗桂林街",
+      "nameEn": "Sham Shui Po, Kweilin Street",
+      "addressTc": "桂林街137-139號地下",
+      "addressEn": "G/F, 137-139 Kweilin Street"
+    },
+    {
+      "id": "hkjc-037",
+      "nameTc": "深水埗汝州街",
+      "nameEn": "Sham Shui Po, Yu Chau Street",
+      "addressTc": "汝州街251-255號地下",
+      "addressEn": "G/F, 251-255 Yu Chau Street"
+    },
+    {
+      "id": "hkjc-038",
+      "nameTc": "石硤尾大埔道",
+      "nameEn": "Shek Kip Mei, Tai Po Road",
+      "addressTc": "大埔道196號嘉順大廈地下及1樓",
+      "addressEn": "G-1/F, Ka Shun Building, 196 Tai Po Road"
+    },
+    {
+      "id": "hkjc-039",
+      "nameTc": "石硤尾偉智街",
+      "nameEn": "Shek Kip Mei, Wai Chi Street",
+      "addressTc": "偉智街39號寶田大廈地下23至24號舖",
+      "addressEn": "Shops 23-24, G/F, Po Tin Building, 39 Wai Chi Street"
+    },
+    {
+      "id": "hkjc-040",
+      "nameTc": "彩雲",
+      "nameEn": "Choi Wan",
+      "addressTc": "彩雲商場第2期2樓A206號舖",
+      "addressEn": "Shop A206, 2/F, Choi Wan Shopping Centre (Phase 2)"
+    },
+    {
+      "id": "hkjc-041",
+      "nameTc": "新蒲崗崇齡街",
+      "nameEn": "San Po Kong, Shung Ling Street",
+      "addressTc": "崇齡街19-21號地下",
+      "addressEn": "G/F, 19-21 Shung Ling Street"
+    },
+    {
+      "id": "hkjc-042",
+      "nameTc": "黃大仙豪苑",
+      "nameEn": "Wong Tai Sin, Tropicana",
+      "addressTc": "龍翔道110號豪苑地下1號舖",
+      "addressEn": "Shop 1, G/F, Tropicana Garden, 110 Lung Cheung Road"
+    },
+    {
+      "id": "hkjc-043",
+      "nameTc": "黃大仙環鳳街",
+      "nameEn": "Wong Tai Sin, Wan Fung Street",
+      "addressTc": "鳳凰新邨環鳳街8-10號華頌樓地下",
+      "addressEn": "G/F Wah Chung Mansion, 8-10 Wan Fung Street",
+      "locationPrecision": "building",
+      "locationQueryTc": "華頌樓",
+      "locationNameTc": "華頌樓",
+      "locationNoteTc": "地政總署未提供此投注站個別位置；標記只代表華頌樓大廈，不是店舖入口。",
+      "locationNoteEn": "Lands Department does not provide a separate point for this outlet; the marker is only the Wah Chung Mansion building, not the shop entrance."
+    },
+    {
+      "id": "hkjc-044",
+      "nameTc": "佐敦道",
+      "nameEn": "Jordan Road",
+      "addressTc": "佐敦道48-50號可群大廈地下",
+      "addressEn": "G/F, Ho Kwan Building, 48-50 Jordan Road"
+    },
+    {
+      "id": "hkjc-045",
+      "nameTc": "旺角亞皆老街",
+      "nameEn": "Mong Kok, Argyle Street",
+      "addressTc": "亞皆老街45號雅佳樓地下、1樓及2樓",
+      "addressEn": "G-2/F, Argyle House, 45 Argyle Street"
+    },
+    {
+      "id": "hkjc-046",
+      "nameTc": "旺角登打士街",
+      "nameEn": "Mong Kok, Dundas Street",
+      "addressTc": "登打士街2-6號寶亨大廈地下",
+      "addressEn": "G/F, Po Hang Building, 2 - 6 Dundas Street"
+    },
+    {
+      "id": "hkjc-047",
+      "nameTc": "旺角花園街",
+      "nameEn": "Mong Kok, Fa Yuen Street",
+      "addressTc": "花園街2-16號好景商業大廈地下25號舖",
+      "addressEn": "Shop 25, G/F, Ho King Commercial Centre, 2-16 Fa Yuen Street"
+    },
+    {
+      "id": "hkjc-048",
+      "nameTc": "旺角彌敦中心",
+      "nameEn": "Mong Kok, Nathan Centre",
+      "addressTc": "彌敦道580號彌敦中心地下G3A號舖、閣樓、1樓及2樓",
+      "addressEn": "Shop G3A on G/F, M/F, 1-2/F, Nathan Centre, 580 Nathan Road"
+    },
+    {
+      "id": "hkjc-049",
+      "nameTc": "太子彌敦道",
+      "nameEn": "Prince Edward, Nathan Road",
+      "addressTc": "彌敦道763-767號新望大廈地下及1樓B舖",
+      "addressEn": "Shop B, 1/F and G/F, Newish Mansion, 763-767 Nathan Road"
+    },
+    {
+      "id": "hkjc-050",
+      "nameTc": "大角咀埃華街",
+      "nameEn": "Tai Kok Tsui, Ivy Street",
+      "addressTc": "埃華街79-83號大眾樓地下",
+      "addressEn": "G/F, Tai Chung Building, 79-83 Ivy Street"
+    },
+    {
+      "id": "hkjc-051",
+      "nameTc": "尖沙咀漢口道",
+      "nameEn": "Tsim Sha Tsui, Hankow Road",
+      "addressTc": "漢口道39-41號麥仕維中心地下",
+      "addressEn": "Basement and G/F, Maxwell Centre, 39-41 Hankow Road"
+    },
+    {
+      "id": "hkjc-052",
+      "nameTc": "尖沙咀寶勒巷",
+      "nameEn": "Tsim Sha Tsui, Prat Avenue",
+      "addressTc": "寶勒巷2-4號金帝行地下及1樓",
+      "addressEn": "UG and 1/F, Kundamal House, 2-4 Prat Avenue"
+    },
+    {
+      "id": "hkjc-053",
+      "nameTc": "尖沙咀東",
+      "nameEn": "Tsim Sha Tsui East",
+      "addressTc": "科學館道14號新文華商業中心地下86號舖",
+      "addressEn": "Shop 86, G/F, New Mandarin Plaza, 14 Science Museum Road"
+    },
+    {
+      "id": "hkjc-054",
+      "nameTc": "油麻地砵蘭街",
+      "nameEn": "Yau Ma Tei, Portland Street",
+      "addressTc": "砵蘭街62-66號昌威大廈地下",
+      "addressEn": "G/F, Cheong Wai Building, 62-66 Portland Street"
+    },
+    {
+      "id": "hkjc-055",
+      "nameTc": "油麻地上海街",
+      "nameEn": "Yau Ma Tei, Shanghai Street",
+      "addressTc": "上海街213-219號及223-225號地下",
+      "addressEn": "G/F, 213-219 and 223-225 Shanghai Street"
+    },
+    {
+      "id": "hkjc-056",
+      "nameTc": "長洲",
+      "nameEn": "Cheung Chau",
+      "addressTc": "大新後街與山頂道1148號地段59號蓮富苑地下",
+      "addressEn": "G/F Lot 1148 Peak Road (No. 59), Lin Fu Yuen"
+    },
+    {
+      "id": "hkjc-057",
+      "nameTc": "梅窩",
+      "nameEn": "Mui Wo",
+      "addressTc": "梅窩碼頭路13號海灣樓A座地下",
+      "addressEn": "Shop A, G/F, Harbour View Villa, 13 Mui Wo Ferry Pier Road"
+    },
+    {
+      "id": "hkjc-058",
+      "nameTc": "逸東商場",
+      "nameEn": "Yat Tung Shopping Centre",
+      "addressTc": "逸東邨逸東商場地下 29 號舖",
+      "addressEn": "Shop 29, G/F, Yat Tung Shopping Centre, Yat Tung Estate"
+    },
+    {
+      "id": "hkjc-059",
+      "nameTc": "葵涌大隴街",
+      "nameEn": "Kwai Chung, Tai Loong Street",
+      "addressTc": "大隴街153號怡勝花園地下5號舖",
+      "addressEn": "Shop No.5, G/F, Victory Garden, 153 Tai Loong Street"
+    },
+    {
+      "id": "hkjc-060",
+      "nameTc": "葵涌榮芳路",
+      "nameEn": "Kwai Chung, Wing Fong Road",
+      "addressTc": "榮芳路3號守運大廈地下5號舖",
+      "addressEn": "Shop 5, G/F, Southern Building, 3 Wing Fong Road"
+    },
+    {
+      "id": "hkjc-061",
+      "nameTc": "葵芳",
+      "nameEn": "Kwai Fong",
+      "addressTc": "葵義路15號葵芳閣地下39-A舖",
+      "addressEn": "Shops A & B, Unit 39, G/F Kwai Fong Terrace, 15 Kwai Yi Road"
+    },
+    {
+      "id": "hkjc-062",
+      "nameTc": "葵興",
+      "nameEn": "Kwai Hing",
+      "addressTc": "興芳路166-174號新葵興花園2樓21號舖",
+      "addressEn": "Shop 21, 1/F, Sun Kwai Hing Gardens, 166-174 Hing Fong Road"
+    },
+    {
+      "id": "hkjc-063",
+      "nameTc": "青衣城",
+      "nameEn": "Tsing Yi, Maritime Square",
+      "addressTc": "青衣城商場G19-G21號舖",
+      "addressEn": "Shop G19-G21, Maritime Square"
+    },
+    {
+      "id": "hkjc-064",
+      "nameTc": "粉嶺聯和墟",
+      "nameEn": "Fanling, Luen Wo Market",
+      "addressTc": "聯和墟聯昌街1-3號地下",
+      "addressEn": "G/F, Luen Wo Market, 1-3 Luen Cheong Street"
+    },
+    {
+      "id": "hkjc-065",
+      "nameTc": "上水石湖墟",
+      "nameEn": "Sheung Shui, Shek Wu Hui",
+      "addressTc": "石湖墟新豐路134-140A號A地下",
+      "addressEn": "G/F, 134-140A San Fung Avenue"
+    },
+    {
+      "id": "hkjc-066",
+      "nameTc": "西貢",
+      "nameEn": "Sai Kung",
+      "addressTc": "褔民路22-40號西貢苑8-10號舖",
+      "addressEn": "Shops 8-10, Sai Kung Town Villa, 22-40 Fuk Man Road"
+    },
+    {
+      "id": "hkjc-067",
+      "nameTc": "日出康城",
+      "nameEn": "The LOHAS",
+      "addressTc": "康城路1號康城4樓419號舖",
+      "addressEn": "Shop Unit 419, 4/F The LOHAS, 1 LOHAS Road, Tseung Kwan O"
+    },
+    {
+      "id": "hkjc-068",
+      "nameTc": "將軍澳寶林",
+      "nameEn": "Tseung Kwan O, Po Lam",
+      "addressTc": "寶林邨寶林商場1樓201-202號舖",
+      "addressEn": "Shop 201-202, 1/F, Po Lam Shopping Centre, Po Lam Estate"
+    },
+    {
+      "id": "hkjc-069",
+      "nameTc": "將軍澳尚德",
+      "nameEn": "Tseung Kwan O, Sheung Tak",
+      "addressTc": "TKO Spot 2樓236室",
+      "addressEn": "Shop 236, 2/F, TKO Spot"
+    },
+    {
+      "id": "hkjc-070",
+      "nameTc": "馬鞍山廣場",
+      "nameEn": "Ma On Shan Plaza",
+      "addressTc": "馬鞍山廣場3樓305號舖",
+      "addressEn": "Shop 305, Level 3, Ma On Shan Plaza"
+    },
+    {
+      "id": "hkjc-071",
+      "nameTc": "沙田沙角街",
+      "nameEn": "Sha Tin, Sha Kok Street",
+      "addressTc": "沙角街7-11號翠華花園地下1-4號舖",
+      "addressEn": "Shop 1-4, G/F, Greenwood Garden, 7-11 Sha Kok Street"
+    },
+    {
+      "id": "hkjc-072",
+      "nameTc": "大圍道",
+      "nameEn": "Tai Wai Road",
+      "addressTc": "大圍道20-22號恩安樓地下",
+      "addressEn": "G/F, Yan On Building, 20-22 Tai Wai Road"
+    },
+    {
+      "id": "hkjc-073",
+      "nameTc": "大埔廣褔道",
+      "nameEn": "Tai Po, Kwong Fuk Road",
+      "addressTc": "廣褔道158-172號大埔商業大廈地下",
+      "addressEn": "G/F, Tai Po Commercial Centre, 158-172 Kwong Fuk Road"
+    },
+    {
+      "id": "hkjc-074",
+      "nameTc": "大埔廣場",
+      "nameEn": "Tai Po Plaza",
+      "addressTc": "大埔廣場地下商場7號舖",
+      "addressEn": "Unit 7 Level 1, Tai Po Plaza"
+    },
+    {
+      "id": "hkjc-075",
+      "nameTc": "荃灣青山道",
+      "nameEn": "Tsuen Wan, Castle Peak Road",
+      "addressTc": "青山公路300-350 號荃錦中心地下B2舖",
+      "addressEn": "Shop B2, G/F, Tsuen Kam Centre, 300-350 Castle Peak Road"
+    },
+    {
+      "id": "hkjc-076",
+      "nameTc": "荃灣沙咀道",
+      "nameEn": "Tsuen Wan, Sha Tsui Road",
+      "addressTc": "沙咀道301-303號眾安大廈地下",
+      "addressEn": "G/F, Chung On Building, 301-303 Sha Tsui Road"
+    },
+    {
+      "id": "hkjc-077",
+      "nameTc": "荃灣荃富街",
+      "nameEn": "Tsuen Wan, Tsuen Fu Street",
+      "addressTc": "荃富街富麗商場2樓1號舖",
+      "addressEn": "Shop 1, 2/F, Wealthy Garden, Tsuen Fu Street"
+    },
+    {
+      "id": "hkjc-078",
+      "nameTc": "屯門建榮街",
+      "nameEn": "Tuen Mun, Kin Wing Street",
+      "addressTc": "建榮街24-30號建榮商業大廈地下3-8號舖",
+      "addressEn": "Shops 3-8, G/F Kin Wing Commercial Building 24-30 Kin Wing Street"
+    },
+    {
+      "id": "hkjc-079",
+      "nameTc": "屯門市廣場",
+      "nameEn": "Tuen Mun Town Plaza",
+      "addressTc": "屯門市廣場第3期地段277號地下",
+      "addressEn": "TMTL 277, Tuen Mun Town Plaza, Phase III"
+    },
+    {
+      "id": "hkjc-080",
+      "nameTc": "天水圍",
+      "nameEn": "Tin Shui Wai",
+      "addressTc": "嘉湖(二期)1樓101舖",
+      "addressEn": "Shop 101, 1/F, +Woo (Phase 2)"
+    },
+    {
+      "id": "hkjc-081",
+      "nameTc": "元朗青山公路",
+      "nameEn": "Yuen Long, Castle Peak Road",
+      "addressTc": "青山公路196-202號元朗大廈地下3-4號舖及1樓B室",
+      "addressEn": "Shops 3 & 4 on Ground Floor and Portion B on 1st Floor, Yuen Long Building, Nos. 196-202 Castle Peak Road"
+    },
+    {
+      "id": "hkjc-082",
+      "nameTc": "元朗洪水橋",
+      "nameEn": "Yuen Long, Hung Shui Kiu",
+      "addressTc": "洪水橋洪堤路2號錦珊園地下3及5-9號舖",
+      "addressEn": "Shops 3&5-9, G/F Coronet Court, 2 Hung Tai Road"
+    },
+    {
+      "id": "hkjc-083",
+      "nameTc": "元朗泰衡街",
+      "nameEn": "Yuen Long, Tai Hang Street",
+      "addressTc": "泰衡街14-20號大興大廈地下",
+      "addressEn": "G/F, Tai Hing Building, 14-20 Tai Hang Street"
+    }
+  ]
+}

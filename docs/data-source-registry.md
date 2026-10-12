@@ -176,3 +176,11 @@
 ## 主動追查規則：已確認某點遺漏後，同源全量複核
 
 一旦確認一個官方設施點被漏收，不可只補該點就結案；須檢查同一上游資料集、同一產生器及相同類別的全部記錄，找出其他同型漏收、重複或錯配，並核對前端合併／去重後實際保留的結果。對底圖可見但快照沒有的具名設施，應搜尋官方地名索引並核實名稱、區域、座標系及 WGS84 轉換；搜尋不到只代表索引未證實，不可推論設施不存在。無法核實個別座標時，保留場地級灰階標記或明確列為缺口，不可估算。修正時須處理根因、更新產生器、快照、回歸檢查及本手冊／計畫／TODO，並按同一來源全量重跑檢查與 Pages 建置；回報根因、受影響數、已補及未能核實數量與限制。
+
+
+### 香港賽馬會場外投注站
+
+- **官方名錄：** 香港賽馬會[繁體中文場外投注處名錄](https://entertainment.hkjc.com/zh-hk/visit-us/off-course-experience-shops)、[官方服務時間名錄 PDF（繁中）](https://is.hkjc.com/ocb/ocbbizhour_ch.pdf) 及[官方服務時間名錄 PDF（英文）](https://is.hkjc.com/ocb/ocbbizhour_en.pdf)。截至 2026-10-12 已核對 PDF 更新日為 2026-10-09，列有 83 個場外投注處名稱和地址。此功能只作位置查找，不提供實時營業或投注服務狀態。
+- **位置來源：** [地政總署位置搜尋 API](https://www.map.gov.hk/gs/api/v1.0.0/locationSearch) 與[香港測繪處座標轉換 API](https://www.geodetic.gov.hk/transform/v2/)。82 個官方名錄地址配對到地政總署「香港賽馬會」位置點並轉換為 WGS84；黃大仙環鳳街一筆沒有個別投注處點，僅有「華頌樓」大廈點。該點以灰色虛線樣式標示，詳情明確提醒它不是投注處入口，不能稱為精確店舖位置。
+- **來源／快照檔案：** `data/hkjc-betting-outlets-directory.json` 保存從官方 PDF 整理的雙語名錄及例外說明；`scripts/refresh-hkjc-betting-outlets.mjs` 重新查詢地政總署並產生 `public/pages-data/hkjc-betting-outlets.json`；`lib/hkjc-betting-outlets.mjs` 執行配對、模糊度檢查、香港範圍檢查及座標轉換。只有全部 83 筆成功且精度數量維持 82 個店舖點／1 個大廈點才會覆寫快照；更新時執行 `pnpm refresh:hkjc-betting-outlets`，驗收執行 `pnpm test:hkjc-betting-outlets`。一般 `pnpm build:pages` 不會自動重新查詢地政總署，避免外部來源短暫故障覆蓋整份已核實資料。
+- **前端位置：** `src/api/nearbyFacilities.ts` 載入雙語靜態快照；`src/components/Filters.tsx` 開啟「馬會投注站」模式；`src/components/MapView.tsx`、`NearbyFacilityCard.tsx` 及 `NearbyFacilityDetail.tsx` 呈現圖示、地址、導航、位置精度與官方來源。GitHub Pages 使用靜態快照，不要標示即時營業狀態。

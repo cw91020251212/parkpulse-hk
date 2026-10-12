@@ -26,6 +26,15 @@ type BorderLocation = {
   residents: BorderQueue; visitors: BorderQueue;
 };
 type BorderSnapshot = { records?: BorderLocation[]; source?: string; generatedAt?: string; residentsLastModified?: string; visitorsLastModified?: string };
+type HkjcLocation = {
+  id: string; kind: 'hkjc'; nameTc: string; nameEn: string; addressTc: string; addressEn: string;
+  latitude: number; longitude: number; locationPrecision: 'outlet' | 'building'; locationNoteTc?: string; locationNoteEn?: string;
+  sourceUrl: string; locationSourceUrl: string; coordinateTransformSourceUrl: string;
+};
+type HkjcSnapshot = {
+  records?: HkjcLocation[]; source?: Record<Language, string>; generatedAt?: string; directoryUpdatedAt?: string; sourceCheckedAt?: string;
+  sourceUrl?: string; sourcePdfTc?: string; sourcePdfEn?: string; locationSourceUrl?: string; coordinateTransformSourceUrl?: string;
+};
 
 function normalized(value: string | undefined) {
   return String(value ?? '').replace(/\s+/g, '').toLocaleLowerCase();
@@ -109,9 +118,35 @@ async function fetchBorderControlPoints(language: Language, signal: AbortSignal)
   return { records, source: snapshot.source || '入境事務處陸路邊境管制站等候時間官方快照' };
 }
 
-export async function fetchNearbyFacilities(kind: 'fuel' | 'atm' | 'aed' | 'emergency' | 'border', signal: AbortSignal, language: Language) {
+async function fetchHkjcBettingOutlets(language: Language, signal: AbortSignal) {
+  const response = await fetch(publicAsset('pages-data/hkjc-betting-outlets.json'), { signal });
+  if (!response.ok) throw new Error('未能讀取香港賽馬會投注站官方位置快照');
+  const snapshot = await response.json() as HkjcSnapshot;
+  const records = (snapshot.records ?? []).map((location) => ({
+    id: location.id,
+    kind: 'hkjc' as const,
+    name: language === 'en' ? location.nameEn : location.nameTc,
+    address: language === 'en' ? location.addressEn : location.addressTc,
+    latitude: location.latitude,
+    longitude: location.longitude,
+    locationPrecision: location.locationPrecision,
+    locationNote: language === 'en' ? location.locationNoteEn : location.locationNoteTc,
+    source: snapshot.source?.[language] ?? (language === 'en' ? 'Hong Kong Jockey Club official outlet directory' : '香港賽馬會官方場外投注處名錄'),
+    sourceUrl: snapshot.sourceUrl,
+    sourcePdfUrl: language === 'en' ? snapshot.sourcePdfEn : snapshot.sourcePdfTc,
+    locationSourceUrl: snapshot.locationSourceUrl,
+    coordinateTransformSourceUrl: snapshot.coordinateTransformSourceUrl,
+    snapshotGeneratedAt: snapshot.generatedAt,
+    sourceDirectoryUpdatedAt: snapshot.directoryUpdatedAt,
+    sourceDataCheckedAt: snapshot.sourceCheckedAt,
+  } satisfies NearbyFacility));
+  return { records, source: snapshot.source?.[language] };
+}
+
+export async function fetchNearbyFacilities(kind: 'fuel' | 'atm' | 'aed' | 'emergency' | 'border' | 'hkjc', signal: AbortSignal, language: Language) {
   if (kind === 'emergency') return fetchEmergencyFacilities(language, signal);
   if (kind === 'border') return fetchBorderControlPoints(language, signal);
+  if (kind === 'hkjc') return fetchHkjcBettingOutlets(language, signal);
   const snapshot = kind === 'fuel' ? 'fuel-stations' : kind === 'atm' ? 'atms' : 'aeds';
   const endpoint = kind === 'aed' || isStaticPages ? publicAsset(`pages-data/${snapshot}.json`) : kind === 'fuel' ? '/api/fuel-stations' : '/api/atms';
   const response = await fetch(endpoint, { signal });

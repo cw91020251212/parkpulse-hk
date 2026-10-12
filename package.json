@@ -8,6 +8,8 @@
     "dev": "node server.mjs",
     "build": "tsc --noEmit && vite build",
     "build:pages": "node scripts/build-pages-data.mjs && tsc --noEmit && vite build --mode pages",
+    "refresh:hkjc-betting-outlets": "node scripts/refresh-hkjc-betting-outlets.mjs",
+    "test:hkjc-betting-outlets": "node scripts/check-hkjc-betting-outlets.mjs",
     "check": "tsc --noEmit",
     "test:domain": "node --experimental-strip-types scripts/check-vacancy.mjs",
     "test:charging": "node --experimental-strip-types scripts/check-ev-charging.mjs",

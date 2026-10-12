@@ -1,12 +1,14 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const [appSource, mapSource, detailSource, styles, borderIcon] = await Promise.all([
+const [appSource, mapSource, detailSource, styles, borderIcon, facilityCard, filters] = await Promise.all([
   readFile(new URL('../src/App.tsx', import.meta.url), 'utf8'),
   readFile(new URL('../src/components/MapView.tsx', import.meta.url), 'utf8'),
   readFile(new URL('../src/components/NearbyFacilityDetail.tsx', import.meta.url), 'utf8'),
   readFile(new URL('../src/styles.css', import.meta.url), 'utf8'),
   readFile(new URL('../public/icons/border-control.svg', import.meta.url), 'utf8'),
+  readFile(new URL('../src/components/NearbyFacilityCard.tsx', import.meta.url), 'utf8'),
+  readFile(new URL('../src/components/Filters.tsx', import.meta.url), 'utf8'),
 ]);
 
 assert.match(appSource, /const mapParks = \(startupLocationPending && searchScope === 'radius'\) \|\| facilityMode \? \[\] : displayedParks;/);
@@ -46,5 +48,15 @@ assert.match(borderIcon, /<path d="M0 35h64v29H0Z" fill="#15384b"/);
 assert.match(borderIcon, /<path[^>]+fill="#18a8cb"/);
 assert.match(borderIcon, /stroke-dasharray="5 4"/);
 assert.doesNotMatch(borderIcon, /<rect[^>]+fill="(?!none|transparent)/);
+assert.match(appSource, /facilityMode === 'hkjc' \? hkjcSourceNote/);
+assert.match(appSource, /legend-hkjc/);
+assert.match(filters, /'border', 'hkjc'/);
+assert.match(mapSource, /kind === 'hkjc'/);
+assert.match(mapSource, /is-hkjc/);
+assert.match(mapSource, /hkjcLocationPrecision/);
+assert.match(facilityCard, /facility\.kind === 'hkjc'/);
+assert.match(facilityCard, /hkjcSources/);
+assert.match(detailSource, /hkjcNoLiveStatus/);
+assert.match(styles, /\.toilet-marker\.is-hkjc/);
 
-console.log('Facility cards, Leaflet markers, map legend, popup and detail cover AED, emergency-department and border-control symbols with matching source and safety text.');
+console.log('Verified AED, emergency-department, border and HKJC outlet controls, markers, legends, sources and location precision across map and detail views.');

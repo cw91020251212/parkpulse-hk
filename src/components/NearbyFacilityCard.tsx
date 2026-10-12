@@ -17,8 +17,9 @@ export function NearbyFacilityCard({ language, item }: Props) {
   const aed = facility.kind === 'aed';
   const emergency = facility.kind === 'emergency';
   const border = facility.kind === 'border';
-  const tone = fuel ? 'is-fuel' : aed ? 'is-aed' : emergency ? 'is-emergency' : border ? 'is-border' : 'is-atm';
-  const brandIcon = aed || emergency || border ? undefined : getFacilityBrandIcon(fuel ? 'fuel' : 'atm', facility.brand);
+  const hkjc = facility.kind === 'hkjc';
+  const tone = fuel ? 'is-fuel' : aed ? 'is-aed' : emergency ? 'is-emergency' : border ? 'is-border' : hkjc ? 'is-hkjc' : 'is-atm';
+  const brandIcon = aed || emergency || border || hkjc ? undefined : getFacilityBrandIcon(fuel ? 'fuel' : 'atm', facility.brand);
   const navigationUrl = `https://www.google.com/maps/dir/?api=1&destination=${facility.latitude},${facility.longitude}${fuel || emergency || border ? '&travelmode=driving' : '&travelmode=walking'}`;
   const navigation = fuel || emergency || border ? text(language, 'drivingNavigation') : text(language, 'walkingNavigation');
   const openDetailByKeyboard = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -27,10 +28,10 @@ export function NearbyFacilityCard({ language, item }: Props) {
     onSelect();
   };
 
-  return <article className={`toilet-card nearby-facility-card ${tone}`}>
+  return <article className={`toilet-card nearby-facility-card ${tone}${facility.locationPrecision === 'building' ? ' is-location-unconfirmed' : ''}`}>
     <div className="toilet-card-main nearby-facility-main" role={onSelect ? 'button' : undefined} tabIndex={onSelect ? 0 : undefined} aria-haspopup={onSelect ? 'dialog' : undefined} aria-label={onSelect ? `${text(language, 'viewFacilityDetails')}: ${facility.name}` : undefined} onClick={onSelect} onKeyDown={openDetailByKeyboard}>
       <div className="card-heading">
-        <span className={`toilet-card-icon ${tone}${brandIcon ? ' is-brand' : ''}`} aria-hidden="true">{brandIcon ? <img src={brandIcon.src} alt="" /> : aed ? <img className="aed-symbol" src={AED_SYMBOL_URL} alt="" /> : emergency ? <img className="emergency-pill-symbol" src={EMERGENCY_SYMBOL_URL} alt="" /> : border ? <img className="border-control-symbol" src={BORDER_SYMBOL_URL} alt="" /> : fuel ? '⛽' : '🏧'}</span>
+        <span className={`toilet-card-icon ${tone}${brandIcon ? ' is-brand' : ''}${facility.locationPrecision === 'building' ? ' is-location-unconfirmed' : ''}`} aria-hidden="true">{brandIcon ? <img src={brandIcon.src} alt="" /> : aed ? <img className="aed-symbol" src={AED_SYMBOL_URL} alt="" /> : emergency ? <img className="emergency-pill-symbol" src={EMERGENCY_SYMBOL_URL} alt="" /> : border ? <img className="border-control-symbol" src={BORDER_SYMBOL_URL} alt="" /> : hkjc ? '🏇' : fuel ? '⛽' : '🏧'}</span>
         <div><h3>{facility.name}</h3><p>{facility.address}</p></div>
         <span className="distance">{formatDistance(distanceKm)}</span>
       </div>
@@ -42,6 +43,8 @@ export function NearbyFacilityCard({ language, item }: Props) {
         {border && <span className="border-wait-summary">{borderWaitSummary(language, facility.borderWait)}</span>}
         {border && <span>{text(language, 'borderSnapshot', { value: formatBorderSnapshotTime(language, facility.borderWait?.snapshotGeneratedAt) })}</span>}
         {border && <span className="border-location-note">{text(language, 'borderLocationNote')}</span>}
+        {hkjc && <span className="hkjc-source-label">{text(language, 'hkjcSources')}</span>}
+        {hkjc && <span className="hkjc-location-note">{facility.locationNote || text(language, 'hkjcLocationPrecision')}</span>}
         {facility.openingHours && <span>{text(language, 'serviceHours', { value: facility.openingHours })}</span>}
         {facility.remarks && <span>{facility.remarks}</span>}
       </div>

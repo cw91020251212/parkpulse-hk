@@ -171,7 +171,7 @@ export interface PublicToiletViewModel {
   manualPositionSource?: 'shared' | 'local';
 }
 
-export type NearbyMode = 'toilets' | 'fuel' | 'atm' | 'aed' | 'emergency' | 'border' | 'onStreet';
+export type NearbyMode = 'toilets' | 'fuel' | 'atm' | 'aed' | 'emergency' | 'border' | 'hkjc' | 'onStreet';
 
 export interface GoogleMapsRating {
   rating: number;
@@ -189,12 +189,17 @@ export interface NearbyFacility {
   remarks?: string;
   latitude: number;
   longitude: number;
-  kind: 'fuel' | 'atm' | 'aed' | 'emergency' | 'border';
+  kind: 'fuel' | 'atm' | 'aed' | 'emergency' | 'border' | 'hkjc';
   source: string;
   sourceUrl?: string;
+  sourcePdfUrl?: string;
   locationSourceUrl?: string;
   coordinateTransformSourceUrl?: string;
   snapshotGeneratedAt?: string;
+  sourceDirectoryUpdatedAt?: string;
+  sourceDataCheckedAt?: string;
+  locationPrecision?: 'outlet' | 'building';
+  locationNote?: string;
   emergencyWait?: EmergencyWaitTime;
   borderWait?: BorderWaitingTime;
 }
