@@ -41,6 +41,8 @@ assert.match(styles, /\.toilet-marker\.is-emergency/);
 assert.match(styles, /\.emergency-pill-symbol/);
 assert.match(styles, /\.border-control-symbol/);
 assert.match(borderIcon, /<circle[^>]+fill="none"/);
+assert.match(borderIcon, /<path d="M0 0h64v35H0Z" fill="#fff"/);
+assert.match(borderIcon, /<path d="M0 35h64v29H0Z" fill="#15384b"/);
 assert.match(borderIcon, /<path[^>]+fill="#18a8cb"/);
 assert.match(borderIcon, /stroke-dasharray="5 4"/);
 assert.doesNotMatch(borderIcon, /<rect[^>]+fill="(?!none|transparent)/);

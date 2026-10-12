@@ -9,7 +9,7 @@ import type { NearbyFacilityViewModel } from '../types';
 type Props = { language: Language; item: NearbyFacilityViewModel };
 const AED_SYMBOL_URL = `${publicAsset('icons/iso-7010-e010-aed.svg')}?v=20261011d`;
 const EMERGENCY_SYMBOL_URL = publicAsset('icons/emergency-pill.svg');
-const BORDER_SYMBOL_URL = `${publicAsset('icons/border-control.svg')}?v=20261012`;
+const BORDER_SYMBOL_URL = `${publicAsset('icons/border-control.svg')}?v=20261012b`;
 
 export function NearbyFacilityCard({ language, item }: Props) {
   const { facility, distanceKm, onSelect } = item;

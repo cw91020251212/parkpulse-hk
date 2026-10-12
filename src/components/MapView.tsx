@@ -30,7 +30,7 @@ const MAP_MAX_ZOOM = 22;
 const LANDSD_LOGO_URL = 'https://api.hkmapservice.gov.hk/mapapi/landsdlogo.jpg';
 const AED_SYMBOL_URL = `${publicAsset('icons/iso-7010-e010-aed.svg')}?v=20261011d`;
 const EMERGENCY_SYMBOL_URL = publicAsset('icons/emergency-pill.svg');
-const BORDER_SYMBOL_URL = `${publicAsset('icons/border-control.svg')}?v=20261012`;
+const BORDER_SYMBOL_URL = `${publicAsset('icons/border-control.svg')}?v=20261012b`;
 
 function Recenter({ position, request, startup }: { position: Coordinates; request: number; startup: boolean }) { const map = useMap(); const startupFlightUsed = useRef(false); useEffect(() => { if (request === 0) return; if (startup && !startupFlightUsed.current) { startupFlightUsed.current = true; map.flyTo([position.lat, position.lng], 14, { duration: 1.4 }); return; } map.setView([position.lat, position.lng], 14, { animate: true }); }, [map, position.lat, position.lng, request, startup]); return null; }
 function FocusSelected({ park }: { park?: ParkViewModel }) { const map = useMap(); useEffect(() => { if (park) map.flyTo([park.info.latitude, park.info.longitude], Math.max(map.getZoom(), 15), { duration: 0.35 }); }, [map, park]); return null; }
