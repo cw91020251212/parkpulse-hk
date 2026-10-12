@@ -56,6 +56,16 @@ assert.ok(vehicleRowStart >= 0 && parkingOptionsStart > vehicleRowStart);
 assert.doesNotMatch(filters.slice(vehicleRowStart, parkingOptionsStart), /height-select/, 'Vehicle row contains only vehicle choices');
 assert.ok(filters.indexOf('className="height-select"') > parkingOptionsStart, 'Vehicle-height control stays on the parking options row');
 assert.equal((filters.match(/<div className="filter-scroll-track">\s*\{scopeControl\}/g) ?? []).length, 2, 'Search scope can scroll in both parking and facilities sections');
+const parkingTrackStart = filters.indexOf('<div className="filter-scroll-track">', parkingOptionsStart);
+const parkingTrackEnd = filters.indexOf('</div>', parkingTrackStart);
+const parkingTrack = filters.slice(parkingTrackStart, parkingTrackEnd);
+const requestedParkingOrder = ['{scopeControl}', "facilityText('onStreet')", 'filters.availableOnly', 'filters.openOnly', 'filters.includeNoLiveData', 'filters.hasEv', 'filters.hasAccessible', 'className="height-select"'];
+let previousParkingControl = -1;
+for (const control of requestedParkingOrder) {
+  const currentParkingControl = parkingTrack.indexOf(control);
+  assert.ok(currentParkingControl > previousParkingControl, `Parking options follow the requested order: ${control}`);
+  previousParkingControl = currentParkingControl;
+}
 assert.doesNotMatch(filters, /className="filter-scroll-row"[^>]*>\s*\{scopeControl\}\s*<div className="filter-scroll-track">/, 'Scope button is not pinned outside the scroll track');
 
 for (const value of ['泊車', '附近設施', '設定', "settings: 'Settings'", '請在上方選擇洗手間、AED、油站等附近設施。', '請選擇車種以查看附近停車場空位。', 'Parking', 'Nearby facilities', 'Choose a nearby facility above—washrooms, AEDs, fuel and more.', 'Select a vehicle type to view nearby parking availability.']) {
