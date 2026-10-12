@@ -915,3 +915,56 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .hkjc-first-prize-legend-crown { font-size: 12px; }
 
 @keyframes current-location-pulse { 0%, 100% { opacity: .42; transform: translateX(-50%) scale(.76); } 50% { opacity: .94; transform: translateX(-50%) scale(1.22); } }
+
+
+/* 2026-10-12：停车与附近设施分区，默认界面不再摊开所有功能。 */
+.filter-mode-switch {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  width: min(100%, 380px);
+  padding: 4px;
+  border: 1px solid #1d455f;
+  border-radius: 12px;
+  background: #091f32;
+}
+
+.filter-mode-button {
+  min-width: 0;
+  min-height: 34px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  padding: 6px 10px;
+  color: #9ab4bd;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 850;
+  transition: background .18s ease, color .18s ease, border-color .18s ease;
+}
+
+.filter-mode-button:hover { color: #e9f4f3; background: #12364a; }
+.filter-mode-button[aria-pressed="true"] { border-color: #b7f2e7; color: #073345; background: #b7f2e7; }
+.filter-mode-button:focus-visible { outline: 2px solid #57dfd1; outline-offset: 2px; }
+
+.facility-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+  padding: 1px 1px 6px;
+}
+
+.facility-mode-grid .chip {
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  min-height: 36px;
+  padding: 6px 8px;
+  line-height: 1.25;
+  white-space: normal;
+  text-align: center;
+}
+
+@media (max-width: 560px) {
+  .filter-mode-switch { width: 100%; }
+  .facility-mode-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+}
