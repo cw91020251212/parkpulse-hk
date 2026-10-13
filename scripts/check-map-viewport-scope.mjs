@@ -75,4 +75,5 @@ assert.match(map, /showPositionMarker && <Marker position=\{\[position\.lat, pos
 assert.match(filters, /searchScope === 'viewport'/);
 assert.match(filters, /aria-pressed=\{searchScope === 'viewport'\}/);
 assert.match(filters, /switchToViewportScope/);
+assert.match(styles, /\/\* On phones, map focus fills the space below the still-visible filters\. \*\/\s*@media \(max-width: 900px\) \{\s*\.map-focus \{\s*height: 100vh;\s*height: 100dvh;\s*min-height: 0;\s*overflow: hidden;\s*padding-bottom: 0;\s*\}\s*\.map-focus \.desktop-layout \{\s*height: 100%;\s*min-height: 0;\s*overflow: hidden;\s*\}\s*\.map-focus \.desktop-layout > \.desktop-sidebar > \.workspace \{\s*flex: 1 1 auto;\s*height: auto;\s*min-height: 0;\s*border-radius: 0;/s, 'mobile map-focus consumes all remaining viewport space beneath filters rather than retaining the parking-mode fixed map height');
 console.log('Map scope OK: radius remains distinct, visible bounds update from Leaflet, and edge/antimeridian filtering is covered.');

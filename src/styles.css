@@ -1562,3 +1562,26 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 
 .medical-map-popup-specialties { display: block; margin-top: 3px; color: #514185; font-weight: 750; line-height: 1.4; white-space: normal; }
 .medical-map-popup-specialties.is-unlisted { color: #687782; font-weight: 600; }
+
+
+/* On phones, map focus fills the space below the still-visible filters. */
+@media (max-width: 900px) {
+  .map-focus {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+    padding-bottom: 0;
+  }
+  .map-focus .desktop-layout {
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .map-focus .desktop-layout > .desktop-sidebar > .workspace {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
+    border-radius: 0;
+  }
+}
