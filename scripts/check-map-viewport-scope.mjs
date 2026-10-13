@@ -43,6 +43,8 @@ assert.match(styles, /@media \(max-width: 900px\).*?\.workspace \{[^}]*height: a
 assert.match(styles, /\.map-focus \.landsd-credit \{\s*z-index: 1003;\s*top: auto;\s*bottom: 22px;\s*\}/, 'the Lands Department credit stays at its normal lower-right position in map focus');
 assert.match(styles, /@media \(max-width: 720px\).*?\.desktop-layout > \.desktop-sidebar > \.workspace\.is-facility-mode \{\s*height: calc\(max\(407px, calc\(100dvh - 173px\)\) \+ 42px\);\s*min-height: calc\(max\(407px, calc\(100dvh - 173px\)\) \+ 42px\);/s, 'nearby facilities extends the mobile map and its bottom controls by one filter row');
 assert.match(app, /className=\{`workspace.*?<div className="map-column"><MapView.*?className="area-tools map-bottom-tools"/s, 'search and legend stay grouped with the map on mobile and are repositioned by desktop grid');
+assert.match(styles, /\.map-wrap \{[^}]*position: relative; z-index: 0;/s, 'Leaflet panes stay inside the map stacking context so page popovers can render above them');
+assert.match(styles, /\.header-tools \{ position: relative; z-index: 20;/, 'the settings and header controls remain above the isolated map layer');
 assert.match(styles, /\.desktop-sidebar \{[^}]*height: 100dvh;[^}]*overflow-x: hidden;\s*overflow-y: auto;/s, 'the desktop left rail scrolls as one column');
 assert.match(styles, /\.desktop-sidebar > \.results-panel \{[^}]*height: auto;\s*overflow: visible;/s, 'desktop results grow naturally instead of being trapped in a short panel');
 assert.match(styles, /\.desktop-sidebar > \.results-panel \.results-list \{[^}]*max-height: none;\s*overflow: visible;/s, 'desktop results no longer use a nested, clipped scrolling viewport');
