@@ -138,6 +138,8 @@ export default function App() {
   const [mapLegendOpen, setMapLegendOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [disclaimerOpen, setDisclaimerOpen] = useState(false);
+  const settingsMenuRef = useRef<HTMLDetailsElement>(null);
+  const settingsHistoryActive = useRef(false);
   const [recenterRequest, setRecenterRequest] = useState(0);
   const [districtSearchOpen, setDistrictSearchOpen] = useState(false);
   const [districtQuery, setDistrictQuery] = useState('');
@@ -298,7 +300,24 @@ export default function App() {
     }
   }, [vehicleType]);
   useEffect(() => { if (!mapExpanded) return; const onKeyDown = (event: KeyboardEvent) => { if (event.key === 'Escape') setMapExpanded(false); }; window.addEventListener('keydown', onKeyDown); return () => window.removeEventListener('keydown', onKeyDown); }, [mapExpanded]);
-  useEffect(() => { const closeDetailFromBack = () => { if (!detailHistoryActive.current) return; detailHistoryActive.current = false; setSelectedId(null); setSelectedOnStreetId(null); setSelectedFacilityId(null); setSelectedToiletId(null); setSelectedMedicalId(null); }; window.addEventListener('popstate', closeDetailFromBack); return () => window.removeEventListener('popstate', closeDetailFromBack); }, []);
+  useEffect(() => {
+    const dismissOutsideSettings = (event: PointerEvent) => {
+      const menu = settingsMenuRef.current;
+      if (menu?.open && event.target instanceof Node && !menu.contains(event.target)) menu.open = false;
+    };
+    const closeSettingsFromBack = (event: PopStateEvent) => {
+      if (!settingsHistoryActive.current || event.state?.parkspotSettings === true) return;
+      settingsHistoryActive.current = false;
+      if (settingsMenuRef.current) settingsMenuRef.current.open = false;
+    };
+    document.addEventListener('pointerdown', dismissOutsideSettings, true);
+    window.addEventListener('popstate', closeSettingsFromBack);
+    return () => {
+      document.removeEventListener('pointerdown', dismissOutsideSettings, true);
+      window.removeEventListener('popstate', closeSettingsFromBack);
+    };
+  }, []);
+  useEffect(() => { const closeDetailFromBack = (event: PopStateEvent) => { if (!detailHistoryActive.current || event.state?.parkspotDetail === true) return; detailHistoryActive.current = false; setSelectedId(null); setSelectedOnStreetId(null); setSelectedFacilityId(null); setSelectedToiletId(null); setSelectedMedicalId(null); }; window.addEventListener('popstate', closeDetailFromBack); return () => window.removeEventListener('popstate', closeDetailFromBack); }, []);
 
   const nearbyParks = useMemo<ParkViewModel[]>(() => infos.map((info) => { const vacancyEntry = selectVacancyEntry(vacancyById.get(info.park_Id)?.[activeVehicleType]); const status = getVacancyStatus(info, vacancyEntry); const distanceKm = distanceInKm(rangeOrigin, { lat: info.latitude, lng: info.longitude }); const verified = verifiedPlaceLinks.get(`carpark:${info.park_Id}`); const enriched = verified ? { ...info, ...(verified.hasPhoto !== false ? { photoPlaceUrl: verified.placeUrl } : {}), ...(verified.rating !== undefined && verified.userRatingCount ? { googleRating: { rating: verified.rating, userRatingCount: verified.userRatingCount, placeUrl: verified.placeUrl, generatedAt: verified.generatedAt } } : {}) } : info; return { info: enriched, status, distanceKm, heightLimit: getHeightLimit(info), evCharger: findEvCharger(info, chargers) }; }).filter((park) => isWithinSearchScope({ lat: park.info.latitude, lng: park.info.longitude }, park.distanceKm, searchScope, mapViewport, NEARBY_RADIUS_KM)).sort((left, right) => { const statusDifference = statusPriority(left.status) - statusPriority(right.status); return statusDifference || left.distanceKm - right.distanceKm; }), [chargers, infos, mapViewport, rangeOrigin, searchScope, vacancyById, vehicleType, verifiedPlaceLinks]);
   const nearestAccessiblePark = useMemo(() => infos.filter(hasAccessibleParking).map((info) => ({ info, distanceKm: distanceInKm(rangeOrigin, { lat: info.latitude, lng: info.longitude }) })).filter((park) => searchScope !== 'viewport' || isWithinSearchScope({ lat: park.info.latitude, lng: park.info.longitude }, park.distanceKm, 'viewport', mapViewport, NEARBY_RADIUS_KM)).sort((left, right) => left.distanceKm - right.distanceKm)[0], [infos, mapViewport, rangeOrigin, searchScope]);
@@ -474,7 +493,15 @@ export default function App() {
       <div className="brand"><Logo /><div className="brand-copy"><h1>{text(language, 'brandTitle')}</h1><p className="brand-kicker">{text(language, 'brandKicker')}</p></div></div>
       <div className="header-tools">
         <div className="top-actions">
-          <details className="settings-menu">
+          <details className="settings-menu" ref={settingsMenuRef} onToggle={(event) => {
+            if (event.currentTarget.open && !settingsHistoryActive.current) {
+              window.history.pushState({ ...(window.history.state ?? {}), parkspotSettings: true }, '');
+              settingsHistoryActive.current = true;
+            } else if (!event.currentTarget.open && settingsHistoryActive.current) {
+              settingsHistoryActive.current = false;
+              if (window.history.state?.parkspotSettings === true) window.history.back();
+            }
+          }}>
             <summary className="settings-button" aria-label={text(language, 'settings')} title={text(language, 'settings')}><SettingsIcon /></summary>
             <div className="settings-popover">
               <div className="text-tools">
