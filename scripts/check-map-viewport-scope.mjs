@@ -40,6 +40,7 @@ assert.match(app, /showCurrentLocation=\{hasGpsPosition\}/, 'the GPS state is pr
 assert.match(app, /showManualCenter=\{hasManualMapMarker\}/, 'the manual map-marker state is provided to the map');
 assert.match(styles, /@media \(max-width: 720px\).*?\.desktop-layout > \.desktop-sidebar > \.workspace \{\s*height: max\(407px, calc\(100dvh - 173px\)\);\s*min-height: max\(407px, calc\(100dvh - 173px\)\);/s, 'parking mode keeps the original mobile map-plus-tools height');
 assert.match(styles, /@media \(max-width: 900px\).*?\.workspace \{[^}]*height: auto;/s, 'mobile workspace remains content-sized so it can contain the map and bottom controls');
+assert.match(styles, /\.map-focus \.landsd-credit \{\s*z-index: 1003;\s*top: auto;\s*bottom: 22px;\s*\}/, 'the Lands Department credit stays at its normal lower-right position in map focus');
 assert.match(styles, /@media \(max-width: 720px\).*?\.desktop-layout > \.desktop-sidebar > \.workspace\.is-facility-mode \{\s*height: calc\(max\(407px, calc\(100dvh - 173px\)\) \+ 42px\);\s*min-height: calc\(max\(407px, calc\(100dvh - 173px\)\) \+ 42px\);/s, 'nearby facilities extends the mobile map and its bottom controls by one filter row');
 assert.match(app, /className=\{`workspace.*?<div className="map-column"><MapView.*?className="area-tools map-bottom-tools"/s, 'search and legend stay grouped with the map on mobile and are repositioned by desktop grid');
 assert.match(styles, /\.desktop-sidebar \{[^}]*height: 100dvh;[^}]*overflow-x: hidden;\s*overflow-y: auto;/s, 'the desktop left rail scrolls as one column');
