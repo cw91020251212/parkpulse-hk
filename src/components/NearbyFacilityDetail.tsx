@@ -22,16 +22,34 @@ function priorityValue(language: Language, value: string, managed: boolean) {
 }
 
 function EmergencyWaitingTimes({ language, wait }: { language: Language; wait?: EmergencyWaitTime }) {
-  if (!wait) return null;
   return <section className="detail-section emergency-waiting-section">
     <h3>{text(language, 'emergencyWaitingTimes')}</h3>
-    <dl className="emergency-wait-grid">
-      <div><dt>{text(language, 'emergencyPriority1')}</dt><dd>{priorityValue(language, wait.priority1Wait, wait.priority1Managed)}</dd></div>
-      <div><dt>{text(language, 'emergencyPriority2')}</dt><dd>{priorityValue(language, wait.priority2Wait, wait.priority2Managed)}</dd></div>
-      <div><dt>{text(language, 'emergencyPriority3')}</dt><dd>{text(language, 'emergencyMedian', { value: wait.priority3Median || text(language, 'emergencyNotProvided') })}<br /><small>{text(language, 'emergencyP95', { value: wait.priority3P95 || text(language, 'emergencyNotProvided') })}</small></dd></div>
-      <div><dt>{text(language, 'emergencyPriority45')}</dt><dd>{text(language, 'emergencyMedian', { value: wait.priority45Median || text(language, 'emergencyNotProvided') })}<br /><small>{text(language, 'emergencyP95', { value: wait.priority45P95 || text(language, 'emergencyNotProvided') })}</small></dd></div>
-    </dl>
-    <p className="emergency-update">{text(language, 'emergencyUpdated', { value: formatHaUpdateTime(language, wait.updatedAt) })}</p>
+    {wait && <>
+      <dl className="emergency-wait-grid">
+        <div><dt>{text(language, 'emergencyPriority1')}</dt><dd>{priorityValue(language, wait.priority1Wait, wait.priority1Managed)}</dd></div>
+        <div><dt>{text(language, 'emergencyPriority2')}</dt><dd>{priorityValue(language, wait.priority2Wait, wait.priority2Managed)}</dd></div>
+        <div><dt>{text(language, 'emergencyPriority3')}</dt><dd>{text(language, 'emergencyMedian', { value: wait.priority3Median || text(language, 'emergencyNotProvided') })}<br /><small>{text(language, 'emergencyP95', { value: wait.priority3P95 || text(language, 'emergencyNotProvided') })}</small></dd></div>
+        <div><dt>{text(language, 'emergencyPriority45')}</dt><dd>{text(language, 'emergencyMedian', { value: wait.priority45Median || text(language, 'emergencyNotProvided') })}<br /><small>{text(language, 'emergencyP95', { value: wait.priority45P95 || text(language, 'emergencyNotProvided') })}</small></dd></div>
+      </dl>
+      <p className="emergency-update">{text(language, 'emergencyUpdated', { value: formatHaUpdateTime(language, wait.updatedAt) })}</p>
+    </>}
+    <details className="emergency-triage-guide">
+      <summary>{text(language, 'emergencyTriageGuideButton')}</summary>
+      <p>{text(language, 'emergencyTriageGuideIntro')}</p>
+      <ol>
+        <li><strong>{text(language, 'emergencyTriage1Title')}</strong> {text(language, 'emergencyTriage1Example')}</li>
+        <li><strong>{text(language, 'emergencyTriage2Title')}</strong> {text(language, 'emergencyTriage2Example')}</li>
+        <li><strong>{text(language, 'emergencyTriage3Title')}</strong> {text(language, 'emergencyTriage3Example')}</li>
+        <li><strong>{text(language, 'emergencyTriage4Title')}</strong> {text(language, 'emergencyTriage4Example')}</li>
+        <li><strong>{text(language, 'emergencyTriage5Title')}</strong> {text(language, 'emergencyTriage5Example')}</li>
+      </ol>
+      <p className="emergency-triage-caution">{text(language, 'emergencyTriageCaution')}</p>
+      <p className="emergency-triage-sources">
+        <a href="https://www.ha.org.hk/visitor/ha_serviceguide_details.asp?Content_ID=10051&IndexPage=200066&Lang=CHIB5" target="_blank" rel="noreferrer">{text(language, 'emergencyTriageHaSource')}</a>
+        {' · '}
+        <a href="https://www.hk01.com/%E7%A4%BE%E6%9C%83%E6%96%B0%E8%81%9E/60223549/%E6%80%A5%E7%97%87%E5%AE%A4%E6%94%B6%E8%B2%BB-%E7%B7%8A%E6%80%A5%E4%B8%8D%E6%80%A5-%E9%AA%A8%E6%8A%98%E5%BF%83%E8%A1%B0%E7%AB%AD%E8%A6%81%E4%BB%98-400-%E7%97%85%E4%BA%BA%E7%B5%84%E7%B9%94-%E5%8F%AF%E5%93%AA%E8%99%95%E9%86%AB" target="_blank" rel="noreferrer">{text(language, 'emergencyTriageExampleSource')}</a>
+      </p>
+    </details>
   </section>;
 }
 

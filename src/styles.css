@@ -816,6 +816,20 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .emergency-wait-grid dd { margin: 3px 0 0; font-size: 12px; line-height: 1.35; }
 .emergency-wait-grid small { color: #bbe8f3; font-size: 10px; font-weight: 700; }
 .emergency-update { margin: 8px 0 0; color: #b7e4ee; font-size: 11px; }
+.emergency-triage-guide { margin-top: 10px; border-top: 1px solid #397286; padding-top: 8px; }
+.emergency-triage-guide summary { display: flex; min-height: 44px; align-items: center; justify-content: space-between; gap: 8px; border: 1px solid #46869a; border-radius: 9px; padding: 7px 10px; color: #e5fbff; background: #174b60; font-size: 14px; font-weight: 900; cursor: pointer; list-style: none; }
+.emergency-triage-guide summary::-webkit-details-marker { display: none; }
+.emergency-triage-guide summary::after { content: '＋'; flex: 0 0 auto; color: #ffe36a; font-size: 18px; }
+.emergency-triage-guide[open] summary::after { content: '−'; }
+.emergency-triage-guide summary:focus-visible { outline: 2px solid #ffe36a; outline-offset: 2px; }
+.emergency-triage-guide > p, .emergency-triage-guide li { color: #d9edf2; font-size: 14px; line-height: 1.5; }
+.emergency-triage-guide > p { margin: 9px 0; }
+.emergency-triage-guide ol { display: grid; gap: 8px; margin: 8px 0; padding-left: 24px; }
+.emergency-triage-guide li::marker { color: #ffe36a; font-weight: 900; }
+.emergency-triage-guide li strong { color: #fff0a3; }
+.emergency-triage-guide .emergency-triage-caution { border-left: 3px solid #ed6970; padding-left: 9px; color: #ffe6e8; font-weight: 800; }
+.emergency-triage-guide .emergency-triage-sources { display: flex; flex-wrap: wrap; gap: 4px 10px; }
+.emergency-triage-guide a { color: #9eece3; font-weight: 800; text-decoration: underline; text-underline-offset: 2px; }
 .border-snapshot-note { margin: 0 0 8px; border: 1px solid #5266b5; border-radius: 10px; padding: 8px 10px; color: #e0e7ff; background: #232e64; font-size: 12px; font-weight: 800; line-height: 1.4; }
 .border-wait-summary { color: #f0f4ff; background: #263873 !important; font-weight: 900; line-height: 1.45; white-space: normal; }
 .border-location-note { color: #c6d1ff; font-size: 11px; line-height: 1.35; white-space: normal; }
