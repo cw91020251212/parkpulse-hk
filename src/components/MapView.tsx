@@ -224,7 +224,7 @@ const selectedCenterIcon = L.divIcon({ className: 'selected-center-marker-shell'
 const currentLocationIcon = L.divIcon({ className: 'selected-center-marker-shell is-current-location', html: '<span class="selected-center-marker is-current-location" aria-hidden="true">📍</span>', iconSize: [36, 40], iconAnchor: [18, 40] });
 function nearbyIcon(kind?: PublicToilet['kind'] | NearbyFacility['kind'] | OnStreetParkingGroup['kind'], occupancy?: OnStreetParkingGroup['occupancy'], vacant?: number, brand?: string, viewed = false, staticRoadside = false, total = 0, venueLocation = false, locationUnconfirmed = false, manualEditing = false, toiletId?: string, firstPrizeRank?: number, firstPrizeCount?: number) {
   const venue = kind === 'lcsdVenue' || kind === 'hadCommunityToilet' || venueLocation;
-  const unconfirmedVenue = kind === 'hadCommunityToilet' || kind === 'afcdLongValleyTemporaryToilets' || locationUnconfirmed;
+  const unconfirmedVenue = kind === 'afcdLongValleyTemporaryToilets' || locationUnconfirmed;
   const fuel = kind === 'fuel';
   const atm = kind === 'atm';
   const aed = kind === 'aed';
@@ -291,7 +291,7 @@ export function MapView({ language, position, showCurrentLocation, showManualCen
                 <strong>{place.name}</strong>
                 <small>{label(place.kind)}</small>
                 <small>{venueLocation ? text(language, 'distanceToVenue', { value: formatDistance(item.distanceKm) }) : formatDistance(item.distanceKm)} · {extra}</small>
-                {venueLocation && <small>{place.kind === 'hadCommunityToilet' ? text(language, 'hadVenuePrecision') : place.kind === 'afcdLongValleyTemporaryToilets' ? text(language, 'afcdLongValleyTemporaryPrecision') : text(language, 'venueLocationPrecision')}</small>}
+                {locationUnconfirmed && <small>{place.kind === 'afcdLongValleyTemporaryToilets' ? text(language, 'afcdLongValleyTemporaryPrecision') : text(language, 'venueLocationPrecision')}</small>}
                 {'remarks' in place && place.remarks && <small>{place.remarks}</small>}
               </button>
               <button className="toilet-popup-detail-action" type="button" aria-haspopup="dialog" aria-label={`${text(language, 'viewFacilityDetails')}: ${place.name}`} onClick={selectToilet}>{text(language, 'details')}</button>
