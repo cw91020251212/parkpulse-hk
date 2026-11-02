@@ -30,6 +30,10 @@ for (const name of ['lcsd-drinking-water.json', 'afcd-drinking-water.json', 'mtr
   assert.ok(water.records.length > 0, `Pages requires official ${name}`);
   await access(path.join(root, 'dist/pages-data', name));
 }
+const namedPlaces = await readJson('named-places.json');
+assert.ok(namedPlaces.places.length >= 1_000, 'Pages needs the territory-wide official named-place index');
+assert.ok(namedPlaces.sourceUrl?.includes('gov.hk'));
+await access(path.join(root, 'dist/pages-data/named-places.json'));
 const brandManifest = JSON.parse(await readFile(path.join(root, 'public/brand-icons/manifest.json'), 'utf8'));
 const brandFiles = Object.values(brandManifest.records).map((record) => record.file);
 assert.equal(brandFiles.length, 25, 'GitHub Pages should contain all current fuel and ATM brand icons');

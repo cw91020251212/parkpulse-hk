@@ -1,8 +1,16 @@
-.position-info { min-width: 200px; max-width: 260px; color: #123440; font-size: 14px; line-height: 1.5; }
-.position-info strong { display: block; padding-right: 30px; font-size: 16px; }
+.position-info { min-width: 200px; max-width: 270px; color: #123440; font-size: 14px; line-height: 1.5; }
+.position-info strong { display: block; padding-right: 30px; font-size: 17px; overflow-wrap: anywhere; }
 .position-info p { margin: 7px 0; overflow-wrap: anywhere; }
 .position-info small { color: #526b73; font-size: 11px; }
+.position-info-name span { font-size: 12px; font-weight: 500; display: block; color: #56717a; }
+.position-info .position-info-address { font-size: 14px; color: #183f4c; }
+.position-info .position-info-area, .position-info .position-info-distance, .position-info .position-info-status { font-size: 12px; color: #526b73; }
+.position-info .position-info-source { display: inline-block; color: #167185; font-size: 11px; margin: 3px 0; text-decoration: underline; }
 .position-info .position-info-coordinates { font-size: 12px; font-variant-numeric: tabular-nums; }
+.position-info-location-details { font-size: 12px; margin-top: 9px; border-top: 1px solid #d7e4e6; padding-top: 7px; }
+.position-info-location-details summary { cursor: pointer; padding: 7px 0; color: #526b73; }
+.position-info .position-info-type { font-size: 11px; color: #526b73; }
+.position-info-retry { color: #075f76; border: 1px solid #a8c9ce; background: #edf9f9; padding: 8px 12px; border-radius: 7px; min-height: 36px; cursor: pointer; }
 .position-info-actions { display: flex; gap: 8px; margin-top: 7px; }
 .position-info .official-3d-link { padding: 0; background: transparent; color: #075f76; border: 0; box-shadow: none; font-size: 13px; font-weight: 700; text-align: left; }
 .position-info .official-3d-link svg { width: 16px; height: 16px; }

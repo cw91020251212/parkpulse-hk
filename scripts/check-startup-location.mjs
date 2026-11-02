@@ -4,10 +4,10 @@ import { readFile } from 'node:fs/promises';
 const source = await readFile(new URL('../src/App.tsx', import.meta.url), 'utf8');
 
 assert.match(source, /navigator\.geolocation\.getCurrentPosition/);
-assert.match(source, /startupLocationRequested\.current = true; requestLocation\('startup'\)/);
+assert.match(source, /startupLocationRequested\.current = true; if \(initial3dReturn\) \{ startupLocationSettled\.current = true; startupLocationDisplayReleased\.current = true; return; \} requestLocation\('startup'\)/);
 assert.match(source, /maximumAge: 0/);
 assert.match(source, /enableHighAccuracy: false/);
-assert.match(source, /const \[startupLocationPending, setStartupLocationPending\] = useState\(true\)/);
+assert.match(source, /const \[startupLocationPending, setStartupLocationPending\] = useState\(!initial3dReturn\)/);
 assert.match(source, /startupLocationPending && searchScope === 'radius' \? <section className="results-panel"/);
 assert.match(source, /const STARTUP_LOCATION_FALLBACK_MS = 3_500/);
 assert.match(source, /const startupLocationSettled = useRef\(false\)/);

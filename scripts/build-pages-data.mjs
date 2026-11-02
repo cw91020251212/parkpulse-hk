@@ -1,3 +1,4 @@
+import { buildNamedPlaces } from '../lib/named-places.mjs';
 import { buildMtrDrinkingWater } from '../lib/mtr-drinking-water.mjs';
 import { buildLcsdDrinkingWater } from '../lib/lcsd-drinking-water.mjs';
 import { buildAfcdDrinkingWater } from '../lib/afcd-drinking-water.mjs';
@@ -110,6 +111,7 @@ await refreshOrKeep('traffic-cameras.json', async () => {
 await refreshOrKeep('lcsd-drinking-water.json', () => buildLcsdDrinkingWater());
 await refreshOrKeep('afcd-drinking-water.json', () => buildAfcdDrinkingWater());
 await refreshOrKeep('mtr-drinking-water.json', () => buildMtrDrinkingWater());
+await refreshOrKeep('named-places.json', () => buildNamedPlaces({ reuseRecentSnapshot: path.join(dataDir, 'named-places.json') }));
 
 await refreshOrKeep('lcsd-park-washrooms.json', () => buildLcsdParkWashrooms());
 
