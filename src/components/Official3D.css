@@ -1,8 +1,52 @@
-.official-3d-link { display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; min-height: 44px; }
+.official-3d-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+  min-height: 44px;
+}
 .official-3d-link svg { width: 20px; height: 20px; flex-shrink: 0; }
-.official-3d-map-control { margin: 12px; top: 52px; display: flex; flex-direction: column; align-items: flex-end; gap: 7px; z-index: 700; }
-.official-3d-map-control .official-3d-link, .official-3d-return { pointer-events: auto; background: #073d53; border: 2px solid #9de6e6; box-shadow: 0 2px 7px #00233466; border-radius: 10px; color: #f2ffff; padding: 8px 11px; font: inherit; font-weight: 700; font-size: 13px; min-height: 44px; cursor: pointer; }
-.official-3d-map-control .official-3d-link:focus-visible, .official-3d-return:focus-visible { outline: 3px solid #ffda70; outline-offset: 2px; }
+.official-3d-map-control {
+  margin: 12px;
+  top: 52px;
+  width: 44px;
+  height: 44px;
+  z-index: 700;
+}
+.official-3d-map-control .official-3d-link {
+  box-sizing: border-box;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  gap: 0;
+  pointer-events: auto;
+  background: #073d53;
+  border: 2px solid #9de6e6;
+  box-shadow: 0 2px 7px #00233466;
+  border-radius: 10px;
+  color: #f2ffff;
+  font: inherit;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+}
+.official-3d-map-control .official-3d-link svg { display: none; }
+.official-3d-map-control .official-3d-link:focus-visible { outline: 3px solid #ffda70; outline-offset: 2px; }
+.official-3d-link.is-disabled { opacity: .55; cursor: not-allowed; }
 .official-3d-note { margin: 10px 0; color: #b7dce6; font-size: 12px; line-height: 1.6; }
-.official-3d-status { border-left: 3px solid #83d5df; padding: 7px 10px; }
-.official-3d-map-note { pointer-events: auto; max-width: 160px; margin: 0; padding: 6px 8px; border-radius: 8px; background: #073349ee; color: #edfaff; font-size: 11px; line-height: 1.5; }
+.settings-restore-map {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 8px;
+  padding: 10px 12px;
+  text-align: left;
+  font: inherit;
+  border: 1px solid #7acbd7;
+  border-radius: 10px;
+  background: #073d53;
+  color: #f2ffff;
+  cursor: pointer;
+}

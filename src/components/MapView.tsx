@@ -17,7 +17,7 @@ import { washroomSymbolMarkup } from './WashroomSymbol';
 
 import { Official3DMapControl, Restore3DMapView, type Restore3DView } from './Official3DMapControl';
 type Props = {
-  return3d?: Restore3DView; canReturn3d: boolean; onReturn3d: () => void;
+  return3d?: Restore3DView;
   language: Language; position: Coordinates; parks: ParkViewModel[];
   showCurrentLocation: boolean;
   showManualCenter: boolean;
@@ -265,7 +265,7 @@ function groupMedicalLocations(items: MedicalLocationViewModel[]) { const groups
 
 function MapFocusIcon({ expanded }: { expanded: boolean }) { return expanded ? <svg className="map-focus-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 3 3 3 3-3M9 21l3-3 3 3M3 9l3 3-3 3M21 9l-3 3 3 3" /></svg> : <svg className="map-focus-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3H3v6m0-6 7 7M15 3h6v6m0-6-7 7M9 21H3v-6m0 6 7-7m5 7h6v-6m0 6-7-7" /></svg>; }
 
-export function MapView({ language, position, showCurrentLocation, showManualCenter, parks, nearbyItems, medicalItems, selectedId, viewedMarkerId, onSelect, onSelectOnStreet, onSelectToilet, onViewPopup, onBeginManualPositionEdit, onManualPositionChange, onCompleteManualPositionEdit, onCancelManualPositionEdit, manualPositionEditorId, onLocationSelect, recenterRequest, startupLocating, startupRecenter, expanded, searchScope, onViewportChange, onToggleExpanded, onShowResults, resultsLabel, return3d, canReturn3d, onReturn3d }: Props) {
+export function MapView({ language, position, showCurrentLocation, showManualCenter, parks, nearbyItems, medicalItems, selectedId, viewedMarkerId, onSelect, onSelectOnStreet, onSelectToilet, onViewPopup, onBeginManualPositionEdit, onManualPositionChange, onCompleteManualPositionEdit, onCancelManualPositionEdit, manualPositionEditorId, onLocationSelect, recenterRequest, startupLocating, startupRecenter, expanded, searchScope, onViewportChange, onToggleExpanded, onShowResults, resultsLabel, return3d }: Props) {
   const selected = parks.find((park) => park.info.park_Id === selectedId); const medicalGroups = useMemo(() => groupMedicalLocations(medicalItems), [medicalItems]); const trafficCameraItems = useMemo(() => nearbyItems.filter((item): item is NearbyFacilityViewModel => 'facility' in item && item.facility.kind === 'trafficCamera'), [nearbyItems]); const standardNearbyItems = useMemo(() => nearbyItems.filter((item) => !('facility' in item && item.facility.kind === 'trafficCamera')), [nearbyItems]); const visibleResultCount = parks.length + nearbyItems.length + medicalItems.length;
   const showPositionMarker = searchScope === 'radius' || showCurrentLocation || showManualCenter;
   const positionMarkerIcon = showCurrentLocation ? currentLocationIcon : selectedCenterIcon;
@@ -275,7 +275,7 @@ export function MapView({ language, position, showCurrentLocation, showManualCen
     <MapContainer center={return3d ? [return3d.center.lat, return3d.center.lng] : [position.lat, position.lng]} zoom={return3d?.zoom ?? (startupLocating ? 10 : 14)} minZoom={8} maxZoom={MAP_MAX_ZOOM} scrollWheelZoom inertia={false} className="landsd-map">
       <PopupHistory />
       <ReportViewport onChange={onViewportChange} />
-      <Official3DMapControl language={language} canReturn={canReturn3d} onReturn={onReturn3d} />
+      <Official3DMapControl language={language} />
       <ManualToiletLongPress editorId={manualPositionEditorId} onBegin={onBeginManualPositionEdit} onMove={onManualPositionChange} onComplete={onCompleteManualPositionEdit} onCancel={onCancelManualPositionEdit} />
       <TileLayer minNativeZoom={LANDSD_MIN_NATIVE_ZOOM} maxNativeZoom={LANDSD_MAX_NATIVE_ZOOM} maxZoom={MAP_MAX_ZOOM} attribution='&copy; <a href="https://api.portal.hkmapservice.gov.hk/disclaimer" target="_blank" rel="noreferrer">Map information from Lands Department</a>' url={LANDSD_BASEMAP_URL} />
       <TileLayer minNativeZoom={LANDSD_MIN_NATIVE_ZOOM} maxNativeZoom={LANDSD_MAX_NATIVE_ZOOM} maxZoom={MAP_MAX_ZOOM} url={LANDSD_LABEL_URL} opacity={1} zIndex={10} />

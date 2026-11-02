@@ -5,7 +5,7 @@ import './Official3D.css';
 
 type Props = { point: Coordinates; language: Language; compact?: boolean };
 export function Official3DLink({ point, language, compact = false }: Props) {
-  if (!isHkPoint(point)) return <span className="official-3d-link is-compact is-disabled" aria-disabled="true">{text(language, 'official3dOutsideHK')}</span>;
+  if (!isHkPoint(point)) return <span className={`official-3d-link is-disabled${compact ? ' is-compact' : ''}`} aria-disabled="true" aria-label={text(language, 'official3dOutsideHK')} title={text(language, 'official3dOutsideHK')}>{compact ? '3D' : text(language, 'official3dOutsideHK')}</span>;
   return <a className={`official-3d-link${compact ? ' is-compact' : ' secondary-action'}`}
     href={official3dUrl(point, language)} target="_blank" rel="noopener noreferrer"
     title={text(language, 'official3dLinkHint')}
@@ -16,6 +16,6 @@ export function Official3DLink({ point, language, compact = false }: Props) {
       window.dispatchEvent(new Event(OPEN_3D_EVENT));
     }}>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="m12 2 9 5v10l-9 5-9-5V7zM3 7l9 5 9-5M12 12v10" /></svg>
-    {text(language, compact ? 'official3dShort' : 'official3dAtPoint')}
+    {compact ? '3D' : text(language, 'official3dAtPoint')}
   </a>;
 }
