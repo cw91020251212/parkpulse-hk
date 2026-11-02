@@ -35,3 +35,7 @@
 ## 官方壓縮包下載核查
 
 官方附件網址 `https://www.hkmapservice.gov.hk/OpenData/directDownload?productName=iG1000&sheetName=Fullset_Seamless&productFormat=FGDB` 可提供HTTP200。CLI原先因伺服器中繼憑證鏈不完整失敗；補入由證書AIA指定的香港郵政官方 `http://www1.eCert.gov.hk/root/ecert_ssl_ca_3-17.crt` 後，OpenSSL鏈驗證通過、官方下載可正常串流。未完成的ZIP自然沒有末端目錄，不能因此說原始資料不存在或是官方已知Bug；本次串流較慢，為完成原要求，使用以上可追溯政府資料鏡像而非等全套大包。沒有停用TLS驗證、沒有複製網站key、沒有偽造Origin，也沒有轉用受限制的 GeoInfo Map identify 接口。
+
+## 正式站驗證
+
+GitHub Pages程式版本`43a8df0`，工作流程`41542440143`成功。2026-11-03在`https://cw91020251212.github.io/parkpulse-hk/`以新瀏覽器390px手機尺寸驗證真實球場範圍；GPS fixture及手動長按選點均顯示官方中英名稱與地址，座標收起、3D依所選釘位置、關閉與返回正常。此為可控座標UI驗證，不宣稱測試了使用者實體手機GPS權限。正式站命名JSON為11,459個範圍，回應gzip；沒有瀏覽器鏡像反查請求或JS例外。
