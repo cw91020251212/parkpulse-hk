@@ -3,7 +3,7 @@ import { text, vehicleLabel, type Language } from '../i18n';
 
 export type FilterSection = 'parking' | 'facilities';
 
-const FACILITY_MODES = ['toilets', 'fuel', 'atm', 'aed', 'emergency', 'medical', 'border', 'hkjc', 'trafficCamera'] as const;
+const FACILITY_MODES = ['toilets', 'fuel', 'atm', 'aed', 'emergency', 'medical', 'border', 'hkjc', 'trafficCamera', 'drinkingWater'] as const;
 
 type Props = {
   language: Language;
@@ -53,6 +53,7 @@ export function Filters({ language, section, vehicleType, filters, evLoading, fa
               ? text(language, 'hkjcOutlets')
               : mode === 'trafficCamera'
                 ? text(language, 'trafficCameras')
+                : mode === 'drinkingWater' ? text(language, 'drinkingWater')
                 : mode === 'medical'
                 ? text(language, 'medicalFacilities')
               : mode === 'onStreet'

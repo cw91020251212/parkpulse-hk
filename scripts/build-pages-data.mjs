@@ -1,3 +1,5 @@
+import { buildLcsdDrinkingWater } from '../lib/lcsd-drinking-water.mjs';
+import { buildAfcdDrinkingWater } from '../lib/afcd-drinking-water.mjs';
 import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -103,6 +105,9 @@ await refreshOrKeep('traffic-cameras.json', async () => {
   ]);
   return buildTrafficCameraSnapshot({ englishXml, traditionalChineseXml });
 });
+
+await refreshOrKeep('lcsd-drinking-water.json', () => buildLcsdDrinkingWater());
+await refreshOrKeep('afcd-drinking-water.json', () => buildAfcdDrinkingWater());
 
 await refreshOrKeep('lcsd-park-washrooms.json', () => buildLcsdParkWashrooms());
 

@@ -582,3 +582,9 @@ ATM 銀行改為按名稱排序的單欄列表，每行銀行全名／短名旁�
 ### 固定面板與手機文字縮放
 
 銀行選擇、詳情、說明、地區搜尋及圖例使用 `ScreenOverlay`／React portal 放到 `document.body`，不繼承主頁 `zoom`／裁切條件。銀行面板以 `100vw × 100dvh` 覆蓋視窗；手機檢查同時讀取 layout 與 visual viewport，確認關閉／完成按鈕仍在可視範圍。官方依據：[React createPortal](https://react.dev/reference/react-dom/createPortal) 的 modal escaping 規則，以及 [MDN Viewport concepts](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/CSSOM_view/Viewport_concepts) 對 layout/visual viewport 的區分。鍵盤焦點限於最上層面板，顯式關閉後交回觸發位置。
+
+## 2026-11-03：附近飲水機／加水站
+
+新增互斥 `drinkingWater` 附近設施模式，沿用地政總署底圖、原有水滴 marker 幾何、範圍／目前畫面、距離排序及共用詳情返回。主來源為康文署官方雙語飲水機 CSV，含場地地址、具體機位、WGS84、機型、機數、服務時間、水溫、室內外及備註；漁護署郊野加水站採最新 CSDI 點位並對照現行官方名錄與暫停提示。公開資料快照隨 GitHub Pages 建置更新，單一來源失敗只保留該來源最後快照並顯示其實際日期，無新增後端或 Manus 發佈。
+
+清單使用緊湊飲水設施專用卡，完整名稱、距離、地址及具體機位、室內外／機型／機數摘要，底部小型詳情和步行導航，不使用高直動作欄。詳情顯示原始開放時間與例外、水溫、過濾證據／未公開狀態、場地入場限制、暫停提示、來源及快照日期；官方沒有圖片就不杜撰。可在同一篩選列切換全部／室內／室外；不誤稱所有機可斟瓶、不把場地免費入場、即時正常供水或濾芯規格當成已核實。以地點數與已公布機數分開處理，不把一筆機位記錄當成只一部機。

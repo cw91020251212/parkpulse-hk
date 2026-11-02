@@ -1,3 +1,4 @@
+import { DRINKING_WATER_SYMBOL_URL } from './DrinkingWaterSymbol';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import L from 'leaflet';
 import { Circle, MapContainer, Marker, Popup, TileLayer, Tooltip, useMap } from 'react-leaflet';
@@ -238,20 +239,21 @@ function nearbyIcon(kind?: PublicToilet['kind'] | NearbyFacility['kind'] | OnStr
   const unconfirmedVenue = kind === 'afcdLongValleyTemporaryToilets' || locationUnconfirmed;
   const fuel = kind === 'fuel';
   const atm = kind === 'atm';
+  const drinkingWater = kind === 'drinkingWater';
   const aed = kind === 'aed';
   const emergency = kind === 'emergency';
   const border = kind === 'border';
   const hkjc = kind === 'hkjc';
   const motorcycle = kind === 'motorcycle';
   const onStreet = kind === 'metered' || kind === 'nonMetered' || motorcycle;
-  const washroom = !fuel && !atm && !aed && !emergency && !border && !hkjc && !onStreet;
+  const washroom = !fuel && !atm && !aed && !emergency && !border && !hkjc && !drinkingWater && !onStreet;
   const brandIcon = fuel || atm ? getFacilityBrandIcon(fuel ? 'fuel' : 'atm', brand) : undefined;
   const count = staticRoadside ? total : vacant ?? 0;
-  const label = onStreet ? String(count > 99 ? '99+' : count) : washroom ? washroomSymbolMarkup(venue) : aed ? `<img class="aed-symbol" src="${AED_SYMBOL_URL}" alt="" />` : emergency ? `<img class="emergency-pill-symbol" src="${EMERGENCY_SYMBOL_URL}" alt="" />` : border ? `<img class="border-control-symbol" src="${BORDER_SYMBOL_URL}" alt="" />` : hkjc ? '<span class="hkjc-horse-icon">♞</span>' : fuel ? '⛽' : '🏧';
+  const label = drinkingWater ? `<img class="drinking-water-symbol" src="${DRINKING_WATER_SYMBOL_URL}" alt="" />` : onStreet ? String(count > 99 ? '99+' : count) : washroom ? washroomSymbolMarkup(venue) : aed ? `<img class="aed-symbol" src="${AED_SYMBOL_URL}" alt="" />` : emergency ? `<img class="emergency-pill-symbol" src="${EMERGENCY_SYMBOL_URL}" alt="" />` : border ? `<img class="border-control-symbol" src="${BORDER_SYMBOL_URL}" alt="" />` : hkjc ? '<span class="hkjc-horse-icon">♞</span>' : fuel ? '⛽' : '🏧';
   const content = brandIcon ? `<span class="facility-brand-mark" aria-hidden="true"><img src="${brandIcon.src}" alt="" /></span>` : `<span aria-hidden="true">${label}</span>`;
   const firstPrizeBadge = hkjc && firstPrizeRank && firstPrizeCount ? `<span class="hkjc-first-prize-marker-badge" aria-hidden="true"><svg viewBox="0 0 48 36" focusable="false"><path d="M3 4 13 14 24 2 35 14 45 4 40 33H8Z" fill="#f8c749" stroke="#8c5a00" stroke-width="2" stroke-linejoin="round"/><path d="M7 26h34v7H7z" fill="#e5a719"/><text x="24" y="25" text-anchor="middle" font-size="17" font-weight="900" fill="#4b3100">${firstPrizeCount}</text></svg></span>` : '';
   const editTarget = venue && toiletId ? ` data-manual-toilet-id="${encodeURIComponent(toiletId)}"` : '';
-  const tone = venue ? ' is-venue' : fuel ? ' is-fuel' : atm ? ' is-atm' : aed ? ' is-aed' : emergency ? ' is-emergency' : border ? ' is-border' : hkjc ? ' is-hkjc' : onStreet ? ` is-onstreet is-${occupancy}${motorcycle ? ' is-motorcycle' : ''}` : '';
+  const tone = drinkingWater ? ' is-drinking-water' : venue ? ' is-venue' : fuel ? ' is-fuel' : atm ? ' is-atm' : aed ? ' is-aed' : emergency ? ' is-emergency' : border ? ' is-border' : hkjc ? ' is-hkjc' : onStreet ? ` is-onstreet is-${occupancy}${motorcycle ? ' is-motorcycle' : ''}` : '';
   return L.divIcon({ className: 'toilet-marker-shell', html: `<span${editTarget} class="toilet-marker${tone}${unconfirmedVenue ? ' is-location-unconfirmed' : ''}${brandIcon ? ' is-brand' : ''}${viewed ? ' is-viewed' : ''}${manualEditing ? ' is-being-adjusted' : ''}${firstPrizeBadge ? ' has-first-prize' : ''}">${content}${firstPrizeBadge}</span>`, iconSize: [34, 34], iconAnchor: [17, 34] });
 }
 
@@ -265,7 +267,7 @@ export function MapView({ language, position, showCurrentLocation, showManualCen
   const selected = parks.find((park) => park.info.park_Id === selectedId); const medicalGroups = useMemo(() => groupMedicalLocations(medicalItems), [medicalItems]); const trafficCameraItems = useMemo(() => nearbyItems.filter((item): item is NearbyFacilityViewModel => 'facility' in item && item.facility.kind === 'trafficCamera'), [nearbyItems]); const standardNearbyItems = useMemo(() => nearbyItems.filter((item) => !('facility' in item && item.facility.kind === 'trafficCamera')), [nearbyItems]); const visibleResultCount = parks.length + nearbyItems.length + medicalItems.length;
   const showPositionMarker = searchScope === 'radius' || showCurrentLocation || showManualCenter;
   const positionMarkerIcon = showCurrentLocation ? currentLocationIcon : selectedCenterIcon;
-  const label = (kind?: PublicToilet['kind'] | NearbyFacility['kind'] | OnStreetParkingGroup['kind']) => kind === 'hadCommunityToilet' ? text(language, 'hadCommunityWashroom') : kind === 'afcdLongValleyTemporaryToilets' ? text(language, 'afcdLongValleyTemporaryWashrooms') : kind === 'afcdNatureCentreToilet' ? text(language, 'afcdNatureCentreWashroom') : kind === 'lcsdVenue' ? text(language, 'venueWashroom') : kind === 'lcsdParkToilet' ? text(language, 'lcsdParkWashroom') : kind === 'afcdCountryParkToilet' ? text(language, 'afcdCountryParkWashroom') : kind === 'landsdMapToilet' ? text(language, 'landsdMapToilet') : kind === 'fuel' ? (language === 'en' ? 'Consumer Council fuel station' : '消委會油站') : kind === 'atm' ? (language === 'en' ? 'HKMA ATM' : '金管局 ATM') : kind === 'aed' ? text(language, 'aed') : kind === 'emergency' ? text(language, 'emergencyDepartment') : kind === 'border' ? text(language, 'borderControlPoints') : kind === 'hkjc' ? text(language, 'hkjcOutlets') : kind === 'trafficCamera' ? text(language, 'trafficCameras') : kind === 'metered' ? text(language, 'meteredParking') : kind === 'nonMetered' ? text(language, 'nonMeteredTrial') : kind === 'motorcycle' ? text(language, 'motorcycleOnStreet') : text(language, 'publicToilet');
+  const label = (kind?: PublicToilet['kind'] | NearbyFacility['kind'] | OnStreetParkingGroup['kind']) => kind === 'hadCommunityToilet' ? text(language, 'hadCommunityWashroom') : kind === 'afcdLongValleyTemporaryToilets' ? text(language, 'afcdLongValleyTemporaryWashrooms') : kind === 'afcdNatureCentreToilet' ? text(language, 'afcdNatureCentreWashroom') : kind === 'lcsdVenue' ? text(language, 'venueWashroom') : kind === 'lcsdParkToilet' ? text(language, 'lcsdParkWashroom') : kind === 'afcdCountryParkToilet' ? text(language, 'afcdCountryParkWashroom') : kind === 'landsdMapToilet' ? text(language, 'landsdMapToilet') : kind === 'fuel' ? (language === 'en' ? 'Consumer Council fuel station' : '消委會油站') : kind === 'atm' ? (language === 'en' ? 'HKMA ATM' : '金管局 ATM') : kind === 'aed' ? text(language, 'aed') : kind === 'emergency' ? text(language, 'emergencyDepartment') : kind === 'border' ? text(language, 'borderControlPoints') : kind === 'hkjc' ? text(language, 'hkjcOutlets') : kind === 'drinkingWater' ? text(language, 'drinkingWater') : kind === 'trafficCamera' ? text(language, 'trafficCameras') : kind === 'metered' ? text(language, 'meteredParking') : kind === 'nonMetered' ? text(language, 'nonMeteredTrial') : kind === 'motorcycle' ? text(language, 'motorcycleOnStreet') : text(language, 'publicToilet');
 
   return <div className={expanded ? 'map-wrap is-expanded' : 'map-wrap'} aria-label={text(language, 'mapLabel')}>
     <MapContainer center={[position.lat, position.lng]} zoom={startupLocating ? 10 : 14} minZoom={8} maxZoom={MAP_MAX_ZOOM} scrollWheelZoom inertia={false} className="landsd-map">

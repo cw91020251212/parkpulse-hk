@@ -1,0 +1,28 @@
+.water-card { background: #092f45; border: 1px solid #32758e; border-left: 4px solid #51c6e9; border-radius: 16px; overflow: hidden; color: #edf8fc; }
+.water-card-main { display: block; width: 100%; min-width: 0; border: 0; background: none; color: inherit; text-align: left; padding: 14px; cursor: pointer; font: inherit; }
+.water-card-heading { display: flex; gap: 10px; align-items: flex-start; }
+.water-card-heading h3 { flex: 1; min-width: 0; margin: 0; font-size: 16px; line-height: 1.45; overflow-wrap: anywhere; }
+.water-card-symbol { flex: 0 0 32px; background: #08649c; border-radius: 9px; padding: 3px; }
+.drinking-water-symbol { display: block; width: 26px; height: 26px; object-fit: contain; }
+.water-card-heading .distance { flex: 0 0 auto; font-size: 13px; color: #c2e9f3; padding-top: 3px; }
+.water-card-address, .water-card-location { margin: 9px 0 0; font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; }
+.water-card-location { color: #b5e5f5; }
+.water-card-facts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.water-card-facts span { padding: 4px 8px; border-radius: 6px; background: #164c62; font-size: 12px; }
+.water-card-hours { font-size: 13px; line-height: 1.45; margin: 10px 0 0; }
+.water-card-source { margin: 8px 0 0; font-size: 11px; color: #a8c3ce; }
+.water-card-actions { display: flex; gap: 8px; padding: 0 14px 14px; }
+.water-card-actions button, .water-card-actions a { display: inline-flex; justify-content: center; align-items: center; min-height: 44px; flex: 1; border-radius: 8px; border: 1px solid #55b7d4; padding: 8px; font: inherit; font-size: 13px; text-decoration: none; color: #e6faff; background: #13516c; cursor: pointer; }
+.water-card button:focus-visible, .water-card a:focus-visible { outline: 3px solid #ffe081; outline-offset: -3px; }
+.water-closed-notice { border-left: 3px solid #ffac69; padding-left: 8px; color: #ffe1c7; font-weight: 700; font-size: 14px; line-height: 1.5; }
+.water-card.is-closed { border-left-color: #ffac69; }
+.water-data-note { padding: 10px; border: 1px solid #30647b; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #b5d9e4; }
+.water-detail-info .detail-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+.water-detail-info dd { overflow-wrap: anywhere; }
+.water-detail-info .water-location-description { font-size: 16px; color: #e3f7ff; line-height: 1.6; }
+.water-filter { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.water-filter select { border-radius: 18px; border: 1px solid #5d8899; background: #0c3346; color: #dff9ff; padding: 8px 12px; min-height: 44px; font: inherit; font-size: 13px; }
+.legend-drinking-water { background: #08649c; border: 1px solid #a5ecff; }
+
+.leaflet-marker-icon .toilet-marker.is-drinking-water { background: #08649c; color: #fff; }
+.toilet-marker.is-drinking-water > span .drinking-water-symbol { width: 24px; height: 24px; }

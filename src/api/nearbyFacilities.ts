@@ -1,3 +1,4 @@
+import { fetchDrinkingWater } from './drinkingWater';
 import type { BorderQueue, BorderQueueStatus, EmergencyWaitTime, NearbyFacility } from '../types';
 import type { Language } from '../i18n';
 import { isStaticPages, publicAsset } from './site';
@@ -181,11 +182,12 @@ async function fetchTrafficCameras(language: Language, signal: AbortSignal) {
   return { records, source: snapshot.source?.[language] };
 }
 
-export async function fetchNearbyFacilities(kind: 'fuel' | 'atm' | 'aed' | 'emergency' | 'border' | 'hkjc' | 'trafficCamera', signal: AbortSignal, language: Language) {
+export async function fetchNearbyFacilities(kind: 'fuel' | 'atm' | 'aed' | 'emergency' | 'border' | 'hkjc' | 'trafficCamera' | 'drinkingWater', signal: AbortSignal, language: Language) {
   if (kind === 'emergency') return fetchEmergencyFacilities(language, signal);
   if (kind === 'border') return fetchBorderControlPoints(language, signal);
   if (kind === 'hkjc') return fetchHkjcBettingOutlets(language, signal);
   if (kind === 'trafficCamera') return fetchTrafficCameras(language, signal);
+  if (kind === 'drinkingWater') return fetchDrinkingWater(signal, language);
   const snapshot = kind === 'fuel' ? 'fuel-stations' : kind === 'atm' ? 'atms' : 'aeds';
   const endpoint = kind === 'aed' || isStaticPages ? publicAsset(`pages-data/${snapshot}.json`) : kind === 'fuel' ? '/api/fuel-stations' : '/api/atms';
   const response = await fetch(endpoint, { signal });

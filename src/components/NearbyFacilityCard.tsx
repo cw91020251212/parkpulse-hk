@@ -1,3 +1,4 @@
+import { DrinkingWaterCard } from './DrinkingWaterCard';
 import { publicAsset } from '../api/site';
 import { getFacilityBrandIcon } from '../domain/brandIcons';
 import { borderWaitSummary, formatBorderSnapshotTime } from '../domain/borderWait';
@@ -20,6 +21,7 @@ export function NearbyFacilityCard({ language, item }: Props) {
   const border = facility.kind === 'border';
   const hkjc = facility.kind === 'hkjc';
   const trafficCamera = facility.kind === 'trafficCamera';
+  if (facility.kind === 'drinkingWater') return <DrinkingWaterCard language={language} item={item} />;
   if (trafficCamera) return <TrafficCameraCard language={language} item={item} />;
   const tone = fuel ? 'is-fuel' : aed ? 'is-aed' : emergency ? 'is-emergency' : border ? 'is-border' : hkjc ? 'is-hkjc' : 'is-atm';
   const brandIcon = aed || emergency || border || hkjc ? undefined : getFacilityBrandIcon(fuel ? 'fuel' : 'atm', facility.brand);

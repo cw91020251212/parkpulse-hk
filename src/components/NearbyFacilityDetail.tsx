@@ -1,3 +1,5 @@
+import { DrinkingWaterDetailFields } from './DrinkingWaterDetailFields';
+import { DrinkingWaterSymbol } from './DrinkingWaterSymbol';
 import { DetailCloseBar } from './DetailCloseBar';
 import { useState } from 'react';
 import { publicAsset } from '../api/site';
@@ -114,13 +116,14 @@ export function NearbyFacilityDetail({ language, item: { facility, distanceKm },
   const border = facility.kind === 'border';
   const hkjc = facility.kind === 'hkjc';
   const trafficCamera = facility.kind === 'trafficCamera';
-  const typeLabel = text(language, trafficCamera ? 'trafficCameras' : emergency ? 'emergencyDepartment' : border ? 'borderControlPoints' : hkjc ? 'hkjcOutlets' : aed ? 'aed' : fuel ? 'fuel' : 'atmBank');
+  const drinkingWater = facility.kind === 'drinkingWater';
+  const typeLabel = text(language, drinkingWater ? 'drinkingWater' : trafficCamera ? 'trafficCameras' : emergency ? 'emergencyDepartment' : border ? 'borderControlPoints' : hkjc ? 'hkjcOutlets' : aed ? 'aed' : fuel ? 'fuel' : 'atmBank');
   const placeUrl = googleMapsPlaceUrl(facility.name, facility.address, facility.latitude, facility.longitude);
   const navigationUrl = `https://www.google.com/maps/dir/?api=1&destination=${facility.latitude},${facility.longitude}${fuel || emergency || border || trafficCamera ? '&travelmode=driving' : '&travelmode=walking'}`;
 
   return <aside className="detail-panel nearby-facility-detail-panel" role="dialog" aria-modal="true" aria-label={`${facility.name} ${text(language, 'details')}`}>
     <DetailCloseBar language={language} onClose={onClose} />
-    <p className="eyebrow">{aed && <img className="aed-detail-symbol" src={AED_SYMBOL_URL} alt="" />}{emergency && <img className="emergency-detail-symbol" src={EMERGENCY_SYMBOL_URL} alt="" />}{border && <img className="border-detail-symbol" src={BORDER_SYMBOL_URL} alt="" />}{hkjc && <span className="hkjc-detail-symbol" aria-hidden="true">♞</span>}{trafficCamera && <span className="traffic-camera-detail-symbol" aria-hidden="true">📷</span>} {typeLabel} · {formatDistance(distanceKm)}</p>
+    <p className="eyebrow">{aed && <img className="aed-detail-symbol" src={AED_SYMBOL_URL} alt="" />}{emergency && <img className="emergency-detail-symbol" src={EMERGENCY_SYMBOL_URL} alt="" />}{border && <img className="border-detail-symbol" src={BORDER_SYMBOL_URL} alt="" />}{hkjc && <span className="hkjc-detail-symbol" aria-hidden="true">♞</span>}{drinkingWater && <DrinkingWaterSymbol />}{trafficCamera && <span className="traffic-camera-detail-symbol" aria-hidden="true">📷</span>} {typeLabel} · {formatDistance(distanceKm)}</p>
     {trafficCamera && facility.snapshotUrl && <TrafficCameraPreview language={language} name={facility.name} snapshotUrl={facility.snapshotUrl} refreshNote={facility.imageRefreshNote} />}
     <h2>{facility.name}</h2>
     {emergency && <p className="emergency-urgent-notice" role="note">{text(language, 'emergencyUrgentNotice')}</p>}
@@ -138,6 +141,7 @@ export function NearbyFacilityDetail({ language, item: { facility, distanceKm },
       <p>{text(language, 'hkjcFirstPrizeAsOf', { value: facility.hkjcFirstPrizeAsOf || '—' })}</p>
       {facility.hkjcFirstPrizeSourceUrl && <a href={facility.hkjcFirstPrizeSourceUrl} target="_blank" rel="noreferrer">{text(language, 'hkjcFirstPrizeSource')}</a>}
     </section>}
+    {drinkingWater && <DrinkingWaterDetailFields language={language} facility={facility} />}
     {emergency && <EmergencyWaitingTimes language={language} wait={facility.emergencyWait} />}
     {border && <BorderWaitingTimes language={language} wait={facility.borderWait} />}
     <dl className="detail-grid">
@@ -146,7 +150,7 @@ export function NearbyFacilityDetail({ language, item: { facility, distanceKm },
       {trafficCamera && <div><dt>{text(language, 'trafficCameraKeyLabel')}</dt><dd>{facility.cameraKey ?? facility.id}</dd></div>}
       {trafficCamera && <div><dt>{text(language, 'trafficCameraArea')}</dt><dd>{facility.region} · {facility.district}</dd></div>}
     </dl>
-    {facility.openingHours && <section className="detail-section"><h3>{text(language, 'openStatus')}</h3><p>{facility.openingHours}</p></section>}
+    {!drinkingWater && facility.openingHours && <section className="detail-section"><h3>{text(language, 'openStatus')}</h3><p>{facility.openingHours}</p></section>}
     {facility.remarks && <section className="detail-section"><h3>{text(language, 'details')}</h3><p>{facility.remarks}</p></section>}
     <div className="detail-actions nearby-facility-actions">
       {trafficCamera && facility.snapshotUrl ? <a className="primary-action" href={facility.snapshotUrl} target="_blank" rel="noreferrer">{text(language, 'trafficCameraOpenSnapshot')}</a> : <a className="primary-action" href={navigationUrl} target="_blank" rel="noreferrer">{fuel || emergency || border ? text(language, 'drivingNavigation') : text(language, 'walkingNavigation')}</a>}

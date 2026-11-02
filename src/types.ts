@@ -210,7 +210,7 @@ export interface MedicalLocationViewModel {
   onSelect?: () => void;
 }
 
-export type NearbyMode = 'toilets' | 'fuel' | 'atm' | 'aed' | 'emergency' | 'border' | 'hkjc' | 'trafficCamera' | 'medical' | 'onStreet';
+export type NearbyMode = 'toilets' | 'fuel' | 'atm' | 'aed' | 'emergency' | 'border' | 'hkjc' | 'trafficCamera' | 'drinkingWater' | 'medical' | 'onStreet';
 
 export interface GoogleMapsRating {
   rating: number;
@@ -228,7 +228,8 @@ export interface NearbyFacility {
   remarks?: string;
   latitude: number;
   longitude: number;
-  kind: 'fuel' | 'atm' | 'aed' | 'emergency' | 'border' | 'hkjc' | 'trafficCamera';
+  kind: 'fuel' | 'atm' | 'aed' | 'emergency' | 'border' | 'hkjc' | 'trafficCamera' | 'drinkingWater';
+  drinkingWater?: import('./domain/drinkingWater').DrinkingWaterInfo;
   source: string;
   sourceUrl?: string;
   sourcePdfUrl?: string;

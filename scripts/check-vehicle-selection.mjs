@@ -15,14 +15,14 @@ assert.match(filters, /section === 'parking' \?/);
 assert.match(filters, /section === 'facilities'/);
 assert.match(filters, /export function FilterModeSwitch/);
 assert.match(filters, /className="filter-mode-switch is-compact"/);
-assert.match(filters, /FACILITY_MODES = \['toilets', 'fuel', 'atm', 'aed', 'emergency', 'medical', 'border', 'hkjc', 'trafficCamera'\] as const/);
+assert.match(filters, /FACILITY_MODES = \['toilets', 'fuel', 'atm', 'aed', 'emergency', 'medical', 'border', 'hkjc', 'trafficCamera', 'drinkingWater'\] as const/);
 assert.doesNotMatch(filters, /!vehicleType && \(\['toilets'/, 'Facility choices are not mixed into the parking filters');
 assert.match(filters, /onClick=\{\(\) => onSectionChange\('facilities'\)\}/);
 assert.match(filters, /facilityMode === 'onStreet'/, 'On-street parking remains in the parking section');
 
 assert.match(app, /useState<VehicleType \| null>\(\(\) => readPreferences\(\)\.vehicleType\)/);
 assert.match(app, /saved\.vehicleType === null \? null/);
-assert.match(app, /const facilityMode = \['toilets', 'fuel', 'atm', 'aed', 'emergency', 'border', 'hkjc', 'trafficCamera', 'medical', 'onStreet'\]/, 'Persisted HKJC and roadside modes remain valid');
+assert.match(app, /const facilityMode = \['toilets', 'fuel', 'atm', 'aed', 'emergency', 'border', 'hkjc', 'trafficCamera', 'drinkingWater', 'medical', 'onStreet'\]/, 'Persisted HKJC, drinking-water and roadside modes remain valid');
 assert.match(app, /vehicleType: facilityMode && facilityMode !== 'onStreet' \? null : vehicleType/, 'Legacy simultaneous facility and vehicle preferences open without both modes');
 assert.match(app, /const \[filterSection, setFilterSection\] = useState<FilterSection>/);
 assert.match(app, /const changeFilterSection = \(section: FilterSection\)/);

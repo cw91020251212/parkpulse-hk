@@ -11,7 +11,7 @@ export function useNearbyFacilities(mode: NearbyMode | null, language: Language)
   const [requestVersion, setRequestVersion] = useState(0);
 
   useEffect(() => {
-    if (mode !== 'fuel' && mode !== 'atm' && mode !== 'aed' && mode !== 'emergency' && mode !== 'border' && mode !== 'hkjc' && mode !== 'trafficCamera') return;
+    if (mode !== 'fuel' && mode !== 'atm' && mode !== 'aed' && mode !== 'emergency' && mode !== 'border' && mode !== 'hkjc' && mode !== 'trafficCamera' && mode !== 'drinkingWater') return;
     let active = true;
     const controller = new AbortController();
     setLoading(true);
