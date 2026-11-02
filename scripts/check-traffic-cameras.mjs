@@ -31,4 +31,16 @@ assert.match(detailSource, /parkpulse_refresh/, 'Traffic camera detail must allo
 assert.match(detailSource, /trafficCameraImageLoadFailed/, 'Traffic camera detail must retain an official-image fallback when loading fails');
 assert.match(detailSource, /referrerPolicy="no-referrer"/, 'Traffic camera detail must not expose the ParkPulse page URL to the official image host');
 
-console.log(`Verified ${records.length} bilingual Transport Department traffic-camera records plus the direct, image-first official snapshot detail view.`);
+const cardSource = await readFile(new URL('../src/components/TrafficCameraCard.tsx', import.meta.url), 'utf8');
+const cardStyles = await readFile(new URL('../src/components/TrafficCameraCard.css', import.meta.url), 'utf8');
+const facilityCardSource = await readFile(new URL('../src/components/NearbyFacilityCard.tsx', import.meta.url), 'utf8');
+assert.match(facilityCardSource, /if \(trafficCamera\) return <TrafficCameraCard/, 'Camera cards must bypass the general facility action-column layout');
+assert.match(cardSource, /src=\{facility\.snapshotUrl\}/, 'Each list image uses its own official camera URL');
+assert.match(cardSource, /loading="lazy"/, 'List images must load lazily rather than download every camera at startup');
+assert.match(cardSource, /referrerPolicy="no-referrer"/, 'List images must not send the page address to the image host');
+assert.match(cardSource, /camera-card-footer[\s\S]*?onClick=\{onSelect\}/, 'Details must be a bottom action, not a tall right-hand column');
+assert.doesNotMatch(cardSource, /toilet-card-actions|trafficCameraSources|trafficCameraImageRefresh/, 'Repeated source/update paragraphs and side action columns must be absent from camera cards');
+assert.match(cardSource, /trafficCameraCardImageFailed/, 'List images must have an honest unavailable-image fallback');
+assert.match(cardStyles, /aspect-ratio: 4 \/ 3/, 'List images must retain a complete four-to-three frame');
+assert.match(cardStyles, /white-space: normal/, 'Full camera names must remain readable instead of being truncated');
+console.log(`Verified ${records.length} bilingual traffic-camera records, image-first details and compact photo list cards.`);

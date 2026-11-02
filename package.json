@@ -52,6 +52,7 @@
     "test:nearby-facilities": "node scripts/check-nearby-facilities.mjs",
     "test:medical-locations": "node scripts/check-medical-locations.mjs",
     "test:atm-crosscheck": "node scripts/check-atm-crosscheck.mjs",
+    "test:atm-bank-selection": "node --experimental-strip-types scripts/check-atm-bank-selection.mjs",
     "test:on-street": "node scripts/check-on-street-parking.mjs",
     "test:on-street-limit": "node --experimental-strip-types scripts/check-on-street-render-limit.mjs",
     "test:motorcycle": "node --experimental-strip-types --experimental-specifier-resolution=node scripts/check-motorcycle-support.mjs",

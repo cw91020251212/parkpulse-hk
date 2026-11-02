@@ -1,0 +1,139 @@
+.atm-bank-filter.atm-bank-multiselect {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+  padding: 10px;
+}
+
+.atm-bank-multiselect__heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.atm-bank-multiselect__heading > strong {
+  font-size: 13px;
+}
+
+.atm-bank-multiselect__heading > span {
+  flex: 1 1 auto;
+  color: #c7eee0;
+  font-size: 12px;
+}
+
+.atm-bank-multiselect__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 44px;
+  min-height: 44px;
+  max-width: 100%;
+  border: 1px solid #4a9480;
+  border-radius: 999px;
+  padding: 8px 11px;
+  color: #e8fff6;
+  background: #0a2928;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.4;
+  text-align: left;
+  overflow-wrap: anywhere;
+  touch-action: manipulation;
+}
+
+.atm-bank-multiselect__button:hover {
+  border-color: #8ce4c3;
+}
+
+.atm-bank-multiselect__button[aria-pressed="true"] {
+  border-color: #a3f2d7;
+  color: #072e2b;
+  background: #a3f2d7;
+}
+
+.atm-bank-multiselect__button b {
+  flex: 0 0 auto;
+  min-width: 22px;
+  border-radius: 999px;
+  padding: 1px 5px;
+  background: rgb(255 255 255 / 13%);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.atm-bank-multiselect__button[aria-pressed="true"] b {
+  background: rgb(7 46 43 / 10%);
+}
+
+.atm-bank-multiselect__check {
+  flex: 0 0 auto;
+  width: 12px;
+  text-align: center;
+}
+
+.atm-bank-multiselect__search {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+}
+
+.atm-bank-multiselect__search input {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  border: 1px solid #4a9480;
+  border-radius: 8px;
+  padding: 9px 10px;
+  color: #e8fff6;
+  background: #0a2928;
+  font: inherit;
+  font-size: 16px;
+}
+
+.atm-bank-multiselect__search input::placeholder {
+  color: #a9cfc0;
+}
+
+.atm-bank-multiselect__button:focus-visible,
+.atm-bank-multiselect__search input:focus-visible {
+  outline: 2px solid #f7dc80;
+  outline-offset: 2px;
+}
+
+.atm-bank-multiselect__options {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: start;
+  gap: 7px;
+  max-height: 190px;
+  overflow-y: auto;
+  padding: 3px;
+  scrollbar-width: thin;
+  scrollbar-color: #4a9480 #0a2928;
+}
+
+.atm-bank-filter.atm-bank-multiselect p {
+  width: auto;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.atm-bank-filter.atm-bank-multiselect .atm-bank-multiselect__scope {
+  color: #c7eee0;
+  font-weight: 700;
+}
+
+/* Several selected names must wrap rather than overflow the existing heading. */
+.app-shell .results-heading.is-bank-filtered h2 {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.app-shell.map-focus .atm-bank-multiselect {
+  display: none;
+}

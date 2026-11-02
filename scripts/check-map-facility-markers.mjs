@@ -103,7 +103,9 @@ assert.match(trafficLayer, /marker-traffic-camera-cluster/, 'Dense traffic camer
 assert.match(trafficLayer, /CLUSTER_GRID_PX/, 'Traffic-camera grouping must avoid overlapping dense markers');
 assert.match(styles, /\.toilet-marker\.is-traffic-camera \{ --marker-outline: #136a80; background: linear-gradient\(to top right, #13738a, #8ce4eb\); \}/, 'Traffic cameras must use a high-contrast distinct tone on the Lands Department basemap');
 assert.match(styles, /\.parking-marker\.marker-traffic-camera-cluster/, 'Traffic-camera clusters must retain the parking-marker waterdrop geometry');
-assert.match(facilityCard, /trafficCameraOpenSnapshot/, 'Traffic-camera cards must offer the official original snapshot action');
+assert.match(facilityCard, /return <TrafficCameraCard/, 'Traffic cameras must use photo-first list cards');
+const trafficCard = await readFile(new URL('../src/components/TrafficCameraCard.tsx', import.meta.url), 'utf8');
+assert.match(trafficCard, /href=\{facility\.snapshotUrl\}/, 'Traffic-camera cards must offer the official original snapshot action');
 assert.match(detailSource, /trafficCameraOpenSnapshot/, 'Traffic-camera detail must offer the official original snapshot action');
 assert.match(nearbyApi, /fetchTrafficCameras/, 'Traffic-camera frontend data must use the static Pages snapshot flow');
 assert.match(trafficBuilder, /TRAFFIC_CAMERA_LOCATIONS_TC_URL/, 'Traffic-camera builder must read the official Traditional Chinese location XML');
