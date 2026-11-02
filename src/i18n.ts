@@ -6,6 +6,10 @@ type Copy = Record<string, string>;
 
 const COPY: Record<Language, Copy> = {
   'zh-Hant': {
+    chooseBanks: '選擇銀行',
+    closeScreen: '關閉',
+    exitFullscreen: '退出全螢幕',
+    viewList: '查看清單',
     brandKicker: 'PARKPULSE HK',
     brandTitle: '泊邊度',
     textSize: '文字',
@@ -395,6 +399,10 @@ const COPY: Record<Language, Copy> = {
     disclaimerPrivacy: '定位只在你授權瀏覽器後用作本機搜尋中心；本站不設帳戶、不收款、不在伺服器端儲存精確位置。語言、文字大小、車種、篩選和 ATM 銀行偏好只儲存在同一瀏覽器。',
   },
   en: {
+    chooseBanks: 'Choose banks',
+    closeScreen: 'Close',
+    exitFullscreen: 'Exit full screen',
+    viewList: 'View list',
     brandKicker: 'PARKPULSE HK',
     brandTitle: 'Find Parking',
     textSize: 'Text',

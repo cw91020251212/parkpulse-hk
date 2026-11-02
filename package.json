@@ -60,7 +60,8 @@
     "test:pages": "node scripts/check-pages-build.mjs",
     "test:pwa": "node scripts/check-pwa.mjs",
     "preview": "vite preview --host 0.0.0.0",
-    "start": "NODE_ENV=production node server.mjs"
+    "start": "NODE_ENV=production node server.mjs",
+    "test:screen-navigation": "node --experimental-strip-types scripts/check-screen-navigation.mjs"
   },
   "dependencies": {
     "express": "^5.2.1",

@@ -10,6 +10,7 @@ import { googleMapsPlaceUrl } from '../domain/placeLinks';
 import { MEDICAL_CATEGORY_LABEL_KEYS, medicalCoordinateKey, medicalIconFile, medicalSpecialtyLabel } from '../domain/medicalLocations';
 import { text, vacancyLabel, type Language } from '../i18n';
 import type { Coordinates, MapViewport, MedicalCategory, MedicalLocationViewModel, NearbyFacility, NearbyFacilityViewModel, OnStreetParkingGroup, OnStreetParkingViewModel, ParkViewModel, PublicToilet, PublicToiletViewModel, SearchScope } from '../types';
+import { useScreenNavigation } from '../hooks/ScreenNavigation';
 import { TrafficCameraMapLayer } from './TrafficCameraMapLayer';
 import { washroomSymbolMarkup } from './WashroomSymbol';
 
@@ -194,14 +195,23 @@ function ManualToiletLongPress({ editorId, onBegin, onMove, onComplete, onCancel
 }
 
 function PopupHistory() {
-  const map = useMap(); const popupOpen = useRef(false); const historyEntry = useRef(false);
+  const map = useMap();
+  const navigation = useScreenNavigation();
+  const popupOpen = useRef(false);
   useEffect(() => {
-    const onPopupOpen = () => { popupOpen.current = true; if (historyEntry.current) return; window.history.pushState({ ...(window.history.state ?? {}), parkspotPopup: true }, ''); historyEntry.current = true; };
-    const onPopupClose = () => { popupOpen.current = false; window.queueMicrotask(() => { if (popupOpen.current || !historyEntry.current) return; historyEntry.current = false; if (window.history.state?.parkspotPopup === true) window.history.back(); }); };
-    const onPopState = (event: PopStateEvent) => { if (!historyEntry.current || event.state?.parkspotPopup === true) return; historyEntry.current = false; popupOpen.current = false; map.closePopup(); };
-    map.on('popupopen', onPopupOpen); map.on('popupclose', onPopupClose); window.addEventListener('popstate', onPopState);
-    return () => { map.off('popupopen', onPopupOpen); map.off('popupclose', onPopupClose); window.removeEventListener('popstate', onPopState); };
-  }, [map]);
+    const onPopupOpen = () => {
+      popupOpen.current = true;
+      navigation.open('popup', () => { popupOpen.current = false; map.closePopup(); });
+    };
+    const onPopupClose = () => {
+      popupOpen.current = false;
+      window.queueMicrotask(() => {
+        if (!popupOpen.current) navigation.retire('popup');
+      });
+    };
+    map.on('popupopen', onPopupOpen); map.on('popupclose', onPopupClose);
+    return () => { map.off('popupopen', onPopupOpen); map.off('popupclose', onPopupClose); };
+  }, [map, navigation]);
   return null;
 }
 

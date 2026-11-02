@@ -1,3 +1,4 @@
+import { DetailCloseBar } from './DetailCloseBar';
 import { publicAsset } from '../api/site';
 import { formatDistance } from '../domain/distance';
 import {
@@ -111,7 +112,7 @@ export function MedicalLocationDetail({ language, item, onClose }: { language: L
   const specialtyCodes = location.specialty_codes ?? [];
   const isSpecialistClinic = location.category === 'ha-specialist-outpatient-clinic';
   return <aside className="detail-panel medical-detail-panel" role="dialog" aria-modal="true" aria-label={`${name} ${text(language, 'details')}`}>
-    <button className="close-detail" type="button" onClick={onClose} aria-label={text(language, 'closeDetails')}>×</button>
+    <DetailCloseBar language={language} onClose={onClose} />
     <p className="eyebrow"><img className="medical-detail-icon" src={iconUrl(location.category)} alt="" />{text(language, 'medicalFacilities')} · {category} · {formatDistance(distanceKm)}</p>
     <h2>{name}</h2>
     {location.relocation_note && <p className="medical-relocation-note">{language === 'en' ? 'Temporary relocation: ' : '臨時搬遷：'}{location.relocation_note}</p>}

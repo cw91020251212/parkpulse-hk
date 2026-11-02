@@ -1,0 +1,59 @@
+/* All temporary screens have a reachable way out, independent of scroll position. */
+.atm-bank-summary { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 10px; min-height: 44px; margin-block: 6px; border: 1px solid #427c8b; border-radius: 10px; padding: 9px 12px; color: #e1f9f6; background: #0b3548; font: inherit; font-size: 14px; text-align: left; }
+.atm-bank-summary span { min-width: 0; }
+.atm-bank-summary strong { flex-shrink: 0; color: #a1f5e6; }
+.screen-section-heading { display: flex !important; align-items: center; justify-content: space-between; gap: 12px; width: 100%; }
+.screen-section-heading button, .results-map-toolbar button, .map-screen-tools button { min-height: 44px; padding: 8px 12px; border: 1px solid #64cfc6; border-radius: 9px; font: inherit; font-size: 14px; font-weight: 800; color: #eafffb; background: #124959; cursor: pointer; }
+.screen-section-heading button { flex-shrink: 0; }
+.settings-popover { max-height: calc(100dvh - 90px); overflow-y: auto; }
+.settings-popover .screen-section-heading { margin-bottom: 9px; }
+.results-map-toolbar { position: sticky; z-index: 40; top: 0; display: flex; justify-content: flex-end; padding: 7px 0; background: #08283ef5; }
+.results-panel.is-fullscreen .results-map-toolbar { display: none; }
+.detail-backdrop .detail-panel { z-index: 1700; overscroll-behavior: contain; }
+.detail-close-bar { position: sticky; z-index: 50; top: -1px; display: flex; align-items: center; justify-content: flex-end; min-height: 54px; margin: -10px -8px 8px; padding: 4px 8px; background: #092239fa; border-bottom: 1px solid #386078; }
+.detail-close-bar .close-detail { position: static; display: inline-flex; align-items: center; gap: 6px; width: auto; height: auto; min-width: 44px; min-height: 44px; padding: 8px 12px; border: 1px solid #74cfc8; border-radius: 9px; color: #f1fffd; background: #174158; font: inherit; font-size: 14px; font-weight: 800; }
+.help-dialog-heading { position: sticky; z-index: 50; top: -22px; padding-block: 12px; background: #092239; }
+.help-dialog-heading .close-help { width: 48px; height: 48px; min-width: 48px; min-height: 48px; }
+.screen-section-heading button:focus-visible, .detail-close-bar button:focus-visible, .map-screen-tools button:focus-visible, .atm-bank-summary:focus-visible { outline: 3px solid #ffe17a; outline-offset: 2px; }
+
+/* Map-only really means map-only, at every breakpoint and text scale. */
+.app-shell.map-focus { position: fixed; z-index: 900; inset: 0; width: 100%; height: 100vh; height: 100dvh; min-height: 0; margin: 0; padding: 0; overflow: hidden; zoom: 1; }
+.app-shell.map-focus .desktop-controls { display: none !important; }
+.app-shell.map-focus .desktop-layout, .app-shell.map-focus .desktop-sidebar { display: block; width: 100%; height: 100%; min-height: 0; margin: 0; padding: 0; overflow: visible; }
+.app-shell.map-focus .desktop-layout > .desktop-sidebar > .workspace { position: absolute; inset: 0; display: block; width: 100%; height: 100%; min-height: 0; max-width: none; margin: 0; border: 0; border-radius: 0; }
+.app-shell.map-focus .desktop-layout > .desktop-sidebar > .workspace > .map-column { position: absolute; inset: 0; width: 100%; height: 100%; min-height: 0; margin: 0; border: 0; }
+.app-shell.map-focus .map-column > .map-wrap, .app-shell.map-focus .landsd-map { width: 100%; height: 100%; min-height: 0; max-height: none; border-radius: 0; }
+.app-shell.map-focus .map-bottom-tools, .app-shell.map-focus footer, .app-shell.map-focus .results-panel:not(.is-fullscreen) { display: none !important; }
+.app-shell.map-focus .results-panel.is-fullscreen { display: flex; }
+.app-shell.map-focus .map-wrap > .map-focus-toggle { display: none; }
+.map-screen-tools { position: fixed; z-index: 1010; top: max(10px, env(safe-area-inset-top)); right: max(10px, env(safe-area-inset-right)); left: 58px; display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 6px; pointer-events: none; }
+.map-screen-tools button { pointer-events: auto; color: #06303e; background: #d9fff5f5; border-color: #1e7a7c; box-shadow: 0 2px 8px #00304033; font-size: 13px; }
+.app-shell:has(.results-panel.is-fullscreen) > .map-screen-tools { display: none; }
+.app-shell.map-focus .atm-bank-picker { display: flex !important; }
+/* Search and the legend remain normal closing layers even when their original entry is below the map. */
+.map-marker-legend:not([hidden]), .area-search { position: fixed; z-index: 1600; left: max(12px, env(safe-area-inset-left)); right: max(12px, env(safe-area-inset-right)); top: max(16px, env(safe-area-inset-top)); width: auto; max-width: 580px; max-height: calc(100dvh - 32px); overflow-y: auto; overscroll-behavior: contain; margin: 0 auto; padding: 16px; border: 1px solid #5ba69e; border-radius: 16px; color: #e6fffa; background: #092b40; box-shadow: 0 0 0 100vmax #03111dc9; }
+.map-marker-legend .screen-section-heading, .area-search .screen-section-heading { position: sticky; top: -16px; z-index: 2; padding-block: 8px; background: #092b40; grid-column: 1 / -1; }
+.map-marker-legend[hidden] { display: none !important; }
+@media (max-width: 560px) {
+  .help-dialog-heading { top: -19px; }
+  .detail-backdrop .detail-panel { right: 8px; bottom: max(8px, env(safe-area-inset-bottom)); width: calc(100vw - 16px); max-height: calc(100dvh - 16px); padding-top: 12px; }
+}
+
+/* A live detail is one modal layer: underlying map actions cannot open a sibling above it. */
+.detail-backdrop { position: fixed; z-index: 1700; inset: 0; background: #03111d55; }
+.settings-popover .screen-section-heading { position: sticky; z-index: 3; top: -1px; margin-top: -1px; padding-block: 5px; background: #0d2b43; }
+/* Short landscape screens still leave room to scroll the bank list. */
+@media (max-height: 500px) {
+  .atm-bank-picker .atm-bank-picker__header { gap: 3px; padding-block: 5px; }
+  .atm-bank-picker .atm-bank-picker__header > p { display: none; }
+  .atm-bank-picker .atm-bank-picker__body { gap: 4px; padding-top: 5px; }
+  .atm-bank-picker .atm-bank-multiselect__search { grid-template-columns: auto minmax(0, 1fr); align-items: center; }
+  .atm-bank-picker .atm-bank-picker__footer { padding-block: 5px; }
+}
+
+.app-shell:has(.results-panel.is-fullscreen) { zoom: 1; }
+.settings-popover { max-width: calc((100vw - 24px) / var(--ui-zoom, 1)); max-height: calc((100dvh - 90px) / var(--ui-zoom, 1)); }
+
+.screen-sheet-backdrop { position: fixed; z-index: 1600; inset: 0; background: #03111dc9; }
+.screen-sheet-backdrop[hidden] { display: none !important; }
+.screen-sheet-backdrop .map-marker-legend, .screen-sheet-backdrop .area-search { box-shadow: none; }

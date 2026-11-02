@@ -27,13 +27,13 @@ assert.match(mapView, /map-popup-address/);
 assert.match(mapView, /map-popup-detail-button[\s\S]*?onClick=\{selectFacility\}/);
 assert.match(app, /onSelect: \(\) => openFacilityDetail\(facility\.id\)/);
 assert.match(app, /selectedFacility && <NearbyFacilityDetail/);
-assert.match(app, /closeDetailFromBack[\s\S]*?setSelectedFacilityId\(null\)/);
+assert.match(app, /clearDetailSelection = useCallback[\s\S]*?setSelectedFacilityId\(null\)/);
 assert.match(toiletCard, /card-address-link/);
 assert.match(styles, /\.toilet-card \.card-heading p\s*\{[^}]*white-space:\s*normal/s);
 assert.match(styles, /overflow-wrap:\s*anywhere/);
 assert.match(i18n, /viewFacilityDetails:[\s\S]*?View full details/);
 assert.match(app, /onSelect: \(\) => openFacilityDetail\(facility\.id\)/);
 assert.match(app, /selectedFacility && <NearbyFacilityDetail/);
-assert.match(app, /closeDetailFromBack[\s\S]*?setSelectedFacilityId\(null\)/);
+assert.match(app, /clearDetailSelection = useCallback[\s\S]*?setSelectedFacilityId\(null\)/);
 
 console.log('Nearby facility and washroom addresses open complete details without truncation.');

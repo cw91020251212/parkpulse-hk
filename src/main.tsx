@@ -2,7 +2,9 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import 'leaflet/dist/leaflet.css';
 import App from './App';
+import { ScreenNavigationProvider } from './hooks/ScreenNavigation';
 import './styles.css';
+import './ScreenNavigation.css';
 
 if (import.meta.env.PROD && 'serviceWorker' in navigator && window.isSecureContext) {
   window.addEventListener('load', () => {
@@ -12,6 +14,6 @@ if (import.meta.env.PROD && 'serviceWorker' in navigator && window.isSecureConte
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <ScreenNavigationProvider><App /></ScreenNavigationProvider>
   </StrictMode>,
 );

@@ -1,3 +1,4 @@
+import { DetailCloseBar } from './DetailCloseBar';
 import { useState } from 'react';
 import { publicAsset } from '../api/site';
 import { borderQueueLabel, borderQueueTone, formatBorderSnapshotTime } from '../domain/borderWait';
@@ -118,7 +119,7 @@ export function NearbyFacilityDetail({ language, item: { facility, distanceKm },
   const navigationUrl = `https://www.google.com/maps/dir/?api=1&destination=${facility.latitude},${facility.longitude}${fuel || emergency || border || trafficCamera ? '&travelmode=driving' : '&travelmode=walking'}`;
 
   return <aside className="detail-panel nearby-facility-detail-panel" role="dialog" aria-modal="true" aria-label={`${facility.name} ${text(language, 'details')}`}>
-    <button className="close-detail" type="button" onClick={onClose} aria-label={text(language, 'closeDetails')}>×</button>
+    <DetailCloseBar language={language} onClose={onClose} />
     <p className="eyebrow">{aed && <img className="aed-detail-symbol" src={AED_SYMBOL_URL} alt="" />}{emergency && <img className="emergency-detail-symbol" src={EMERGENCY_SYMBOL_URL} alt="" />}{border && <img className="border-detail-symbol" src={BORDER_SYMBOL_URL} alt="" />}{hkjc && <span className="hkjc-detail-symbol" aria-hidden="true">♞</span>}{trafficCamera && <span className="traffic-camera-detail-symbol" aria-hidden="true">📷</span>} {typeLabel} · {formatDistance(distanceKm)}</p>
     {trafficCamera && facility.snapshotUrl && <TrafficCameraPreview language={language} name={facility.name} snapshotUrl={facility.snapshotUrl} refreshNote={facility.imageRefreshNote} />}
     <h2>{facility.name}</h2>

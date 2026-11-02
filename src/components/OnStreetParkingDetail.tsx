@@ -1,3 +1,4 @@
+import { DetailCloseBar } from './DetailCloseBar';
 import { formatDistance } from '../domain/distance';
 import { text, type Language } from '../i18n';
 import type { OnStreetParkingViewModel } from '../types';
@@ -18,8 +19,8 @@ export function OnStreetParkingDetail({ language, item, onClose }: Props) {
     ? [onStreet.addressEn ?? onStreet.address].filter(Boolean)
     : onStreet.sections.length ? onStreet.sections : [onStreet.address].filter(Boolean);
 
-  return <aside className="detail-panel on-street-detail" aria-label={`${name} ${text(language, 'details')}`}>
-    <button className="close-detail" type="button" onClick={onClose} aria-label={text(language, 'closeDetails')}>×</button>
+  return <aside className="detail-panel on-street-detail" role="dialog" aria-modal="true" aria-label={`${name} ${text(language, 'details')}`}>
+    <DetailCloseBar language={language} onClose={onClose} />
     <p className="eyebrow">{formatDistance(distanceKm)} · {type}{onStreet.snapshot ? ` · ${text(language, 'snapshot')}` : ''}</p>
     <h2>{name}</h2>
     <p className="detail-address">{address || text(language, 'addressUnavailable')}</p>

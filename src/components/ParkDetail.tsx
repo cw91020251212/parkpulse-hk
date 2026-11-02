@@ -1,3 +1,4 @@
+import { DetailCloseBar } from './DetailCloseBar';
 import { formatOfficialHourlyCharge, formatPrice, getOfficialHourlyCharges, getOfficialPricingNotes, getVerifiedOperatorRate } from '../domain/carpark';
 import { formatDistance } from '../domain/distance';
 import { isStaticPages } from '../api/site';
@@ -27,8 +28,8 @@ export function ParkDetail({ language, park, vehicleType, onClose }: Props) {
   const totalSpaces = info[vehicleType]?.space;
   const officialSource = info.officialSource;
 
-  return <aside className="detail-panel" aria-label={`${info.name} ${text(language, 'details')} `}>
-    <button className="close-detail" type="button" onClick={onClose} aria-label={text(language, 'closeDetails')}>×</button>
+  return <aside className="detail-panel" role="dialog" aria-modal="true" aria-label={`${info.name} ${text(language, 'details')} `}>
+    <DetailCloseBar language={language} onClose={onClose} />
     <p className="eyebrow">{formatDistance(distanceKm)} · {info.district || 'Hong Kong'}</p><h2>{info.name}</h2><p className="detail-address">{info.displayAddress || text(language, 'addressUnavailable')}</p>
     <div className={`detail-status status-${status.kind}`}><strong>{vacancyLabel(language, status)}</strong><span>{updatedLabel(language, status.updatedAt)}</span></div>
     {status.stale && <p className="warning">{language === 'en' ? 'Data is over 5 minutes old; conditions may have changed.' : '資料已超過 5 分鐘，實際情況可能有變。'}</p>}
