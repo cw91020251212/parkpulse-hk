@@ -4,7 +4,7 @@ import { ScreenHistory } from '../domain/screenHistory';
 const NavigationContext = createContext<ScreenHistory | null>(null);
 const regions: Partial<Record<NonNullable<ScreenHistory['topName']>, string>> = {
   'atm-banks': '.atm-bank-picker', detail: '.detail-panel', help: '#help-title',
-  disclaimer: '#disclaimer-title', settings: '.settings-popover', district: '.area-search', legend: '.map-marker-legend',
+  disclaimer: '#disclaimer-title', settings: '.settings-popover', 'map-tools': '.map-extra-tools-panel', district: '.area-search', legend: '.map-marker-legend',
 };
 function activeRegion(navigation: ScreenHistory): HTMLElement | null {
   const selector = navigation.topName && regions[navigation.topName];

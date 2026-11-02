@@ -1,0 +1,10 @@
+.position-info { min-width: 200px; max-width: 260px; color: #123440; font-size: 14px; line-height: 1.5; }
+.position-info strong { display: block; padding-right: 30px; font-size: 16px; }
+.position-info p { margin: 7px 0; overflow-wrap: anywhere; }
+.position-info small { color: #526b73; font-size: 11px; }
+.position-info .position-info-coordinates { font-size: 12px; font-variant-numeric: tabular-nums; }
+.position-info-actions { display: flex; gap: 8px; margin-top: 7px; }
+.position-info .official-3d-link { padding: 0; background: transparent; color: #075f76; border: 0; box-shadow: none; font-size: 13px; font-weight: 700; text-align: left; }
+.position-info .official-3d-link svg { width: 16px; height: 16px; }
+.position-info-popup a.leaflet-popup-close-button { top: 1px; right: 1px; width: 44px; height: 44px; line-height: 44px; font-size: 24px; color: #365b65; background: transparent; }
+.position-info-popup a.leaflet-popup-close-button:focus-visible { outline: 2px solid #16758a; outline-offset: -4px; border-radius: 8px; }

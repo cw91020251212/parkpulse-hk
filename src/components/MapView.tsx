@@ -15,10 +15,11 @@ import { useScreenNavigation } from '../hooks/ScreenNavigation';
 import { TrafficCameraMapLayer } from './TrafficCameraMapLayer';
 import { washroomSymbolMarkup } from './WashroomSymbol';
 
-import { Official3DMapControl, Restore3DMapView, type Restore3DView } from './Official3DMapControl';
+import { PositionInfo } from './PositionInfo';
+import { Capture3DMapView, Restore3DMapView, type Restore3DView } from './Official3DMapControl';
 type Props = {
   return3d?: Restore3DView;
-  language: Language; position: Coordinates; parks: ParkViewModel[];
+  language: Language; position: Coordinates; positionLabel: string; parks: ParkViewModel[];
   showCurrentLocation: boolean;
   showManualCenter: boolean;
   nearbyItems: Array<PublicToiletViewModel | NearbyFacilityViewModel | OnStreetParkingViewModel>;
@@ -265,7 +266,7 @@ function groupMedicalLocations(items: MedicalLocationViewModel[]) { const groups
 
 function MapFocusIcon({ expanded }: { expanded: boolean }) { return expanded ? <svg className="map-focus-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 3 3 3 3-3M9 21l3-3 3 3M3 9l3 3-3 3M21 9l-3 3 3 3" /></svg> : <svg className="map-focus-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3H3v6m0-6 7 7M15 3h6v6m0-6-7 7M9 21H3v-6m0 6 7-7m5 7h6v-6m0 6-7-7" /></svg>; }
 
-export function MapView({ language, position, showCurrentLocation, showManualCenter, parks, nearbyItems, medicalItems, selectedId, viewedMarkerId, onSelect, onSelectOnStreet, onSelectToilet, onViewPopup, onBeginManualPositionEdit, onManualPositionChange, onCompleteManualPositionEdit, onCancelManualPositionEdit, manualPositionEditorId, onLocationSelect, recenterRequest, startupLocating, startupRecenter, expanded, searchScope, onViewportChange, onToggleExpanded, onShowResults, resultsLabel, return3d }: Props) {
+export function MapView({ language, position, positionLabel, showCurrentLocation, showManualCenter, parks, nearbyItems, medicalItems, selectedId, viewedMarkerId, onSelect, onSelectOnStreet, onSelectToilet, onViewPopup, onBeginManualPositionEdit, onManualPositionChange, onCompleteManualPositionEdit, onCancelManualPositionEdit, manualPositionEditorId, onLocationSelect, recenterRequest, startupLocating, startupRecenter, expanded, searchScope, onViewportChange, onToggleExpanded, onShowResults, resultsLabel, return3d }: Props) {
   const selected = parks.find((park) => park.info.park_Id === selectedId); const medicalGroups = useMemo(() => groupMedicalLocations(medicalItems), [medicalItems]); const trafficCameraItems = useMemo(() => nearbyItems.filter((item): item is NearbyFacilityViewModel => 'facility' in item && item.facility.kind === 'trafficCamera'), [nearbyItems]); const standardNearbyItems = useMemo(() => nearbyItems.filter((item) => !('facility' in item && item.facility.kind === 'trafficCamera')), [nearbyItems]); const visibleResultCount = parks.length + nearbyItems.length + medicalItems.length;
   const showPositionMarker = searchScope === 'radius' || showCurrentLocation || showManualCenter;
   const positionMarkerIcon = showCurrentLocation ? currentLocationIcon : selectedCenterIcon;
@@ -275,7 +276,7 @@ export function MapView({ language, position, showCurrentLocation, showManualCen
     <MapContainer center={return3d ? [return3d.center.lat, return3d.center.lng] : [position.lat, position.lng]} zoom={return3d?.zoom ?? (startupLocating ? 10 : 14)} minZoom={8} maxZoom={MAP_MAX_ZOOM} scrollWheelZoom inertia={false} className="landsd-map">
       <PopupHistory />
       <ReportViewport onChange={onViewportChange} />
-      <Official3DMapControl language={language} />
+      <Capture3DMapView />
       <ManualToiletLongPress editorId={manualPositionEditorId} onBegin={onBeginManualPositionEdit} onMove={onManualPositionChange} onComplete={onCompleteManualPositionEdit} onCancel={onCancelManualPositionEdit} />
       <TileLayer minNativeZoom={LANDSD_MIN_NATIVE_ZOOM} maxNativeZoom={LANDSD_MAX_NATIVE_ZOOM} maxZoom={MAP_MAX_ZOOM} attribution='&copy; <a href="https://api.portal.hkmapservice.gov.hk/disclaimer" target="_blank" rel="noreferrer">Map information from Lands Department</a>' url={LANDSD_BASEMAP_URL} />
       <TileLayer minNativeZoom={LANDSD_MIN_NATIVE_ZOOM} maxNativeZoom={LANDSD_MAX_NATIVE_ZOOM} maxZoom={MAP_MAX_ZOOM} url={LANDSD_LABEL_URL} opacity={1} zIndex={10} />
@@ -284,7 +285,7 @@ export function MapView({ language, position, showCurrentLocation, showManualCen
       <Restore3DMapView view={return3d} />
       <ResizeMap expanded={expanded} />
       <LongPressPicker onPick={(coordinates) => onLocationSelect(coordinates, { recenter: false, showManualMarker: true })} />
-      {!startupLocating && <>{searchScope === 'radius' && <Circle center={[position.lat, position.lng]} radius={2_000} pathOptions={{ color: '#14B8A6', fillColor: '#14B8A6', fillOpacity: 0.1, weight: 2, dashArray: '6 6' }} />}{showPositionMarker && <Marker position={[position.lat, position.lng]} icon={positionMarkerIcon} zIndexOffset={showCurrentLocation ? 10_000 : 1_000} keyboard={false} />}</>}
+      {!startupLocating && <>{searchScope === 'radius' && <Circle center={[position.lat, position.lng]} radius={2_000} pathOptions={{ color: '#14B8A6', fillColor: '#14B8A6', fillOpacity: 0.1, weight: 2, dashArray: '6 6' }} />}{showPositionMarker && <Marker position={[position.lat, position.lng]} icon={positionMarkerIcon} zIndexOffset={showCurrentLocation ? 10_000 : 1_000} keyboard title={text(language, 'pinOpenInfo')}><Popup className="position-info-popup" maxWidth={280} closeButton><PositionInfo point={position} language={language} gps={showCurrentLocation} areaName={positionLabel} /></Popup></Marker>}</>}
       {parks.map((park) => { const viewed = viewedMarkerId === `park:${park.info.park_Id}`; return <Marker key={park.info.park_Id} position={[park.info.latitude, park.info.longitude]} icon={markerIcon(park, language, viewed)} zIndexOffset={viewed ? 600 : 0} eventHandlers={{ click: () => onSelect(park.info.park_Id) }}><Tooltip direction="top" offset={[0, -38]} opacity={0.95}>{park.info.name} · {vacancyLabel(language, park.status)}</Tooltip></Marker>; })}
       <TrafficCameraMapLayer items={trafficCameraItems} language={language} viewedMarkerId={viewedMarkerId} />
       {standardNearbyItems.map((item) => {

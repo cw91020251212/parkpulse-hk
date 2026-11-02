@@ -1,4 +1,4 @@
-export type ScreenName = 'map' | 'results' | 'atm-banks' | 'detail' | 'settings' | 'help' | 'disclaimer' | 'district' | 'legend' | 'popup';
+export type ScreenName = 'map' | 'results' | 'atm-banks' | 'detail' | 'settings' | 'help' | 'disclaimer' | 'district' | 'legend' | 'popup' | 'map-tools';
 export interface HistoryPort {
   readonly state: unknown;
   pushState(state: unknown, unused: string): void;

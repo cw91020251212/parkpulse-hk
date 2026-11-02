@@ -1,9 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
-import { useMap, useMapEvents } from 'react-leaflet';
+import { useEffect } from 'react';
+import { useMap } from 'react-leaflet';
 import { CAPTURE_3D_EVENT, type LiveMapCapture } from '../domain/official3d';
-import { DomEvent } from 'leaflet';
-import { Official3DLink } from './Official3DLink';
-import type { Language } from '../i18n';
 import type { Coordinates } from '../types';
 
 export type Restore3DView = { center: Coordinates; zoom: number; request: number };
@@ -15,14 +12,11 @@ export function Restore3DMapView({ view }: { view?: Restore3DView }) {
   return null;
 }
 
-export function Official3DMapControl({ language }: { language: Language }) {
+/** Captures the map for external toolbar links. Intentionally renders no map UI. */
+export function Capture3DMapView() {
   const map = useMap();
-  const [point, setPoint] = useState(() => ({ lat: map.getCenter().lat, lng: map.getCenter().lng }));
-  const ref = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     const capture = (event: Event) => {
-      // Freeze a stable live view even when the original page is in the background.
       map.stop();
       const current = map.getCenter();
       map.setView([current.lat, current.lng], Math.round(map.getZoom()), { animate: false });
@@ -37,21 +31,5 @@ export function Official3DMapControl({ language }: { language: Language }) {
     window.addEventListener(CAPTURE_3D_EVENT, capture);
     return () => window.removeEventListener(CAPTURE_3D_EVENT, capture);
   }, [map]);
-
-  useMapEvents({
-    moveend() {
-      const center = map.getCenter();
-      setPoint({ lat: center.lat, lng: center.lng });
-    },
-  });
-
-  useEffect(() => {
-    if (!ref.current) return;
-    DomEvent.disableClickPropagation(ref.current);
-    DomEvent.disableScrollPropagation(ref.current);
-  }, []);
-
-  return <div ref={ref} className="official-3d-map-control leaflet-top leaflet-right">
-    <Official3DLink point={point} language={language} compact />
-  </div>;
+  return null;
 }
