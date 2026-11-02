@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { publicAsset } from '../api/site';
 import { borderQueueLabel, borderQueueTone, formatBorderSnapshotTime } from '../domain/borderWait';
 import { formatDistance } from '../domain/distance';
@@ -72,6 +73,39 @@ function BorderWaitingTimes({ language, wait }: { language: Language; wait?: Bor
   </section>;
 }
 
+function freshSnapshotUrl(snapshotUrl: string, refreshToken: number) {
+  const url = new URL(snapshotUrl);
+  url.searchParams.set('parkpulse_refresh', String(refreshToken));
+  return url.toString();
+}
+
+function TrafficCameraPreview({ language, name, snapshotUrl, refreshNote }: { language: Language; name: string; snapshotUrl: string; refreshNote?: string }) {
+  const [refreshToken, setRefreshToken] = useState(() => Date.now());
+  const [imageFailed, setImageFailed] = useState(false);
+  const sourceUrl = freshSnapshotUrl(snapshotUrl, refreshToken);
+  const reload = () => {
+    setImageFailed(false);
+    setRefreshToken((current) => current + 1);
+  };
+
+  return <figure className="traffic-camera-preview">
+    <figcaption className="traffic-camera-preview-heading">
+      <strong>{text(language, 'trafficCameraImage')}</strong>
+      <span>{text(language, 'trafficCameraImageDirect')}</span>
+    </figcaption>
+    {imageFailed ? <div className="traffic-camera-preview-fallback" role="status">
+      <p>{text(language, 'trafficCameraImageLoadFailed')}</p>
+      <a href={snapshotUrl} target="_blank" rel="noreferrer">{text(language, 'trafficCameraOpenSnapshot')}</a>
+    </div> : <a className="traffic-camera-preview-link" href={snapshotUrl} target="_blank" rel="noreferrer" aria-label={`${text(language, 'trafficCameraOpenSnapshot')}: ${name}`}>
+      <img className="traffic-camera-preview-image" src={sourceUrl} alt={text(language, 'trafficCameraImageAlt', { name })} loading="eager" decoding="async" referrerPolicy="no-referrer" onLoad={() => setImageFailed(false)} onError={() => setImageFailed(true)} />
+    </a>}
+    <div className="traffic-camera-preview-actions">
+      <button type="button" onClick={reload}>{text(language, 'trafficCameraReloadImage')}</button>
+      <span>{refreshNote || text(language, 'trafficCameraImageRefresh')}</span>
+    </div>
+  </figure>;
+}
+
 export function NearbyFacilityDetail({ language, item: { facility, distanceKm }, onClose }: Props) {
   const fuel = facility.kind === 'fuel';
   const aed = facility.kind === 'aed';
@@ -86,6 +120,7 @@ export function NearbyFacilityDetail({ language, item: { facility, distanceKm },
   return <aside className="detail-panel nearby-facility-detail-panel" role="dialog" aria-modal="true" aria-label={`${facility.name} ${text(language, 'details')}`}>
     <button className="close-detail" type="button" onClick={onClose} aria-label={text(language, 'closeDetails')}>×</button>
     <p className="eyebrow">{aed && <img className="aed-detail-symbol" src={AED_SYMBOL_URL} alt="" />}{emergency && <img className="emergency-detail-symbol" src={EMERGENCY_SYMBOL_URL} alt="" />}{border && <img className="border-detail-symbol" src={BORDER_SYMBOL_URL} alt="" />}{hkjc && <span className="hkjc-detail-symbol" aria-hidden="true">♞</span>}{trafficCamera && <span className="traffic-camera-detail-symbol" aria-hidden="true">📷</span>} {typeLabel} · {formatDistance(distanceKm)}</p>
+    {trafficCamera && facility.snapshotUrl && <TrafficCameraPreview language={language} name={facility.name} snapshotUrl={facility.snapshotUrl} refreshNote={facility.imageRefreshNote} />}
     <h2>{facility.name}</h2>
     {emergency && <p className="emergency-urgent-notice" role="note">{text(language, 'emergencyUrgentNotice')}</p>}
     <section className="detail-section">
@@ -110,7 +145,6 @@ export function NearbyFacilityDetail({ language, item: { facility, distanceKm },
       {trafficCamera && <div><dt>{text(language, 'trafficCameraKeyLabel')}</dt><dd>{facility.cameraKey ?? facility.id}</dd></div>}
       {trafficCamera && <div><dt>{text(language, 'trafficCameraArea')}</dt><dd>{facility.region} · {facility.district}</dd></div>}
     </dl>
-    {trafficCamera && <section className="detail-section traffic-camera-image-note"><h3>{text(language, 'trafficCameraImage')}</h3><p>{facility.imageRefreshNote || text(language, 'trafficCameraImageRefresh')}</p></section>}
     {facility.openingHours && <section className="detail-section"><h3>{text(language, 'openStatus')}</h3><p>{facility.openingHours}</p></section>}
     {facility.remarks && <section className="detail-section"><h3>{text(language, 'details')}</h3><p>{facility.remarks}</p></section>}
     <div className="detail-actions nearby-facility-actions">

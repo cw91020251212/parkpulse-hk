@@ -1615,3 +1615,23 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 .traffic-camera-detail-symbol { display: inline-block; margin-right: 4px; vertical-align: -2px; font-size: 17px; }
 .traffic-camera-image-note { border-left: 3px solid #50cbd7; padding-left: 10px; }
 .traffic-camera-snapshot-link { background: #81dce4; }
+.traffic-camera-preview { margin: 6px 0 16px; overflow: hidden; border: 1px solid #3b8796; border-radius: 13px; background: #0a2938; }
+.traffic-camera-preview-heading { display: grid; gap: 3px; padding: 10px 12px 8px; color: #d9f8fb; }
+.traffic-camera-preview-heading strong { color: #f4ffff; font-size: 14px; }
+.traffic-camera-preview-heading span { color: #a8dbe1; font-size: 11px; line-height: 1.4; }
+.traffic-camera-preview-link { display: block; aspect-ratio: 4 / 3; background: #041a27; }
+.traffic-camera-preview-image { display: block; width: 100%; height: 100%; background: #041a27; object-fit: contain; }
+.traffic-camera-preview-link:focus-visible { outline: 3px solid #83e7ed; outline-offset: -3px; }
+.traffic-camera-preview-fallback { display: grid; place-items: center; min-height: 180px; gap: 10px; padding: 18px; color: #d8eff2; background: #08202e; text-align: center; }
+.traffic-camera-preview-fallback p { max-width: 290px; margin: 0; line-height: 1.5; }
+.traffic-camera-preview-fallback a { color: #9bf1ed; font-weight: 900; text-decoration: underline; text-underline-offset: 3px; }
+.traffic-camera-preview-actions { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 9px; padding: 9px 11px 10px; border-top: 1px solid #28586a; }
+.traffic-camera-preview-actions button { min-height: 38px; border: 1px solid #5ecbd3; border-radius: 8px; padding: 7px 10px; color: #e8ffff; background: #13596b; font: inherit; font-size: 12px; font-weight: 850; cursor: pointer; }
+.traffic-camera-preview-actions button:hover, .traffic-camera-preview-actions button:focus-visible { border-color: #b1fbf7; background: #1b7180; }
+.traffic-camera-preview-actions span { min-width: 0; color: #a8dbe1; font-size: 10px; line-height: 1.35; }
+@media (max-width: 560px) {
+  .traffic-camera-preview { margin-inline: -2px; }
+  .traffic-camera-preview-heading { padding: 11px 12px 9px; }
+  .traffic-camera-preview-actions { grid-template-columns: 1fr; gap: 7px; }
+  .traffic-camera-preview-actions button { min-height: 42px; font-size: 13px; }
+}

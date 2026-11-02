@@ -22,4 +22,13 @@ for (const record of records) {
   assert.match(imageUrl.pathname, /\.jpe?g$/i, `Traffic camera ${record.id} must open an original JPEG snapshot`);
 }
 
-console.log(`Verified ${records.length} bilingual Transport Department traffic-camera records with exact locations and official original JPEG URLs.`);
+const detailSource = await readFile(new URL('../src/components/NearbyFacilityDetail.tsx', import.meta.url), 'utf8');
+const previewPosition = detailSource.indexOf('<TrafficCameraPreview');
+const titlePosition = detailSource.indexOf('<h2>{facility.name}</h2>');
+assert.ok(previewPosition >= 0 && previewPosition < titlePosition, 'Traffic camera detail must show the official image before its title and descriptive fields');
+assert.match(detailSource, /src=\{sourceUrl\}/, 'Traffic camera detail must render the directly sourced official image');
+assert.match(detailSource, /parkpulse_refresh/, 'Traffic camera detail must allow an explicit original-image reload');
+assert.match(detailSource, /trafficCameraImageLoadFailed/, 'Traffic camera detail must retain an official-image fallback when loading fails');
+assert.match(detailSource, /referrerPolicy="no-referrer"/, 'Traffic camera detail must not expose the ParkPulse page URL to the official image host');
+
+console.log(`Verified ${records.length} bilingual Transport Department traffic-camera records plus the direct, image-first official snapshot detail view.`);

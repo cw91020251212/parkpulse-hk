@@ -199,4 +199,5 @@
 - **更新位置／輸出：** `lib/traffic-cameras.mjs` 解析並以 `Key` 嚴格配對兩個 XML；`scripts/build-pages-data.mjs` 透過 `pnpm build:pages` 寫入 `public/pages-data/traffic-cameras.json`。前端只讀此位置快照；`src/api/nearbyFacilities.ts` 會按使用者語言顯示名稱、地區及分區。
 - **強制驗證：** 建置器拒絕雙語 ID 集不一致、雙語座標或快拍 URL 不一致、重覆 ID、缺名稱／地區／分區／座標／URL、非香港座標或非 `tdcctv.data.one.gov.hk` HTTPS JPEG。`pnpm test:traffic-cameras` 再檢查完整靜態快照及所有上述的對外連結約束。
 - **影像與私隱限制：** GitHub Pages 不下載、快取、鏡像或重新發送任何快拍影像；只保存官方位置及原始 URL。使用者按「開啟官方快拍」才直接在新分頁開啟運輸署 JPG。官方快拍約每兩分鐘更新，並非連續直播；單一鏡頭可能暫時顯示 `No Service` 或轉址，不能把快照當成即時／保證可用服務。
+- **拍攝方向限制：** 運輸署的官方資料字典只列 `Key`、地區、分區、影像位置描述、Easting、Northing、緯度、經度及 URL，沒有逐鏡頭的朝向角度、方位或視野欄位。描述中偶有「東／西／南／北行」等原文，只能作地點名稱的一部分顯示；不可自行把它轉為地圖精確方向箭嘴或視野扇形。
 - **地圖規則：** 單一鏡頭沿用 `.toilet-marker` 的 34×34 水滴、底尖錨點、陰影、觸控區和選取粉紅描邊，只加上相機圖示及交通快拍色；高密度區用 `.parking-marker` 的既有數字水滴群組，按下放大至可分開查看。不得改用白色菱形、圓點或另一套鏡頭雷達圖釘。
