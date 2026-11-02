@@ -1,3 +1,4 @@
+import { Official3DLink } from './Official3DLink';
 import { DrinkingWaterDetailFields } from './DrinkingWaterDetailFields';
 import { DrinkingWaterSymbol } from './DrinkingWaterSymbol';
 import { DetailCloseBar } from './DetailCloseBar';
@@ -152,7 +153,9 @@ export function NearbyFacilityDetail({ language, item: { facility, distanceKm },
     </dl>
     {!drinkingWater && facility.openingHours && <section className="detail-section"><h3>{text(language, 'openStatus')}</h3><p>{facility.openingHours}</p></section>}
     {facility.remarks && <section className="detail-section"><h3>{text(language, 'details')}</h3><p>{facility.remarks}</p></section>}
+    <p className="official-3d-note">{text(language, 'official3dNotice')}</p>
     <div className="detail-actions nearby-facility-actions">
+      <Official3DLink language={language} point={{ lat: facility.latitude, lng: facility.longitude }} />
       {trafficCamera && facility.snapshotUrl ? <a className="primary-action" href={facility.snapshotUrl} target="_blank" rel="noreferrer">{text(language, 'trafficCameraOpenSnapshot')}</a> : <a className="primary-action" href={navigationUrl} target="_blank" rel="noreferrer">{fuel || emergency || border ? text(language, 'drivingNavigation') : text(language, 'walkingNavigation')}</a>}
       <a className="secondary-action" href={trafficCamera ? navigationUrl : placeUrl} target="_blank" rel="noreferrer">{trafficCamera ? text(language, 'drivingNavigation') : text(language, 'openPlaceOnMap')}</a>
     </div>

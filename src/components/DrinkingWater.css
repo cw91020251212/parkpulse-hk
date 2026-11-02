@@ -2,7 +2,7 @@
 .water-card-main { display: block; width: 100%; min-width: 0; border: 0; background: none; color: inherit; text-align: left; padding: 14px; cursor: pointer; font: inherit; }
 .water-card-heading { display: flex; gap: 10px; align-items: flex-start; }
 .water-card-heading h3 { flex: 1; min-width: 0; margin: 0; font-size: 16px; line-height: 1.45; overflow-wrap: anywhere; }
-.water-card-symbol { flex: 0 0 32px; background: #08649c; border-radius: 9px; padding: 3px; }
+.water-card-symbol { flex: 0 0 32px; background: linear-gradient(to top right, #087fa6, #93e2f3); border-radius: 9px; padding: 3px; }
 .drinking-water-symbol { display: block; width: 26px; height: 26px; object-fit: contain; }
 .water-card-heading .distance { flex: 0 0 auto; font-size: 13px; color: #c2e9f3; padding-top: 3px; }
 .water-card-address, .water-card-location { margin: 9px 0 0; font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; }
@@ -22,7 +22,8 @@
 .water-detail-info .water-location-description { font-size: 16px; color: #e3f7ff; line-height: 1.6; }
 .water-filter { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
 .water-filter select { border-radius: 18px; border: 1px solid #5d8899; background: #0c3346; color: #dff9ff; padding: 8px 12px; min-height: 44px; font: inherit; font-size: 13px; }
-.legend-drinking-water { background: #08649c; border: 1px solid #a5ecff; }
+.legend-drinking-water { background: linear-gradient(to top right, #087fa6, #93e2f3); border: 1px solid #a5ecff; }
 
-.leaflet-marker-icon .toilet-marker.is-drinking-water { background: #08649c; color: #fff; }
+.leaflet-marker-icon .toilet-marker.is-drinking-water { background: linear-gradient(to top right, #087fa6, #93e2f3); color: #fff; }
 .toilet-marker.is-drinking-water > span .drinking-water-symbol { width: 24px; height: 24px; }
+.water-card-location-note { margin: 9px 0 0; padding: 7px 9px; border-left: 3px solid #72c7e3; background: #123f53; color: #c4eaf5; font-size: 12px; line-height: 1.5; }

@@ -18,6 +18,7 @@ export function DrinkingWaterCard({ language, item: { facility, distanceKm, onSe
         {water?.type && <span>{water.type}</span>}
         {water?.unitCount != null && <span>{text(language, 'waterUnitCount', { count: water.unitCount })}</span>}
       </div>
+      {facility.locationPrecision === 'building' && <p className="water-card-location-note">{text(language, 'waterVenuePin')}</p>}
       {water?.temporaryClosed && <p className="water-closed-notice">{text(language, 'waterTemporarilyClosed')}</p>}
       {facility.openingHours && <p className="water-card-hours">{facility.openingHours}</p>}
       <p className="water-card-source">{facility.source}</p>

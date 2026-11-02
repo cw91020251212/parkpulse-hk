@@ -62,7 +62,9 @@
     "preview": "vite preview --host 0.0.0.0",
     "start": "NODE_ENV=production node server.mjs",
     "test:screen-navigation": "node --experimental-strip-types scripts/check-screen-navigation.mjs",
-    "test:drinking-water": "node scripts/check-lcsd-drinking-water.mjs && node scripts/check-afcd-drinking-water.mjs && node --experimental-strip-types scripts/check-drinking-water.mjs"
+    "test:drinking-water": "node scripts/check-lcsd-drinking-water.mjs && node scripts/check-afcd-drinking-water.mjs && node scripts/check-mtr-drinking-water.mjs && node --experimental-strip-types scripts/check-drinking-water.mjs",
+    "test:official-3d": "node --experimental-strip-types scripts/check-official-3d.mjs",
+    "test:mtr-drinking-water": "node scripts/check-mtr-drinking-water.mjs"
   },
   "dependencies": {
     "express": "^5.2.1",

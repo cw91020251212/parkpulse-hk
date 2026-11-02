@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { matchesWaterEnvironment } from '../src/domain/drinkingWater.ts';
 
 const read = (file) => readFile(new URL(`../${file}`, import.meta.url), 'utf8');
-const snapshots = await Promise.all(['lcsd', 'afcd'].map(async (provider) => JSON.parse(await read(`public/pages-data/${provider}-drinking-water.json`))));
+const snapshots = await Promise.all(['lcsd', 'afcd', 'mtr'].map(async (provider) => JSON.parse(await read(`public/pages-data/${provider}-drinking-water.json`))));
 const ids = new Set();
 for (const snapshot of snapshots) {
   assert.ok(!Number.isNaN(Date.parse(snapshot.generatedAt)));
@@ -13,13 +13,13 @@ for (const snapshot of snapshots) {
     assert.ok(!ids.has(record.id), `duplicate ${record.id}`); ids.add(record.id);
     assert.ok(record.nameTc && record.nameEn && record.addressTc && record.addressEn);
     assert.ok(record.latitude > 22 && record.latitude < 23 && record.longitude > 113 && record.longitude < 115);
-    assert.ok(['lcsd', 'afcd'].includes(record.provider));
+    assert.ok(['lcsd', 'afcd', 'mtr'].includes(record.provider));
     assert.ok(['indoor', 'outdoor', 'unknown'].includes(record.indoorOutdoor));
     assert.ok(['confirmed', 'notPublished'].includes(record.filterStatus));
     assert.equal(typeof record.temporaryClosed, 'boolean');
     assert.ok(record.unitCount === null || Number.isInteger(record.unitCount) && record.unitCount >= 0);
     assert.ok(/^https:\/\//.test(record.sourceUrl));
-    assert.ok(/(^|\.)(gov\.hk)$/.test(new URL(record.sourceUrl).hostname), record.sourceUrl);
+    assert.ok(/(^|\.)(gov\.hk|mtr\.com\.hk)$/.test(new URL(record.sourceUrl).hostname), record.sourceUrl);
     assert.ok(!('snapshotUrl' in record), 'never invent water-facility images');
   }
 }
@@ -41,6 +41,9 @@ assert.match(map, /const drinkingWater = kind === 'drinkingWater'/);
 assert.match(map, /const tone = drinkingWater \? ' is-drinking-water'/);
 assert.match(map, /class="toilet-marker\$\{tone\}/);
 const card = await read('src/components/DrinkingWaterCard.tsx');
+assert.match(card, /waterVenuePin/);
+assert.match(await read('src/components/DrinkingWater.css'), /linear-gradient/);
+assert.match(await read('public/icons/drinking-water.svg'), /Lucide glass-water/);
 assert.match(card, /water-card-actions/); assert.doesNotMatch(card, /toilet-card-actions/);
 assert.match(card, /water\.unitCount/); assert.match(card, /temporaryClosed/);
 const detail = await read('src/components/NearbyFacilityDetail.tsx');
@@ -53,5 +56,5 @@ assert.match(loader, /Promise.allSettled/); assert.match(loader, /if \(!snapshot
 assert.match(loader, /snapshotGeneratedAt: snapshot.generatedAt/);
 assert.match(loader, /未能載入來源/);
 const build = await read('scripts/build-pages-data.mjs');
-for (const provider of ['lcsd', 'afcd']) assert.ok(build.includes(`${provider}-drinking-water.json`));
+for (const provider of ['lcsd', 'afcd', 'mtr']) assert.ok(build.includes(`${provider}-drinking-water.json`));
 console.log(`Drinking water OK: ${ids.size} official location records; indoor/outdoor, source dates, closure notices, existing waterdrop pins and shared detail exits.`);

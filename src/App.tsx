@@ -1,3 +1,5 @@
+import { readMapReturn, saveMapReturn, returnViewport, captureLiveMap, OPEN_3D_EVENT, type MapReturnState } from './domain/official3d';
+import type { Restore3DView } from './components/Official3DMapControl';
 import { matchesWaterEnvironment, type WaterEnvironment } from './domain/drinkingWater';
 import { ScreenOverlay } from './components/ScreenOverlay';
 import { DetailCloseBar } from './components/DetailCloseBar';
@@ -102,21 +104,25 @@ function formatSnapshotTime(language: Language, value: string) { const date = ne
 
 export default function App() {
   const navigation = useScreenNavigation();
+  const [initial3dReturn] = useState(() => readMapReturn());
+  const last3dReturn = useRef<MapReturnState | null>(initial3dReturn);
+  const [restore3dView, setRestore3dView] = useState<Restore3DView | undefined>(() => initial3dReturn ? { ...initial3dReturn.view, request: 0 } : undefined);
+  const [canReturn3d, setCanReturn3d] = useState(Boolean(initial3dReturn));
   const { infos, vacancyById, loading, vacancyLoading, refreshing, error, refresh, retry } = useCarparks();
   const { chargers, loading: evLoading, error: evError } = useEvChargers();
-  const [position, setPosition] = useState<Coordinates>(HONG_KONG_CENTER);
-  const [hasGpsPosition, setHasGpsPosition] = useState(false);
-  const [hasManualMapMarker, setHasManualMapMarker] = useState(false);
-  const [startupLocationPending, setStartupLocationPending] = useState(true);
+  const [position, setPosition] = useState<Coordinates>(initial3dReturn?.position ?? HONG_KONG_CENTER);
+  const [hasGpsPosition, setHasGpsPosition] = useState(initial3dReturn?.hasGpsPosition ?? false);
+  const [hasManualMapMarker, setHasManualMapMarker] = useState(initial3dReturn?.hasManualMapMarker ?? false);
+  const [startupLocationPending, setStartupLocationPending] = useState(!initial3dReturn);
   const [startupLocationFallbackActive, setStartupLocationFallbackActive] = useState(false);
   const [startupLocationFlight, setStartupLocationFlight] = useState(false);
-  const [areaName, setAreaName] = useState('香港中心');
+  const [areaName, setAreaName] = useState(initial3dReturn?.areaName ?? '香港中心');
   const [locationState, setLocationState] = useState<'default' | 'locating' | 'ready' | 'denied' | 'unavailable'>('default');
   const [vehicleType, setVehicleType] = useState<VehicleType | null>(() => readPreferences().vehicleType);
   const [filters, setFilters] = useState<ParkFilters>(() => readPreferences().filters);
   const [textScale, setTextScale] = useState<TextScale>(() => readPreferences().textScale);
   const [facilityMode, setFacilityMode] = useState<NearbyMode | null>(() => readPreferences().facilityMode ?? null);
-  const [waterEnvironment, setWaterEnvironment] = useState<WaterEnvironment>('all');
+  const [waterEnvironment, setWaterEnvironment] = useState<WaterEnvironment>(initial3dReturn?.waterEnvironment ?? 'all');
   const [medicalCategoryFilter, setMedicalCategoryFilter] = useState<MedicalCategoryFilter>('all');
   const [medicalSpecialtyFilter, setMedicalSpecialtyFilter] = useState<SopcSpecialtyCode | 'all'>('all');
   const [filterSection, setFilterSection] = useState<FilterSection>(() => {
@@ -125,7 +131,7 @@ export default function App() {
   });
   const [atmSelectedBanks, setAtmSelectedBanks] = useState<string[]>(() => readPreferences().atmSelectedBanks);
   const [language, setLanguage] = useState<Language>(() => readPreferences().language);
-  const [searchScope, setSearchScope] = useState<SearchScope>(() => readPreferences().searchScope);
+  const [searchScope, setSearchScope] = useState<SearchScope>(() => initial3dReturn?.searchScope ?? readPreferences().searchScope);
   const [mapViewport, setMapViewport] = useState<MapViewport | null>(null);
   const [localManualToiletPositions, setLocalManualToiletPositions] = useState<ManualToiletPositionMap>(readLocalManualToiletPositions);
   const [manualPositionDraft, setManualPositionDraft] = useState<ManualPositionDraft | null>(null);
@@ -160,7 +166,27 @@ export default function App() {
     setViewedMarkerId(markerKey);
   }, []);
   const updateMapViewport = useCallback((next: MapViewport) => {
-    setMapViewport((current) => current && current.north === next.north && current.south === next.south && current.east === next.east && current.west === next.west && current.center.lat === next.center.lat && current.center.lng === next.center.lng ? current : next);
+    setMapViewport((current) => current && current.north === next.north && current.south === next.south && current.east === next.east && current.west === next.west && current.center.lat === next.center.lat && current.center.lng === next.center.lng && current.zoom === next.zoom ? current : next);
+  }, []);
+  useEffect(() => {
+    const save = () => {
+      const state: MapReturnState = { savedAt: Date.now(), position, view: returnViewport(captureLiveMap(mapViewport), position), searchScope, hasGpsPosition, hasManualMapMarker, areaName, waterEnvironment };
+      last3dReturn.current = state;
+      saveMapReturn(state);
+      setCanReturn3d(true);
+    };
+    window.addEventListener(OPEN_3D_EVENT, save);
+    return () => window.removeEventListener(OPEN_3D_EVENT, save);
+  }, [position, mapViewport, searchScope, hasGpsPosition, hasManualMapMarker, areaName, waterEnvironment]);
+  const returnFrom3d = useCallback(() => {
+    const state = last3dReturn.current;
+    if (!state) return;
+    // Do not issue another GPS/recenter request: restore exact map center AND zoom.
+    setRecenterRequest(0);
+    setPosition(state.position); setHasGpsPosition(state.hasGpsPosition); setHasManualMapMarker(state.hasManualMapMarker);
+    setAreaName(state.areaName); setSearchScope(state.searchScope); setWaterEnvironment(state.waterEnvironment);
+    setRestore3dView((current) => ({ ...state.view, request: (current?.request ?? 0) + 1 }));
+    document.querySelector('.map-wrap')?.scrollIntoView({ block: 'center', behavior: 'smooth' });
   }, []);
   const openFacilityDetail = useCallback((facilityId: string) => {
     if (!registerDetail()) return;
@@ -284,7 +310,7 @@ export default function App() {
     link.remove();
     window.setTimeout(() => URL.revokeObjectURL(fileUrl), 1000);
   }, [localManualToiletPositions]);
-  useEffect(() => { if (startupLocationRequested.current) return; startupLocationRequested.current = true; requestLocation('startup'); }, []);
+  useEffect(() => { if (startupLocationRequested.current) return; startupLocationRequested.current = true; if (initial3dReturn) { startupLocationSettled.current = true; startupLocationDisplayReleased.current = true; return; } requestLocation('startup'); }, []);
   useEffect(() => () => clearStartupLocationFallback(), []);
   useEffect(() => { document.documentElement.lang = language; document.title = language === 'en' ? 'ParkPulse HK | Find Parking' : 'ParkPulse HK｜泊邊度'; }, [language]);
   useEffect(() => {
@@ -539,7 +565,7 @@ export default function App() {
     {visibleError && <div className="error-banner" role="alert"><span>{text(language, 'dataConnection')}{visibleError}</span><button type="button" onClick={retry}>{text(language, 'retry')}</button></div>}
 
       </section>
-      <section className={`workspace${filterSection === 'facilities' ? ' is-facility-mode' : ''}`}><div className="map-column"><MapView language={language} position={position} showCurrentLocation={hasGpsPosition} showManualCenter={hasManualMapMarker} parks={mapParks} nearbyItems={mapNearbyItems} medicalItems={mapMedicalItems} selectedId={selectedId} viewedMarkerId={viewedMarkerId} onSelect={openDetail} onSelectOnStreet={openOnStreetDetail} onSelectToilet={openToiletDetail} onViewPopup={markMarkerViewed} onBeginManualPositionEdit={beginManualPositionEdit} onManualPositionChange={updateManualPositionDraft} onCompleteManualPositionEdit={saveManualPosition} onCancelManualPositionEdit={cancelManualPositionEdit} manualPositionEditorId={manualPositionDraft?.toiletId ?? null} onLocationSelect={(coordinates, behavior) => selectArea(coordinates, '地圖選取位置', behavior)} recenterRequest={recenterRequest} startupLocating={startupLocationPending && searchScope === 'radius'} startupRecenter={startupLocationFlight && searchScope === 'radius'} expanded={mapExpanded} searchScope={searchScope} onViewportChange={updateMapViewport} onToggleExpanded={toggleMap} onShowResults={showResults} resultsLabel={mapResultLabel} /></div>
+      <section className={`workspace${filterSection === 'facilities' ? ' is-facility-mode' : ''}`}><div className="map-column"><MapView language={language} position={position} showCurrentLocation={hasGpsPosition} showManualCenter={hasManualMapMarker} parks={mapParks} nearbyItems={mapNearbyItems} medicalItems={mapMedicalItems} selectedId={selectedId} viewedMarkerId={viewedMarkerId} onSelect={openDetail} onSelectOnStreet={openOnStreetDetail} onSelectToilet={openToiletDetail} onViewPopup={markMarkerViewed} onBeginManualPositionEdit={beginManualPositionEdit} onManualPositionChange={updateManualPositionDraft} onCompleteManualPositionEdit={saveManualPosition} onCancelManualPositionEdit={cancelManualPositionEdit} manualPositionEditorId={manualPositionDraft?.toiletId ?? null} onLocationSelect={(coordinates, behavior) => selectArea(coordinates, '地圖選取位置', behavior)} recenterRequest={recenterRequest} startupLocating={startupLocationPending && searchScope === 'radius'} startupRecenter={startupLocationFlight && searchScope === 'radius'} expanded={mapExpanded} searchScope={searchScope} onViewportChange={updateMapViewport} return3d={restore3dView} canReturn3d={canReturn3d} onReturn3d={returnFrom3d} onToggleExpanded={toggleMap} onShowResults={showResults} resultsLabel={mapResultLabel} /></div>
         <section className="area-tools map-bottom-tools" aria-label={`${text(language, 'districtSearch')} / ${text(language, 'mapGesture')}`}><div className="area-tools-row"><button className="area-search-toggle" type="button" onClick={toggleDistrict} aria-expanded={districtSearchOpen}>{text(language, 'districtSearch')}</button><p className="map-gesture-note">{text(language, 'mapGesture')}</p><button className="map-legend-toggle" type="button" aria-controls="map-marker-legend" aria-expanded={mapLegendOpen} aria-label={text(language, mapLegendOpen ? 'hideMapLegend' : 'showMapLegend')} title={text(language, mapLegendOpen ? 'hideMapLegend' : 'showMapLegend')} onClick={toggleLegend}><span className={`map-legend-caret${mapLegendOpen ? ' is-open' : ''}`} aria-hidden="true" /></button></div><ScreenOverlay><div className="screen-sheet-backdrop" hidden={!mapLegendOpen} role="presentation" onClick={(event) => { if (event.target === event.currentTarget) navigation.close('legend'); }}><div id="map-marker-legend" className="map-marker-legend" hidden={!mapLegendOpen} aria-label={text(language, 'mapMarkerLegend')}><div className="screen-section-heading"><strong>{text(language, 'mapMarkerLegend')}</strong><button type="button" onClick={() => navigation.close('legend')}>{text(language, 'closeScreen')} ×</button></div><span><i className="legend-swatch legend-available" />{text(language, 'legendAvailable')}</span><span><i className="legend-swatch legend-full" />{text(language, 'legendFull')}</span><span><i className="legend-swatch legend-closed" />{text(language, 'legendClosed')}</span><span><i className="legend-swatch legend-unknown" />{text(language, 'legendUnknown')}</span><span><i className="legend-swatch legend-toilet" />{text(language, 'legendToilet')}</span><span><i className="legend-swatch legend-venue" />{text(language, 'legendVenue')}</span><span><i className="legend-swatch legend-venue-unconfirmed" />{text(language, 'legendVenueUnconfirmed')}</span><span><i className="legend-swatch legend-fuel" />{text(language, 'legendFuel')}</span><span><i className="legend-swatch legend-atm" />{text(language, 'legendAtm')}</span><span><i className="legend-swatch legend-drinking-water" />{text(language, 'drinkingWater')}</span><span><i className="legend-swatch legend-traffic-camera">📷</i>{text(language, 'legendTrafficCamera')}</span><span><i className="legend-swatch legend-aed"><img className="legend-aed-symbol" src={AED_SYMBOL_URL} alt="" /></i>{text(language, 'legendAed')} · {text(language, 'aedSources')}</span><span><i className="legend-swatch legend-emergency"><img className="legend-emergency-symbol" src={publicAsset('icons/emergency-pill.svg')} alt="" /></i>{text(language, 'legendEmergency')}</span><span><i className="legend-swatch legend-border"><img className="legend-border-symbol" src={BORDER_SYMBOL_URL} alt="" /></i>{text(language, 'legendBorder')}</span><span><i className="legend-swatch legend-hkjc" aria-hidden="true"><span className="hkjc-horse-icon">♞</span></i>{text(language, 'legendHkjc')} · <span className="hkjc-first-prize-legend-crown" aria-hidden="true">👑</span> {text(language, 'legendHkjcFirstPrize')}</span>{facilityMode === 'medical' && MEDICAL_CATEGORY_ORDER.map((category) => <span key={category}><i className={`medical-legend-icon is-${category}`}><img src={publicAsset(`icons/medical/${medicalIconFile(category)}`)} alt="" /></i>{text(language, MEDICAL_CATEGORY_LABEL_KEYS[category])}</span>)}<span><i className="legend-swatch legend-onstreet" />{text(language, 'legendOnStreet')}</span>{searchScope === 'radius' && <span className="legend-center">📍 {text(language, 'legendCentre')}</span>}</div></div></ScreenOverlay>{districtSearchOpen && <ScreenOverlay><div className="screen-sheet-backdrop" role="presentation" onClick={(event) => { if (event.target === event.currentTarget) navigation.close('district'); }}><form className="area-search" onSubmit={submitDistrict}><div className="screen-section-heading"><strong>{text(language, 'districtSearch')}</strong><button type="button" onClick={() => navigation.close('district')}>{text(language, 'closeScreen')} ×</button></div><label htmlFor="district-search">{text(language, 'searchCentre')}</label><div><input id="district-search" list="district-options" value={districtQuery} onChange={(event) => setDistrictQuery(event.target.value)} placeholder={text(language, 'districtPlaceholder')} autoFocus /><button type="submit">{text(language, 'show')}</button></div><datalist id="district-options">{DISTRICTS.map((district) => <option key={district.label} value={language === 'en' ? district.englishLabel : district.label}>{language === 'en' ? district.label : district.englishLabel}</option>)}</datalist><small>{districtMessage || text(language, 'districtHelp')}</small></form></div></ScreenOverlay>}</section>
       </section>
       {startupLocationPending && searchScope === 'radius' ? <section className="results-panel" id="parking-results" aria-live="polite"><div className="loading-state"><span className="loader" />{text(language, 'startupLocationLoading')}<small>{text(language, 'startupLocationHint')}</small></div></section> : <section className={`results-panel${resultsExpanded ? ' is-fullscreen' : ''}`} id="parking-results" aria-label={facilityMode ? text(language, 'resultList', { label: facilityResultLabel ?? '' }) : text(language, 'resultList', { label: text(language, 'carparks', { count: '' }) })}><div className="results-map-toolbar"><button type="button" onClick={returnToMap}>↑ {text(language, 'returnToMap')}</button></div><div className={`results-heading${facilityMode === 'atm' && atmSelectedBanks.length > 0 ? ' is-bank-filtered' : ''}`}><div><p className="eyebrow">{resultScopeHeading}</p><h2>{facilityMode ? (facilityLoading && activeNearbyResultCount === 0 ? text(language, 'loadingFacility', { label: facilityLabel ?? '' }) : facilityError && activeNearbyResultCount === 0 ? text(language, 'facilityUnavailable', { label: facilityLabel ?? '' }) : showingOnStreet ? onStreetResultLabel : nearbyResultLabel) : (!vehicleType ? text(language, filterSection === 'facilities' ? 'facilityNotSelected' : 'vehicleNotSelected') : (resultsVerified ? text(language, 'results', { count: displayedParks.length }) : text(language, 'verifyingCarparks')))}</h2></div><p>{showingToilets ? text(language, 'washroomSources') : showingOnStreet ? (!vehicleType ? text(language, 'vehicleSelectionHint') : (showingMotorcycleOnStreet ? (motorcycleRoadsideSource ?? text(language, 'motorcycleOnStreetSources')) : (onStreetSource ?? text(language, 'onStreetSources')))) : facilityMode === 'fuel' ? (language === 'en' ? 'Consumer Council Oil Price Watch' : '消委會油價資訊通') : facilityMode === 'atm' ? (language === 'en' ? 'Hong Kong Monetary Authority' : (nearbyFacilitySource ?? '香港金融管理局')) : facilityMode === 'aed' ? aedSourceNote : facilityMode === 'emergency' ? text(language, 'emergencySources') : facilityMode === 'border' ? borderSourceNote : facilityMode === 'hkjc' ? hkjcSourceNote : facilityMode === 'drinkingWater' ? (nearbyFacilitySource ?? text(language, 'waterSources')) : facilityMode === 'trafficCamera' ? trafficCameraSourceNote : facilityMode === 'medical' ? text(language, 'medicalSources') : (!vehicleType ? text(language, filterSection === 'facilities' ? 'facilitySelectionHint' : 'vehicleSelectionHint') : (resultsVerified ? (filters.includeNoLiveData ? text(language, 'includedNoLiveData', { count: nonLiveCount }) : text(language, 'availableChoices', { count: availableCount })) : verificationLabel))}</p></div>

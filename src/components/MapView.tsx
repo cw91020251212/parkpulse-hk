@@ -15,7 +15,9 @@ import { useScreenNavigation } from '../hooks/ScreenNavigation';
 import { TrafficCameraMapLayer } from './TrafficCameraMapLayer';
 import { washroomSymbolMarkup } from './WashroomSymbol';
 
+import { Official3DMapControl, Restore3DMapView, type Restore3DView } from './Official3DMapControl';
 type Props = {
+  return3d?: Restore3DView; canReturn3d: boolean; onReturn3d: () => void;
   language: Language; position: Coordinates; parks: ParkViewModel[];
   showCurrentLocation: boolean;
   showManualCenter: boolean;
@@ -53,7 +55,7 @@ function ReportViewport({ onChange }: { onChange: (viewport: MapViewport) => voi
       frame = window.requestAnimationFrame(() => {
         const bounds = map.getBounds();
         const center = map.getCenter();
-        onChangeRef.current({ north: bounds.getNorth(), south: bounds.getSouth(), east: bounds.getEast(), west: bounds.getWest(), center: { lat: center.lat, lng: center.lng } });
+        onChangeRef.current({ north: bounds.getNorth(), south: bounds.getSouth(), east: bounds.getEast(), west: bounds.getWest(), center: { lat: center.lat, lng: center.lng }, zoom: map.getZoom() });
       });
     };
     map.on('moveend zoomend resize', report);
@@ -263,21 +265,23 @@ function groupMedicalLocations(items: MedicalLocationViewModel[]) { const groups
 
 function MapFocusIcon({ expanded }: { expanded: boolean }) { return expanded ? <svg className="map-focus-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 3 3 3 3-3M9 21l3-3 3 3M3 9l3 3-3 3M21 9l-3 3 3 3" /></svg> : <svg className="map-focus-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3H3v6m0-6 7 7M15 3h6v6m0-6-7 7M9 21H3v-6m0 6 7-7m5 7h6v-6m0 6-7-7" /></svg>; }
 
-export function MapView({ language, position, showCurrentLocation, showManualCenter, parks, nearbyItems, medicalItems, selectedId, viewedMarkerId, onSelect, onSelectOnStreet, onSelectToilet, onViewPopup, onBeginManualPositionEdit, onManualPositionChange, onCompleteManualPositionEdit, onCancelManualPositionEdit, manualPositionEditorId, onLocationSelect, recenterRequest, startupLocating, startupRecenter, expanded, searchScope, onViewportChange, onToggleExpanded, onShowResults, resultsLabel }: Props) {
+export function MapView({ language, position, showCurrentLocation, showManualCenter, parks, nearbyItems, medicalItems, selectedId, viewedMarkerId, onSelect, onSelectOnStreet, onSelectToilet, onViewPopup, onBeginManualPositionEdit, onManualPositionChange, onCompleteManualPositionEdit, onCancelManualPositionEdit, manualPositionEditorId, onLocationSelect, recenterRequest, startupLocating, startupRecenter, expanded, searchScope, onViewportChange, onToggleExpanded, onShowResults, resultsLabel, return3d, canReturn3d, onReturn3d }: Props) {
   const selected = parks.find((park) => park.info.park_Id === selectedId); const medicalGroups = useMemo(() => groupMedicalLocations(medicalItems), [medicalItems]); const trafficCameraItems = useMemo(() => nearbyItems.filter((item): item is NearbyFacilityViewModel => 'facility' in item && item.facility.kind === 'trafficCamera'), [nearbyItems]); const standardNearbyItems = useMemo(() => nearbyItems.filter((item) => !('facility' in item && item.facility.kind === 'trafficCamera')), [nearbyItems]); const visibleResultCount = parks.length + nearbyItems.length + medicalItems.length;
   const showPositionMarker = searchScope === 'radius' || showCurrentLocation || showManualCenter;
   const positionMarkerIcon = showCurrentLocation ? currentLocationIcon : selectedCenterIcon;
   const label = (kind?: PublicToilet['kind'] | NearbyFacility['kind'] | OnStreetParkingGroup['kind']) => kind === 'hadCommunityToilet' ? text(language, 'hadCommunityWashroom') : kind === 'afcdLongValleyTemporaryToilets' ? text(language, 'afcdLongValleyTemporaryWashrooms') : kind === 'afcdNatureCentreToilet' ? text(language, 'afcdNatureCentreWashroom') : kind === 'lcsdVenue' ? text(language, 'venueWashroom') : kind === 'lcsdParkToilet' ? text(language, 'lcsdParkWashroom') : kind === 'afcdCountryParkToilet' ? text(language, 'afcdCountryParkWashroom') : kind === 'landsdMapToilet' ? text(language, 'landsdMapToilet') : kind === 'fuel' ? (language === 'en' ? 'Consumer Council fuel station' : '消委會油站') : kind === 'atm' ? (language === 'en' ? 'HKMA ATM' : '金管局 ATM') : kind === 'aed' ? text(language, 'aed') : kind === 'emergency' ? text(language, 'emergencyDepartment') : kind === 'border' ? text(language, 'borderControlPoints') : kind === 'hkjc' ? text(language, 'hkjcOutlets') : kind === 'drinkingWater' ? text(language, 'drinkingWater') : kind === 'trafficCamera' ? text(language, 'trafficCameras') : kind === 'metered' ? text(language, 'meteredParking') : kind === 'nonMetered' ? text(language, 'nonMeteredTrial') : kind === 'motorcycle' ? text(language, 'motorcycleOnStreet') : text(language, 'publicToilet');
 
   return <div className={expanded ? 'map-wrap is-expanded' : 'map-wrap'} aria-label={text(language, 'mapLabel')}>
-    <MapContainer center={[position.lat, position.lng]} zoom={startupLocating ? 10 : 14} minZoom={8} maxZoom={MAP_MAX_ZOOM} scrollWheelZoom inertia={false} className="landsd-map">
+    <MapContainer center={return3d ? [return3d.center.lat, return3d.center.lng] : [position.lat, position.lng]} zoom={return3d?.zoom ?? (startupLocating ? 10 : 14)} minZoom={8} maxZoom={MAP_MAX_ZOOM} scrollWheelZoom inertia={false} className="landsd-map">
       <PopupHistory />
       <ReportViewport onChange={onViewportChange} />
+      <Official3DMapControl language={language} canReturn={canReturn3d} onReturn={onReturn3d} />
       <ManualToiletLongPress editorId={manualPositionEditorId} onBegin={onBeginManualPositionEdit} onMove={onManualPositionChange} onComplete={onCompleteManualPositionEdit} onCancel={onCancelManualPositionEdit} />
       <TileLayer minNativeZoom={LANDSD_MIN_NATIVE_ZOOM} maxNativeZoom={LANDSD_MAX_NATIVE_ZOOM} maxZoom={MAP_MAX_ZOOM} attribution='&copy; <a href="https://api.portal.hkmapservice.gov.hk/disclaimer" target="_blank" rel="noreferrer">Map information from Lands Department</a>' url={LANDSD_BASEMAP_URL} />
       <TileLayer minNativeZoom={LANDSD_MIN_NATIVE_ZOOM} maxNativeZoom={LANDSD_MAX_NATIVE_ZOOM} maxZoom={MAP_MAX_ZOOM} url={LANDSD_LABEL_URL} opacity={1} zIndex={10} />
       <Recenter position={position} request={recenterRequest} startup={startupRecenter} />
       <FocusSelected park={selected} />
+      <Restore3DMapView view={return3d} />
       <ResizeMap expanded={expanded} />
       <LongPressPicker onPick={(coordinates) => onLocationSelect(coordinates, { recenter: false, showManualMarker: true })} />
       {!startupLocating && <>{searchScope === 'radius' && <Circle center={[position.lat, position.lng]} radius={2_000} pathOptions={{ color: '#14B8A6', fillColor: '#14B8A6', fillOpacity: 0.1, weight: 2, dashArray: '6 6' }} />}{showPositionMarker && <Marker position={[position.lat, position.lng]} icon={positionMarkerIcon} zIndexOffset={showCurrentLocation ? 10_000 : 1_000} keyboard={false} />}</>}

@@ -1,3 +1,4 @@
+import { buildMtrDrinkingWater } from '../lib/mtr-drinking-water.mjs';
 import { buildLcsdDrinkingWater } from '../lib/lcsd-drinking-water.mjs';
 import { buildAfcdDrinkingWater } from '../lib/afcd-drinking-water.mjs';
 import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
@@ -108,6 +109,7 @@ await refreshOrKeep('traffic-cameras.json', async () => {
 
 await refreshOrKeep('lcsd-drinking-water.json', () => buildLcsdDrinkingWater());
 await refreshOrKeep('afcd-drinking-water.json', () => buildAfcdDrinkingWater());
+await refreshOrKeep('mtr-drinking-water.json', () => buildMtrDrinkingWater());
 
 await refreshOrKeep('lcsd-park-washrooms.json', () => buildLcsdParkWashrooms());
 

@@ -4,7 +4,7 @@ import type { DrinkingWaterSnapshot } from '../domain/drinkingWater';
 import { publicAsset } from './site';
 
 export async function fetchDrinkingWater(signal: AbortSignal, language: Language) {
-  const providers = ['lcsd', 'afcd'] as const;
+  const providers = ['lcsd', 'afcd', 'mtr'] as const;
   const results = await Promise.allSettled(providers.map(async (provider) => {
     const response = await fetch(publicAsset(`pages-data/${provider}-drinking-water.json`), { signal });
     if (!response.ok) throw new Error(`${provider}: HTTP ${response.status}`);
@@ -28,6 +28,8 @@ export async function fetchDrinkingWater(signal: AbortSignal, language: Language
     sourceUrl: record.sourceUrl || snapshot.sourceUrl,
     locationSourceUrl: record.coordinateSourceUrl,
     snapshotGeneratedAt: snapshot.generatedAt,
+    locationPrecision: record.locationPrecision,
+    locationNote: language === 'en' ? record.locationNoteEn : record.locationNoteTc,
     drinkingWater: {
       provider: record.provider,
       location: language === 'en' ? record.locationEn || record.locationTc : record.locationTc,

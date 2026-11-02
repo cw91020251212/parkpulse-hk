@@ -25,7 +25,7 @@ assert.ok(Object.keys(operatorRates.records ?? {}).length >= 80, 'GitHub Pages s
 assert.equal(hkjc.records.length, 83, 'GitHub Pages should contain all official HKJC betting outlets');
 assert.equal(hkjc.records.filter(({ locationPrecision }) => locationPrecision === 'outlet').length, 82);
 assert.equal(hkjc.records.filter(({ locationPrecision }) => locationPrecision === 'building').length, 1);
-for (const name of ['lcsd-drinking-water.json', 'afcd-drinking-water.json']) {
+for (const name of ['lcsd-drinking-water.json', 'afcd-drinking-water.json', 'mtr-drinking-water.json']) {
   const water = await readJson(name);
   assert.ok(water.records.length > 0, `Pages requires official ${name}`);
   await access(path.join(root, 'dist/pages-data', name));

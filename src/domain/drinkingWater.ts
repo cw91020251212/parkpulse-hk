@@ -3,7 +3,7 @@ import type { Language } from '../i18n';
 export type WaterEnvironment = 'all' | 'indoor' | 'outdoor';
 export interface DrinkingWaterRecord {
   id: string;
-  provider: 'lcsd' | 'afcd';
+  provider: 'lcsd' | 'afcd' | 'mtr';
   nameTc: string; nameEn: string;
   addressTc: string; addressEn: string;
   latitude: number; longitude: number;
@@ -20,6 +20,9 @@ export interface DrinkingWaterRecord {
   filterStatus: 'confirmed' | 'notPublished';
   accessTc: string; accessEn: string;
   temporaryClosed: boolean;
+  locationPrecision?: 'building';
+  locationNoteTc?: string;
+  locationNoteEn?: string;
 }
 export interface DrinkingWaterSnapshot {
   generatedAt: string;

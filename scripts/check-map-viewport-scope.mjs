@@ -29,8 +29,8 @@ assert.match(styles, /\.locate-icon \{[^}]*color: #ef1d2d;/, 'the location pin i
 assert.match(app, /atmSelectedBanks, language, searchScope/);
 assert.match(app, /startupLocationDisplayReleased = useRef\(searchScope === 'viewport'\)/, 'saved viewport mode is available before startup GPS finishes');
 assert.match(app, /const searchScopeRef = useRef\(searchScope\)/, 'late startup GPS reads the current scope instead of the initial render');
-assert.match(app, /const \[hasGpsPosition, setHasGpsPosition\] = useState\(false\)/, 'GPS success is tracked separately from a manual map centre');
-assert.match(app, /const \[hasManualMapMarker, setHasManualMapMarker\] = useState\(false\)/, 'a long-press marker is tracked separately from GPS');
+assert.match(app, /const \[hasGpsPosition, setHasGpsPosition\] = useState\(initial3dReturn\?\.hasGpsPosition \?\? false\)/, 'GPS success is tracked separately from a manual map centre');
+assert.match(app, /const \[hasManualMapMarker, setHasManualMapMarker\] = useState\(initial3dReturn\?\.hasManualMapMarker \?\? false\)/, 'a long-press marker is tracked separately from GPS');
 assert.doesNotMatch(app, /useLayoutEffect|mapColumnRef|visualViewport/, 'map height does not dynamically fill the remaining screen');
 assert.match(app, /filterSection === 'facilities' \? ' is-facility-mode' : ''/, 'the nearby-facilities section activates the extended layout even before a facility subtype is selected; parking stays unchanged');
 assert.match(app, /setPosition\(\{ lat: coords\.latitude, lng: coords\.longitude \}\);\s*setHasGpsPosition\(true\);/s, 'a successful geolocation result enables the current-location marker');
