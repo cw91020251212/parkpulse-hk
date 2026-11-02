@@ -10,6 +10,11 @@ const [appSource, mapSource, detailSource, styles, borderIcon, facilityCard, fil
   readFile(new URL('../src/components/NearbyFacilityCard.tsx', import.meta.url), 'utf8'),
   readFile(new URL('../src/components/Filters.tsx', import.meta.url), 'utf8'),
 ]);
+const [trafficLayer, nearbyApi, trafficBuilder] = await Promise.all([
+  readFile(new URL('../src/components/TrafficCameraMapLayer.tsx', import.meta.url), 'utf8'),
+  readFile(new URL('../src/api/nearbyFacilities.ts', import.meta.url), 'utf8'),
+  readFile(new URL('../lib/traffic-cameras.mjs', import.meta.url), 'utf8'),
+]);
 
 assert.match(appSource, /const mapParks = \(startupLocationPending && searchScope === 'radius'\) \|\| facilityMode \? \[\] : displayedParks;/);
 assert.match(appSource, /const mapNearbyItems = \(startupLocationPending && searchScope === 'radius'\) \|\| !facilityMode \|\| facilityMode === 'medical' \? \[\] : activeNearbyResults;/);
@@ -21,7 +26,7 @@ assert.match(appSource, /legend-emergency-symbol/);
 assert.match(appSource, /emergencyWaitStatistics/);
 assert.match(appSource, /legend-border-symbol/);
 assert.match(appSource, /borderSnapshotGeneratedAt/);
-assert.match(mapSource, /nearbyItems\.map\(\(item\)/);
+assert.match(mapSource, /standardNearbyItems\.map\(\(item\)/);
 assert.match(mapSource, /kind === 'aed'/);
 assert.match(mapSource, /kind === 'emergency'/);
 assert.match(mapSource, /kind === 'border'/);
@@ -88,5 +93,20 @@ assert.match(mapSource, /showManualMarker: true/, 'a long press requests a visib
 assert.match(styles, /\.selected-center-marker\.is-current-location \{[^}]*width: 36px; height: 40px; font-size: 31px;\s*\}/, 'GPS pin remains slightly enlarged without a yellow highlight');
 assert.doesNotMatch(styles, /\.selected-center-marker::before|\.selected-center-marker\.is-current-location::before/, 'manual and GPS centre pins have no glow pseudo-element');
 assert.doesNotMatch(styles, /current-location-pulse|255\s+220\s+88|255\s+207\s+54|255\s+213\s+72/, 'centre pins have no yellow pulse animation or glow colors');
+assert.match(filters, /'trafficCamera'/, 'Traffic cameras should be selectable inside existing nearby facilities filters');
+assert.match(appSource, /facilityMode === 'trafficCamera'/, 'Traffic cameras should use the nearby-facility result flow');
+assert.match(mapSource, /TrafficCameraMapLayer/, 'Traffic cameras should render through their dedicated clustered map layer');
+assert.match(trafficLayer, /className: 'toilet-marker-shell'/, 'Individual traffic cameras must retain the existing facility waterdrop shell');
+assert.match(trafficLayer, /class="toilet-marker is-traffic-camera/, 'Individual traffic cameras must retain the existing facility waterdrop marker class');
+assert.match(trafficLayer, /className: 'parking-marker-shell'/, 'Dense traffic cameras must retain the existing parking waterdrop shell');
+assert.match(trafficLayer, /marker-traffic-camera-cluster/, 'Dense traffic cameras must use a numbered parking-marker waterdrop cluster');
+assert.match(trafficLayer, /CLUSTER_GRID_PX/, 'Traffic-camera grouping must avoid overlapping dense markers');
+assert.match(styles, /\.toilet-marker\.is-traffic-camera \{ --marker-outline: #136a80; background: linear-gradient\(to top right, #13738a, #8ce4eb\); \}/, 'Traffic cameras must use a high-contrast distinct tone on the Lands Department basemap');
+assert.match(styles, /\.parking-marker\.marker-traffic-camera-cluster/, 'Traffic-camera clusters must retain the parking-marker waterdrop geometry');
+assert.match(facilityCard, /trafficCameraOpenSnapshot/, 'Traffic-camera cards must offer the official original snapshot action');
+assert.match(detailSource, /trafficCameraOpenSnapshot/, 'Traffic-camera detail must offer the official original snapshot action');
+assert.match(nearbyApi, /fetchTrafficCameras/, 'Traffic-camera frontend data must use the static Pages snapshot flow');
+assert.match(trafficBuilder, /TRAFFIC_CAMERA_LOCATIONS_TC_URL/, 'Traffic-camera builder must read the official Traditional Chinese location XML');
+assert.match(trafficBuilder, /TRAFFIC_CAMERA_LOCATIONS_EN_URL/, 'Traffic-camera builder must read the official English location XML');
 
-console.log('Verified AED, emergency-department, border and HKJC outlet controls, markers, legends, sources and location precision across map and detail views.');
+console.log('Verified AED, emergency-department, border, HKJC outlet and Transport Department traffic-camera controls, markers, legends, sources and location precision across map and detail views.');

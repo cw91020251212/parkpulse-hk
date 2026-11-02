@@ -191,3 +191,12 @@
 - **官方統計：** [繁中「十大幸運投注處中六合彩頭獎次數統計」](https://special.hkjc.com/e-win/zh-HK/betting-info/marksix/lucky-ocb/)及[英文榜單](https://special.hkjc.com/e-win/en-US/betting-info/marksix/lucky-ocb/)。本次榜單截止日期為 2026-06-30；只儲存官方公開的十個分店名次及頭獎獎券售出次數。
 - **來源與更新：** 榜單對應到 83 間官方場外投注處名錄的固定分店 ID，資料存於 `data/hkjc-betting-outlets-directory.json` 的 `firstPrizeStats`，由 `lib/hkjc-betting-outlets.mjs` 驗證和附加到 `public/pages-data/hkjc-betting-outlets.json`。更新榜單時重新讀取官方頁面、更新統計截止日和十個名次／數字，並核實每個 ID 仍對應正確的官方投注站名稱；目錄座標刷新不可刪除榜單資料。
 - **前端與檢查：** `src/api/nearbyFacilities.ts` 讀取次數、名次、統計日期和官方來源；地圖皇冠、卡片及詳情位於 `src/components/MapView.tsx`、`src/components/NearbyFacilityCard.tsx`、`src/components/NearbyFacilityDetail.tsx`，繁中／英文標籤位於 `src/i18n.ts`。執行 `pnpm test:hkjc-betting-outlets` 及 `pnpm test:map-markers` 核對十筆榜單、ID 對應、皇冠、排名、次數和來源連結。
+
+
+### 運輸署交通快拍
+
+- **官方來源：** [DATA.GOV.HK「交通快拍圖像」資料集](https://data.gov.hk/tc-data/dataset/hk-td-tis_2-traffic-snapshot-images)，繁中 [Traffic Camera Locations XML](https://static.data.gov.hk/td/traffic-snapshot-images/code/Traffic_Camera_Locations_Tc.xml) 及英文 [Traffic Camera Locations XML](https://static.data.gov.hk/td/traffic-snapshot-images/code/Traffic_Camera_Locations_En.xml)。每筆都有同一官方 `Key`、地區、分區、描述、WGS84 緯度／經度及原始 `https://tdcctv.data.one.gov.hk/<Key>.JPG` 快拍網址。
+- **更新位置／輸出：** `lib/traffic-cameras.mjs` 解析並以 `Key` 嚴格配對兩個 XML；`scripts/build-pages-data.mjs` 透過 `pnpm build:pages` 寫入 `public/pages-data/traffic-cameras.json`。前端只讀此位置快照；`src/api/nearbyFacilities.ts` 會按使用者語言顯示名稱、地區及分區。
+- **強制驗證：** 建置器拒絕雙語 ID 集不一致、雙語座標或快拍 URL 不一致、重覆 ID、缺名稱／地區／分區／座標／URL、非香港座標或非 `tdcctv.data.one.gov.hk` HTTPS JPEG。`pnpm test:traffic-cameras` 再檢查完整靜態快照及所有上述的對外連結約束。
+- **影像與私隱限制：** GitHub Pages 不下載、快取、鏡像或重新發送任何快拍影像；只保存官方位置及原始 URL。使用者按「開啟官方快拍」才直接在新分頁開啟運輸署 JPG。官方快拍約每兩分鐘更新，並非連續直播；單一鏡頭可能暫時顯示 `No Service` 或轉址，不能把快照當成即時／保證可用服務。
+- **地圖規則：** 單一鏡頭沿用 `.toilet-marker` 的 34×34 水滴、底尖錨點、陰影、觸控區和選取粉紅描邊，只加上相機圖示及交通快拍色；高密度區用 `.parking-marker` 的既有數字水滴群組，按下放大至可分開查看。不得改用白色菱形、圓點或另一套鏡頭雷達圖釘。

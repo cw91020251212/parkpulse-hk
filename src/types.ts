@@ -210,7 +210,7 @@ export interface MedicalLocationViewModel {
   onSelect?: () => void;
 }
 
-export type NearbyMode = 'toilets' | 'fuel' | 'atm' | 'aed' | 'emergency' | 'border' | 'hkjc' | 'medical' | 'onStreet';
+export type NearbyMode = 'toilets' | 'fuel' | 'atm' | 'aed' | 'emergency' | 'border' | 'hkjc' | 'trafficCamera' | 'medical' | 'onStreet';
 
 export interface GoogleMapsRating {
   rating: number;
@@ -228,7 +228,7 @@ export interface NearbyFacility {
   remarks?: string;
   latitude: number;
   longitude: number;
-  kind: 'fuel' | 'atm' | 'aed' | 'emergency' | 'border' | 'hkjc';
+  kind: 'fuel' | 'atm' | 'aed' | 'emergency' | 'border' | 'hkjc' | 'trafficCamera';
   source: string;
   sourceUrl?: string;
   sourcePdfUrl?: string;
@@ -243,6 +243,11 @@ export interface NearbyFacility {
   hkjcFirstPrizeTicketCount?: number;
   hkjcFirstPrizeAsOf?: string;
   hkjcFirstPrizeSourceUrl?: string;
+  cameraKey?: string;
+  snapshotUrl?: string;
+  region?: string;
+  district?: string;
+  imageRefreshNote?: string;
   emergencyWait?: EmergencyWaitTime;
   borderWait?: BorderWaitingTime;
 }

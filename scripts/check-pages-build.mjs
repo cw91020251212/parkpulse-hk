@@ -4,8 +4,8 @@ import path from 'node:path';
 
 const root = process.cwd();
 const readJson = async (name) => JSON.parse(await readFile(path.join(root, 'public/pages-data', name), 'utf8'));
-const [ev, toilets, fuel, atms, placeLinks, onStreet, motorcycleRoadside, officialStaticCarparks, operatorRates, hkjc] = await Promise.all([
-  ...['ev-chargers.json', 'public-toilets.json', 'fuel-stations.json', 'atms.json', 'verified-place-links.json', 'on-street-parking.json', 'motorcycle-roadside.json', 'official-static-carparks.json'].map(readJson),
+const [ev, toilets, fuel, atms, placeLinks, onStreet, motorcycleRoadside, officialStaticCarparks, trafficCameras, operatorRates, hkjc] = await Promise.all([
+  ...['ev-chargers.json', 'public-toilets.json', 'fuel-stations.json', 'atms.json', 'verified-place-links.json', 'on-street-parking.json', 'motorcycle-roadside.json', 'official-static-carparks.json', 'traffic-cameras.json'].map(readJson),
   readFile(path.join(root, 'public/operator-rates.json'), 'utf8').then(JSON.parse),
   readJson('hkjc-betting-outlets.json'),
 ]);
@@ -19,6 +19,8 @@ assert.ok(onStreet.nonMetered?.length >= 100, 'GitHub Pages should contain the T
 assert.ok(motorcycleRoadside.recordCount >= 10_000 && motorcycleRoadside.groups?.length >= 600, 'GitHub Pages should contain the official HKeMobility motorcycle roadside snapshot');
 assert.ok(officialStaticCarparks.records?.length >= 20, 'GitHub Pages should contain official supplemental car parks without Transport Department live vacancy data');
 assert.ok(officialStaticCarparks.vacancies?.some((record) => record.park_Id === 'link-4324'), 'GitHub Pages should contain the Link Ming Nga availability snapshot');
+assert.ok(trafficCameras.records?.length >= 900, 'GitHub Pages should contain the complete Transport Department traffic-camera location snapshot');
+assert.ok(trafficCameras.records?.every(({ snapshotUrl }) => /^https:\/\/tdcctv\.data\.one\.gov\.hk\/.+\.JPG$/i.test(snapshotUrl)), 'GitHub Pages traffic-camera records must link only to Transport Department original JPEG snapshots');
 assert.ok(Object.keys(operatorRates.records ?? {}).length >= 80, 'GitHub Pages should contain Link official rate snapshots');
 assert.equal(hkjc.records.length, 83, 'GitHub Pages should contain all official HKJC betting outlets');
 assert.equal(hkjc.records.filter(({ locationPrecision }) => locationPrecision === 'outlet').length, 82);
@@ -29,4 +31,4 @@ assert.equal(brandFiles.length, 25, 'GitHub Pages should contain all current fue
 await Promise.all(brandFiles.map((file) => access(path.join(root, 'dist/brand-icons', file))));
 const html = await readFile(path.join(root, 'dist/index.html'), 'utf8');
 assert.match(html, /\/parkpulse-hk\//, 'GitHub Pages build must use the repository base path');
-console.log(`Verified static Pages data: ${ev.records.length} EV, ${toilets.records.length} toilets, ${fuel.records.length} fuel stations, ${atms.records.length} ATMs, ${hkjc.records.length} HKJC outlets (82 outlet points, 1 building point), ${onStreet.nonMetered.length} trial road-side spaces, ${motorcycleRoadside.recordCount} motorcycle roadside spaces, ${officialStaticCarparks.records.length} official non-live car parks, ${placeLinks.records.length} verified place links, ${Object.keys(operatorRates.records).length} operator rate snapshots`);
+console.log(`Verified static Pages data: ${ev.records.length} EV, ${toilets.records.length} toilets, ${fuel.records.length} fuel stations, ${atms.records.length} ATMs, ${trafficCameras.records.length} traffic cameras, ${hkjc.records.length} HKJC outlets (82 outlet points, 1 building point), ${onStreet.nonMetered.length} trial road-side spaces, ${motorcycleRoadside.recordCount} motorcycle roadside spaces, ${officialStaticCarparks.records.length} official non-live car parks, ${placeLinks.records.length} verified place links, ${Object.keys(operatorRates.records).length} operator rate snapshots`);

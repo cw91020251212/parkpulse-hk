@@ -37,6 +37,14 @@ type HkjcSnapshot = {
   sourceUrl?: string; sourcePdfTc?: string; sourcePdfEn?: string; locationSourceUrl?: string; coordinateTransformSourceUrl?: string;
   firstPrizeStats?: { asOf: string; sourceUrlTc: string; sourceUrlEn: string };
 };
+type TrafficCameraLocation = {
+  id: string; nameTc: string; nameEn: string; regionTc: string; regionEn: string; districtTc: string; districtEn: string;
+  latitude: number; longitude: number; snapshotUrl: string;
+};
+type TrafficCameraSnapshot = {
+  records?: TrafficCameraLocation[]; source?: Record<Language, string>; sourceUrl?: string; locationSourceTcUrl?: string; locationSourceEnUrl?: string;
+  generatedAt?: string; imageRefreshNote?: Record<Language, string>;
+};
 
 function normalized(value: string | undefined) {
   return String(value ?? '').replace(/\s+/g, '').toLocaleLowerCase();
@@ -149,10 +157,35 @@ async function fetchHkjcBettingOutlets(language: Language, signal: AbortSignal) 
   return { records, source: snapshot.source?.[language] };
 }
 
-export async function fetchNearbyFacilities(kind: 'fuel' | 'atm' | 'aed' | 'emergency' | 'border' | 'hkjc', signal: AbortSignal, language: Language) {
+async function fetchTrafficCameras(language: Language, signal: AbortSignal) {
+  const response = await fetch(publicAsset('pages-data/traffic-cameras.json'), { signal });
+  if (!response.ok) throw new Error('未能讀取運輸署交通快拍位置快照');
+  const snapshot = await response.json() as TrafficCameraSnapshot;
+  const records = (snapshot.records ?? []).map((camera) => ({
+    id: camera.id,
+    kind: 'trafficCamera' as const,
+    name: language === 'en' ? camera.nameEn : camera.nameTc,
+    address: `${language === 'en' ? camera.regionEn : camera.regionTc} · ${language === 'en' ? camera.districtEn : camera.districtTc}`,
+    latitude: camera.latitude,
+    longitude: camera.longitude,
+    source: snapshot.source?.[language] ?? (language === 'en' ? 'Transport Department / DATA.GOV.HK · traffic camera locations and original images' : '運輸署／DATA.GOV.HK · 交通快拍鏡頭位置及原始影像'),
+    sourceUrl: snapshot.sourceUrl,
+    locationSourceUrl: language === 'en' ? snapshot.locationSourceEnUrl : snapshot.locationSourceTcUrl,
+    snapshotGeneratedAt: snapshot.generatedAt,
+    cameraKey: camera.id,
+    snapshotUrl: camera.snapshotUrl,
+    region: language === 'en' ? camera.regionEn : camera.regionTc,
+    district: language === 'en' ? camera.districtEn : camera.districtTc,
+    imageRefreshNote: snapshot.imageRefreshNote?.[language],
+  } satisfies NearbyFacility));
+  return { records, source: snapshot.source?.[language] };
+}
+
+export async function fetchNearbyFacilities(kind: 'fuel' | 'atm' | 'aed' | 'emergency' | 'border' | 'hkjc' | 'trafficCamera', signal: AbortSignal, language: Language) {
   if (kind === 'emergency') return fetchEmergencyFacilities(language, signal);
   if (kind === 'border') return fetchBorderControlPoints(language, signal);
   if (kind === 'hkjc') return fetchHkjcBettingOutlets(language, signal);
+  if (kind === 'trafficCamera') return fetchTrafficCameras(language, signal);
   const snapshot = kind === 'fuel' ? 'fuel-stations' : kind === 'atm' ? 'atms' : 'aeds';
   const endpoint = kind === 'aed' || isStaticPages ? publicAsset(`pages-data/${snapshot}.json`) : kind === 'fuel' ? '/api/fuel-stations' : '/api/atms';
   const response = await fetch(endpoint, { signal });

@@ -17,6 +17,7 @@ import { buildAfcdLongValleyTemporaryToilets } from '../lib/afcd-long-valley-tem
 import { buildFsdAeds, FSD_AED_API_URL } from '../lib/aeds.mjs';
 import { buildEmergencyDepartments } from '../lib/emergency-departments.mjs';
 import { buildBorderControlPoints } from '../lib/border-control-points.mjs';
+import { buildTrafficCameraSnapshot, TRAFFIC_CAMERA_LOCATIONS_EN_URL, TRAFFIC_CAMERA_LOCATIONS_TC_URL } from '../lib/traffic-cameras.mjs';
 import { refreshBrandIcons } from './refresh-brand-icons.mjs';
 
 const publicDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../public');
@@ -94,6 +95,14 @@ await refreshOrKeep('aeds.json', async () => {
 await refreshOrKeep('emergency-departments.json', () => buildEmergencyDepartments());
 
 await refreshOrKeep('border-control-points.json', () => buildBorderControlPoints());
+
+await refreshOrKeep('traffic-cameras.json', async () => {
+  const [englishXml, traditionalChineseXml] = await Promise.all([
+    request(TRAFFIC_CAMERA_LOCATIONS_EN_URL, 'application/xml,text/xml;q=0.9,*/*;q=0.8').then((response) => response.text()),
+    request(TRAFFIC_CAMERA_LOCATIONS_TC_URL, 'application/xml,text/xml;q=0.9,*/*;q=0.8').then((response) => response.text()),
+  ]);
+  return buildTrafficCameraSnapshot({ englishXml, traditionalChineseXml });
+});
 
 await refreshOrKeep('lcsd-park-washrooms.json', () => buildLcsdParkWashrooms());
 

@@ -1599,3 +1599,19 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
     border-radius: 0;
   }
 }
+
+/* Transport Department traffic cameras retain ParkPulse waterdrop geometries with a high-contrast teal camera tone. */
+.toilet-marker.is-traffic-camera { --marker-outline: #136a80; background: linear-gradient(to top right, #13738a, #8ce4eb); }
+.toilet-marker.is-traffic-camera > span { font-size: 17px; line-height: 1; filter: saturate(.9); }
+.parking-marker.marker-traffic-camera-cluster { --marker-outline: #136a80; background: linear-gradient(to top right, #13738a, #8ce4eb); color: #f7ffff; text-shadow: 0 1px 2px #0a4151; }
+.toilet-card-icon.is-traffic-camera, .legend-traffic-camera { color: #f7ffff; background: linear-gradient(to top right, #13738a, #8ce4eb); }
+.toilet-card-icon.is-traffic-camera { font-size: 14px; }
+.legend-traffic-camera { display: inline-grid; place-items: center; font-size: 11px; }
+.nearby-facility-card.is-traffic-camera { border-left: 3px solid #59ced9; }
+.washroom-source.is-traffic-camera { color: #dbfbfd; background: #13566a; }
+.traffic-camera-note, .traffic-camera-location { white-space: normal; }
+.traffic-camera-note { color: #e2f8fa; background: #17495d !important; }
+.traffic-camera-location-note { color: #a9dae0; }
+.traffic-camera-detail-symbol { display: inline-block; margin-right: 4px; vertical-align: -2px; font-size: 17px; }
+.traffic-camera-image-note { border-left: 3px solid #50cbd7; padding-left: 10px; }
+.traffic-camera-snapshot-link { background: #81dce4; }
