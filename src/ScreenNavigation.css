@@ -42,7 +42,6 @@
 /* Short landscape screens still leave room to scroll the bank list. */
 @media (max-height: 500px) {
   .atm-bank-picker .atm-bank-picker__header { gap: 3px; padding-block: 5px; }
-  .atm-bank-picker .atm-bank-picker__header > p { display: none; }
   .atm-bank-picker .atm-bank-picker__body { gap: 4px; padding-top: 5px; }
   .atm-bank-picker .atm-bank-multiselect__search { grid-template-columns: auto minmax(0, 1fr); align-items: center; }
   .atm-bank-picker .atm-bank-picker__footer { padding-block: 5px; }

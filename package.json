@@ -66,7 +66,8 @@
     "test:official-3d": "node --experimental-strip-types scripts/check-official-3d.mjs",
     "test:mtr-drinking-water": "node scripts/check-mtr-drinking-water.mjs",
     "test:pin-location": "node scripts/check-pin-location.mjs",
-    "test:named-places": "node scripts/check-named-place-download.mjs && node --experimental-strip-types scripts/check-named-places.mjs"
+    "test:named-places": "node scripts/check-named-place-download.mjs && node --experimental-strip-types scripts/check-named-places.mjs",
+    "test:result-readability": "node scripts/check-result-card-flow.mjs && node scripts/check-park-card-flow.mjs && node scripts/check-overlay-text-scale.mjs"
   },
   "dependencies": {
     "express": "^5.2.1",

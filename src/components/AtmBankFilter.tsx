@@ -38,8 +38,6 @@ export function AtmBankFilter({ language, banks, selectedBanks, bankCounts, scop
           <span>{text(language, 'allBanks')} <span className="atm-bank-multiselect__count">({scopedTotal})</span></span>
         </button>
       </div>
-      <p id={`${id}-hint`}>{text(language, 'atmBankHint')}</p>
-      <p id={`${id}-scope`} className="atm-bank-multiselect__scope">{scopeLabel}</p>
     </header>
     <div className="atm-bank-picker__body">
       <label className="atm-bank-multiselect__search" htmlFor={`${id}-search`}>
@@ -47,6 +45,8 @@ export function AtmBankFilter({ language, banks, selectedBanks, bankCounts, scop
         <input id={`${id}-search`} type="search" name="atm-bank-name-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={text(language, 'atmBankSearch')} autoComplete="off" spellCheck={false} aria-describedby={`${id}-hint`} />
       </label>
       <div className="atm-bank-multiselect__options" role="group" aria-label={text(language, 'atmBank')} aria-describedby={`${id}-hint ${id}-scope`}>
+      <p id={`${id}-hint`}>{text(language, 'atmBankHint')}</p>
+      <p id={`${id}-scope`} className="atm-bank-multiselect__scope">{scopeLabel}</p>
         {visibleBanks.map((bank) => <button key={bank} className="atm-bank-multiselect__button" type="button" aria-pressed={selectedBanks.includes(bank)} title={bank} onClick={() => onChange(toggleAtmBank(selectedBanks, bank))}>
           <span className="atm-bank-multiselect__name">{shortBankName(bank)} <span className="atm-bank-multiselect__count">({bankCounts.get(bank) ?? 0})</span></span>
           <span className="atm-bank-multiselect__check" aria-hidden="true">{selectedBanks.includes(bank) ? '✓' : ''}</span>

@@ -1,0 +1,64 @@
+/* Keep these component selectors stronger than the legacy global card rules,
+   including :has(.card-pricing-summary), regardless of stylesheet load order. */
+article.park-card > .park-card-main {
+  display: block;
+  min-height: 0;
+  height: auto;
+  padding: 0;
+}
+
+article.park-card > .park-card-main > .park-card-select {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: none;
+  grid-auto-rows: max-content;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+  min-height: 0;
+  height: auto;
+}
+
+/* A separate, right-aligned secondary row after the selectable content.
+   The Google link is never nested inside the detail button. */
+article.park-card > .park-card-main > .park-card-rating {
+  position: static;
+  inset: auto;
+  z-index: auto;
+  display: block;
+  width: fit-content;
+  max-width: calc(100% - 24px);
+  margin: 0 11px 13px auto;
+}
+
+/* There is no overlaid rating beside the address to reserve space for. */
+article.park-card .park-card-select .card-heading p {
+  padding-right: 0;
+}
+
+article.park-card .park-card-select .availability-line,
+article.park-card .park-card-select .card-facts {
+  min-height: 0;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  overflow: visible;
+  white-space: normal;
+}
+
+article.park-card .park-card-select .card-facts span,
+article.park-card .park-card-select .updated {
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+/* Source notes are the final selectable content row and contribute height. */
+article.park-card > .park-card-main > .park-card-select > .card-note {
+  position: static;
+  inset: auto;
+  display: block;
+  min-width: 0;
+  margin-left: 16px;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}

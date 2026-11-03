@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+const read=p=>readFile(new URL(`../${p}`,import.meta.url),'utf8');
+const [styles,app,toilet,bank,nav]=await Promise.all(['src/styles.css','src/App.tsx','src/components/ToiletCard.tsx','src/components/AtmBankFilter.tsx','src/ScreenNavigation.css'].map(read));
+assert.match(styles,/\.results-list\s*\{[^}]*grid-auto-rows:\s*max-content;[^}]*align-items:\s*start;/);
+assert.match(styles,/\.toilet-card-actions\s*\{[^}]*align-self:\s*start;/);
+const complete=styles.slice(styles.indexOf('/* Full card content belongs to the list flow'));
+for(const s of ['.park-card .card-heading h3','.park-card .card-heading p','.toilet-card .card-heading h3','.toilet-card .card-heading p'])assert.ok(complete.includes(s));
+assert.match(complete,/overflow:\s*visible;[\s\S]*white-space:\s*normal;[\s\S]*-webkit-line-clamp:\s*unset;/);
+assert.match(app,/key=\{toilet.toilet.id\} toilet=\{toilet\} onSelect=\{\(\) => openToiletDetail\(toilet.toilet.id\)\}/);
+assert.match(toilet,/onSelect\?: \(\) => void/);
+assert.match(toilet,/toilet-card-title-button[^>]*type="button"[^>]*onClick=\{onSelect\}/);
+assert.match(toilet,/onSelect\s*\?\s*<button[\s\S]*:\s*displayName/);
+assert.ok(toilet.includes('displayRemarks && <span>{displayRemarks}</span>'),'Original remarks retained');
+assert.match(styles,/\.washroom-detail-panel \.toilet-card-main\s*\{[^}]*grid-template-rows:\s*auto auto;/);
+assert.ok(bank.indexOf('<p id={`${id}-hint`}>')>bank.indexOf('className="atm-bank-multiselect__options"'),'Bank explanations remain in scroll reading order');
+assert.doesNotMatch(nav,/\.atm-bank-picker__header\s*>\s*p\s*\{\s*display:\s*none/);
+console.log('Result card flow OK: max-content rows, full titles/addresses, washroom detail action, original remarks and bank instructions retained.');

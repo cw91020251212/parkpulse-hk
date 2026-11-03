@@ -1,0 +1,185 @@
+/* Imported by useOverlayTextScale. These selectors deliberately outrank the
+   legacy sheets even when this import is evaluated before styles.css.
+   Zoom exactly one content boundary, never a fixed frame or all descendants. */
+
+/* ScreenNavigation keeps main at zoom: 1 while fullscreen results are open. */
+main.app-shell .results-panel.is-fullscreen > .results-heading,
+main.app-shell .results-panel.is-fullscreen > .results-list {
+  zoom: var(--ui-zoom, 1);
+  min-width: 0;
+  min-height: 0;
+}
+
+main.app-shell .results-panel.is-fullscreen > .results-heading {
+  flex: 0 1 auto;
+  max-height: 45%;
+  overflow-y: auto;
+  flex-wrap: wrap;
+  overflow-wrap: anywhere;
+}
+
+main.app-shell .results-panel.is-fullscreen > .results-heading > div {
+  min-width: 0;
+}
+
+main.app-shell .results-panel.is-fullscreen > .results-list {
+  flex: 1 1 0;
+}
+
+main.app-shell .results-fullscreen-close {
+  font-size: calc(16px * var(--ui-zoom, 1));
+}
+
+/* The panel and its sticky close bar retain viewport geometry. */
+body .detail-backdrop .detail-panel > :not(.detail-close-bar) {
+  zoom: var(--overlay-text-scale, 1);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+body .detail-close-bar .close-detail {
+  font-size: calc(14px * var(--overlay-text-scale, 1));
+  white-space: normal;
+}
+
+body .detail-panel > .detail-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+body .detail-panel > .detail-actions,
+body .detail-panel > .detail-status,
+body .detail-panel .detail-section-heading {
+  flex-wrap: wrap;
+}
+
+/* Fullscreen bank picker: three scaled siblings, one scrollable body.
+   The bounded, separately scrollable header keeps its close action reachable
+   without hiding instructions on short landscape screens. */
+body .atm-bank-picker > .atm-bank-picker__header,
+body .atm-bank-picker > .atm-bank-picker__body,
+body .atm-bank-picker > .atm-bank-picker__footer {
+  zoom: var(--overlay-text-scale, 1);
+  min-width: 0;
+  min-height: 0;
+}
+
+body .atm-bank-picker > .atm-bank-picker__header {
+  flex: 0 1 auto;
+  max-height: 45%;
+  overflow-y: auto;
+}
+
+body .atm-bank-picker > .atm-bank-picker__body {
+  flex: 1 1 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+body .atm-bank-picker .atm-bank-multiselect__options {
+  flex: 0 0 auto;
+  overflow-y: visible;
+}
+
+body .atm-bank-picker .atm-bank-picker__close,
+body .atm-bank-picker .atm-bank-picker__complete {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* Water picker: leave backdrop/dialog unzoomed; options own the remaining
+   flex height instead of scrolling the close action off the dialog. */
+body .water-environment-picker-backdrop > .water-environment-picker {
+  overflow: hidden;
+}
+
+body .water-environment-picker > .water-environment-picker__header,
+body .water-environment-picker > .water-environment-picker__options {
+  zoom: var(--overlay-text-scale, 1);
+  min-width: 0;
+  min-height: 0;
+}
+
+body .water-environment-picker > .water-environment-picker__header {
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  max-height: 50%;
+  overflow-y: auto;
+}
+
+body .water-environment-picker .water-environment-picker__heading {
+  flex: 1 1 120px;
+}
+
+body .water-environment-picker > .water-environment-picker__options {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Help + disclaimer share this actual DOM. The heading stays sticky at its
+   original offset; only its text column scales, not the close button frame. */
+body .help-dialog > .help-intro,
+body .help-dialog > .help-steps,
+body .help-dialog > .help-done,
+body .help-dialog > .help-dialog-heading > div {
+  zoom: var(--overlay-text-scale, 1);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+body .help-dialog > .help-dialog-heading > div {
+  flex: 1 1 0;
+}
+
+body .help-dialog > .help-done {
+  display: block;
+  width: auto;
+}
+
+body .help-dialog-heading .close-help {
+  font-size: calc(24px * var(--overlay-text-scale, 1));
+}
+
+/* Legend/search fixed roots remain bounded by ScreenNavigation.css.
+   Their sticky heading frames do not scale; each heading child scales once. */
+body .map-marker-legend > span,
+body .map-marker-legend > .screen-section-heading > *,
+body .area-search > label,
+body .area-search > div:not(.screen-section-heading),
+body .area-search > small,
+body .area-search > .screen-section-heading > * {
+  zoom: var(--overlay-text-scale, 1);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+body .map-marker-legend > .screen-section-heading,
+body .area-search > .screen-section-heading {
+  flex-wrap: wrap;
+}
+
+body .map-marker-legend > .screen-section-heading > strong,
+body .area-search > .screen-section-heading > strong {
+  flex: 1 1 0;
+}
+
+body .map-marker-legend > span {
+  white-space: normal;
+}
+
+body .map-marker-legend :is(.legend-swatch, .medical-legend-icon, .hkjc-first-prize-legend-crown) {
+  flex-shrink: 0;
+}
+
+body .area-search > div:not(.screen-section-heading) {
+  flex-wrap: wrap;
+}
+
+body .area-search > div:not(.screen-section-heading) > input {
+  flex: 1 1 120px;
+}
+
+body .area-search > div:not(.screen-section-heading) > button {
+  min-height: 44px;
+}

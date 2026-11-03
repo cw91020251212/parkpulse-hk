@@ -2,6 +2,7 @@ import { formatPrice, getOfficialPricingNotes, getVerifiedOperatorRate, isAvaila
 import { formatDistance } from '../domain/distance';
 import { heightLabel, paymentLabel, text, updatedLabel, vacancyLabel, vehicleLabel, type Language } from '../i18n';
 import type { ParkViewModel, VehicleType } from '../types';
+import './ParkCardReadability.css';
 
 type Props = { language: Language; park: ParkViewModel; vehicleType: VehicleType; selected: boolean; lastViewed: boolean; onSelect: () => void };
 
@@ -35,10 +36,10 @@ export function ParkCard({ language, park, vehicleType, selected, lastViewed, on
         <div className="card-facts">{typeof totalSpaces === 'number' && <span className="total-spaces">{text(language, 'totalSpaces')} {totalSpaces}</span>}{!isMotorcycle && <span>{text(language, 'height')} {heightLabel(language, heightLimit)}</span>}{price ? <span>{text(language, 'hourlyRate')} {price}</span> : !cardPricing && <span>{isMotorcycle ? text(language, 'motorcycleRateNotVerified') : `${text(language, 'hourlyRate')} ${text(language, 'officialRateNotProvided')}`}</span>}{paymentSummary && <span>{paymentSummary}</span>}{charging && <span className="charging-fact">{charging}</span>}{!isMotorcycle && facilities.includes('disabilities') && <span>{text(language, 'accessible')}</span>}</div>
         {cardPricing && <p className="card-pricing-summary">{cardPricing}</p>}
         <p className="updated">{updatedLabel(language, status.updatedAt)}</p>
+        {info.officialSource && (status.noLiveData || info.officialSource.availability === 'snapshot') ? <span className="card-note">{info.officialSource.sourceLabel[language]} · {info.officialSource.availability === 'snapshot' ? text(language, 'officialAvailabilitySnapshot') : text(language, 'noLiveData')}</span> : !isAvailable(status) && status.kind === 'unknown' && <span className="card-note">{text(language, 'operatorNoVacancy')}</span>}
       </button>
       {info.googleRating && <a className="park-card-rating" href={info.googleRating.placeUrl} target="_blank" rel="noreferrer" title={`${text(language, 'googleUserRating')} · ${text(language, 'ratingCount', { count: info.googleRating.userRatingCount })}`}>★ {info.googleRating.rating.toFixed(1)}</a>}
     </div>
     <a className="nav-link" href={navigateUrl} target="_blank" rel="noreferrer" aria-label={`${text(language, 'navigation')}: ${info.name}`}>{text(language, 'navigation')}</a>
-    {info.officialSource && (status.noLiveData || info.officialSource.availability === 'snapshot') ? <span className="card-note">{info.officialSource.sourceLabel[language]} · {info.officialSource.availability === 'snapshot' ? text(language, 'officialAvailabilitySnapshot') : text(language, 'noLiveData')}</span> : !isAvailable(status) && status.kind === 'unknown' && <span className="card-note">{text(language, 'operatorNoVacancy')}</span>}
   </article>;
 }

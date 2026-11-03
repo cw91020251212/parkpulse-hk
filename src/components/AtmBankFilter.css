@@ -250,3 +250,11 @@
   white-space: normal;
   overflow-wrap: anywhere;
 }
+
+/* Explanations scroll in the same reading order as banks, including landscape. */
+.atm-bank-picker .atm-bank-multiselect__options > p {
+  flex: 0 0 auto;
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}

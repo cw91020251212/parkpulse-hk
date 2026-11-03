@@ -7,9 +7,9 @@ import { text, type Language } from '../i18n';
 import type { PublicToiletViewModel } from '../types';
 import { WashroomSymbol } from './WashroomSymbol';
 
-type Props = { language: Language; toilet: PublicToiletViewModel };
+type Props = { language: Language; toilet: PublicToiletViewModel; onSelect?: () => void };
 
-export function ToiletCard({ language, toilet: { toilet, distanceKm, manualPositionSource } }: Props) {
+export function ToiletCard({ language, toilet: { toilet, distanceKm, manualPositionSource }, onSelect }: Props) {
   const navigationUrl = `https://www.google.com/maps/dir/?api=1&destination=${toilet.latitude},${toilet.longitude}`;
   const isLcsdVenue = toilet.kind === 'lcsdVenue';
   const isLongValleyTemporaryVenue = toilet.kind === 'afcdLongValleyTemporaryToilets';
@@ -33,7 +33,9 @@ export function ToiletCard({ language, toilet: { toilet, distanceKm, manualPosit
     <div className="toilet-card-main">
       <div className="card-heading">
         <span className={`toilet-card-icon${isVenueLocation ? ' is-venue' : ''}${isUnconfirmedVenue ? ' is-location-unconfirmed' : ''}`} aria-hidden="true"><WashroomSymbol venue={isVenueLocation} /></span>
-        <div><h3>{displayName}</h3><a className="card-address-link" href={addressUrl} target="_blank" rel="noreferrer" aria-label={`${text(language, 'openPlaceOnMap')}: ${displayName}`}><p>{displayAddress || fallbackAddress}</p></a></div>
+        <div><h3>{onSelect
+          ? <button className="toilet-card-title-button" type="button" onClick={onSelect} aria-label={`${displayName} — ${text(language, 'details')}`}>{displayName}<span aria-hidden="true"> ›</span></button>
+          : displayName}</h3><a className="card-address-link" href={addressUrl} target="_blank" rel="noreferrer" aria-label={`${text(language, 'openPlaceOnMap')}: ${displayName}`}><p>{displayAddress || fallbackAddress}</p></a></div>
         <span className="distance">{formatDistance(distanceKm)}{isVenueLocation && <small className="distance-scope">{text(language, 'distanceToVenueLabel')}</small>}</span>
       </div>
       <div className="toilet-facts">

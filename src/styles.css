@@ -219,7 +219,11 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
   line-height: 1;
 }
 
-.results-list { gap: var(--result-card-gap); }
+.results-list {
+  gap: var(--result-card-gap);
+  grid-auto-rows: max-content;
+  align-items: start;
+}
 
 .park-card,
 .toilet-card {
@@ -312,7 +316,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 }
 
 .toilet-card-actions {
-  align-self: stretch;
+  align-self: start;
   width: var(--result-action-width);
   grid-template-rows: repeat(2, minmax(44px, 1fr));
   gap: 7px;
@@ -1635,4 +1639,47 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
   .traffic-camera-preview-heading { padding: 11px 12px 9px; }
   .traffic-camera-preview-actions { grid-template-columns: 1fr; gap: 7px; }
   .traffic-camera-preview-actions button { min-height: 42px; font-size: 13px; }
+}
+
+/* A washroom title is an explicit in-app detail action, never a nested link. */
+.toilet-card-title-button {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  line-height: inherit;
+  text-align: start;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.toilet-card-title-button:hover { text-decoration: underline; text-underline-offset: 3px; }
+.toilet-card-title-button:focus-visible { outline: 2px solid #ffe17a; outline-offset: 2px; }
+
+/* The washroom detail uses the same full information, with no fixed title row. */
+.washroom-detail-panel .toilet-card { align-items: start; }
+.washroom-detail-panel .toilet-card-main { grid-template-rows: auto auto; align-content: start; }
+.washroom-detail-panel .card-heading h3,
+.washroom-detail-panel .card-heading p {
+  overflow: visible;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* Full card content belongs to the list flow, not a clipped summary window. */
+.results-panel .park-card .card-heading h3,
+.results-panel .park-card .card-heading p,
+.results-panel .toilet-card .card-heading h3,
+.results-panel .toilet-card .card-heading p {
+  display: block;
+  overflow: visible;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  -webkit-line-clamp: unset;
 }
