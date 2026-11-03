@@ -43,6 +43,9 @@ try {
   await ev("sessionStorage.clear();localStorage.setItem('parkspot:preferences:v1',JSON.stringify({facilityMode:'trafficCamera',searchScope:'radius',language:'zh-Hant',atmSelectedBanks:[]}))");
   await send('Page.reload', {ignoreCache:true}); await wait("document.querySelector('.selected-center-marker-shell.is-current-location')"); await pause(1700);
   const baseline = await mapBox();
+  const headerEdges = await ev("(()=>{const m=document.querySelector('.workspace').getBoundingClientRect(),b=document.querySelector('.brand').getBoundingClientRect(),t=document.querySelector('.header-tools').getBoundingClientRect();return{mapLeft:m.left,mapRight:m.right,brandLeft:b.left,toolsRight:t.right}})()");
+  assert.ok(Math.abs(headerEdges.brandLeft-headerEdges.mapLeft)<1,'Brand left edge must align with map');
+  assert.ok(Math.abs(headerEdges.toolsRight-headerEdges.mapRight)<1,'Header tools right edge must align with map');
   assert.equal(await ev("document.querySelectorAll('.water-filter,.atm-bank-summary').length"), 0);
 
   await click(primary('atm')); await wait(`document.querySelector(${JSON.stringify(edit('atm'))})`);
@@ -67,9 +70,18 @@ try {
   assert.equal(await ev("document.querySelectorAll('.water-environment-picker').length"), 0);
   await wait("document.querySelectorAll('.water-card').length>0");
   await openWater(); assert.ok(await fits('.water-environment-picker'));
+  const countExpression = "Object.fromEntries([...document.querySelectorAll('[data-environment-count]')].map(e=>[e.dataset.environmentCount,Number(e.textContent.replace(/[^0-9]/g,''))]))";
+  const waterCounts = await ev(countExpression);
+  assert.deepEqual(Object.keys(waterCounts).sort(),['all','indoor','outdoor']);
+  assert.ok(waterCounts.all>0 && waterCounts.all>=waterCounts.indoor+waterCounts.outdoor);
+  const allWaterCards=await ev("document.querySelectorAll('.water-card').length");
+  assert.equal(waterCounts.all,allWaterCards,'All count matches scoped map/list records');
+  if(process.env.SCREENSHOT_COUNTS){const shot=await send('Page.captureScreenshot',{format:'png'});await writeFile(process.env.SCREENSHOT_COUNTS,Buffer.from(shot.data,'base64'));}
   for (let n=0;n<6;n++) { await key('Tab'); assert.ok(await ev("document.querySelector('.water-environment-picker').contains(document.activeElement)"), 'All-radio Tab stays in the modal'); }
   await click('.water-environment-picker input[value="indoor"]'); await wait("!document.querySelector('.water-environment-picker')");
   await openWater(); assert.equal(await ev("document.querySelector('.water-environment-picker input:checked').value"), 'indoor');
+  assert.deepEqual(await ev(countExpression),waterCounts,'Choosing indoor must not zero or change outdoor counts');
+  assert.equal(await ev("document.querySelectorAll('.water-card').length"),waterCounts.indoor,'Indoor count matches filtered map/list records');
   for (let n=0;n<6;n++) { await key('Tab'); assert.ok(await ev("document.querySelector('.water-environment-picker').contains(document.activeElement)"), 'Indoor-radio Tab stays in the modal'); }
   await ev('history.back()'); await wait("!document.querySelector('.water-environment-picker')");
   assert.ok((await ev('location.href')).startsWith(site.split('?')[0]));
@@ -108,5 +120,5 @@ try {
   const full=await mapBox(); assert.equal(full.height,844); assert.equal(full.width,390);
   await ev('history.back()'); await wait("!document.querySelector('.app-shell.map-focus')");
   assert.equal(errors.length,0,JSON.stringify(errors));
-  console.log(JSON.stringify({site,noPersistentTopFilters:true,inlineEdit:true,hideAfter5Seconds:true,repeatToggle:true,bankMultiSelectRetained:true,waterSelectionRetained:true,mapBoxUnchanged:baseline,waterAllExits:true,landscape130PercentFits:true,fullscreenMoreEdit:true,noGhostHistory:true,noJsErrors:true}));
+  console.log(JSON.stringify({site,headerEdges,waterCounts,noPersistentTopFilters:true,inlineEdit:true,hideAfter5Seconds:true,repeatToggle:true,bankMultiSelectRetained:true,waterSelectionRetained:true,mapBoxUnchanged:baseline,waterAllExits:true,landscape130PercentFits:true,fullscreenMoreEdit:true,noGhostHistory:true,noJsErrors:true}));
 } finally { ws.close(); }

@@ -973,6 +973,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 14px
 
 
 /* 2026-10-12：将设置收进齿轮菜单，模式按钮紧贴工具列下方。 */
+.desktop-controls > .topbar { width: 100%; }
 .brand { flex: 1 1 auto; min-width: 0; }
 .header-tools { position: relative; z-index: 20; display: flex; flex: 0 0 auto; flex-direction: column; align-items: flex-end; gap: 4px; }
 .top-actions { display: flex; align-items: center; justify-content: flex-end; gap: 6px; }

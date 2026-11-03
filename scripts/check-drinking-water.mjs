@@ -31,6 +31,13 @@ for (const value of ['indoor', 'outdoor', 'unknown']) {
 assert.equal(matchesWaterEnvironment('indoor'), false);
 const app = await read('src/App.tsx');
 assert.match(app, /matchesWaterEnvironment\(waterEnvironment, facility.drinkingWater\)/);
+const countsMemo = app.match(/const waterEnvironmentCounts = useMemo\(\(\) => countWaterEnvironments\([\s\S]*?\n  }\)\), \[([^\]]+)\]\);/);
+assert.ok(countsMemo, 'environment counts have their own scope-filtered memo');
+assert.match(countsMemo[0], /isWithinSearchScope/);
+assert.match(countsMemo[0], /distanceInKm\(rangeOrigin, coordinates\)/);
+assert.doesNotMatch(countsMemo[0], /matchesWaterEnvironment|waterEnvironment,/);
+assert.match(app, /counts=\{waterEnvironmentCounts\} scopeLabel=\{rangeDescription\}/);
+
 const waterPicker = await read('src/components/WaterEnvironmentPicker.tsx');
 assert.match(waterPicker, /indoor/); assert.match(waterPicker, /outdoor/);
 assert.match(app, /<WaterEnvironmentPicker/);

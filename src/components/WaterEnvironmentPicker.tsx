@@ -1,5 +1,5 @@
 import { useId } from 'react';
-import type { WaterEnvironment } from '../domain/drinkingWater';
+import type { WaterEnvironment, WaterEnvironmentCounts } from '../domain/drinkingWater';
 import { text, type Language } from '../i18n';
 import { ScreenOverlay } from './ScreenOverlay';
 import './WaterEnvironmentPicker.css';
@@ -7,6 +7,8 @@ import './WaterEnvironmentPicker.css';
 type Props = {
   language: Language;
   value: WaterEnvironment;
+  counts: WaterEnvironmentCounts;
+  scopeLabel: string;
   onChange: (value: WaterEnvironment) => void;
   onClose: () => void;
 };
@@ -17,9 +19,10 @@ const options = [
   { value: 'outdoor', label: 'waterOutdoor' },
 ] as const;
 
-export function WaterEnvironmentPicker({ language, value, onChange, onClose }: Props) {
+export function WaterEnvironmentPicker({ language, value, counts, scopeLabel, onChange, onClose }: Props) {
   const id = useId();
   const titleId = `${id}-title`;
+  const scopeId = `${id}-scope`;
   const name = `${id}-environment`;
 
   function choose(environment: WaterEnvironment) {
@@ -47,17 +50,21 @@ export function WaterEnvironmentPicker({ language, value, onChange, onClose }: P
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
+        aria-describedby={scopeId}
         lang={language}
         tabIndex={-1}
       >
         <header className="water-environment-picker__header">
-          <h2 id={titleId}>{text(language, 'waterEnvironment')}</h2>
+          <div className="water-environment-picker__heading">
+            <h2 id={titleId}>{text(language, 'waterEnvironment')}</h2>
+            <p id={scopeId} className="water-environment-picker__scope">{text(language, 'waterCountScope', { scope: scopeLabel })}</p>
+          </div>
           <button className="water-environment-picker__close" type="button" onClick={onClose}>
             <span aria-hidden="true">×</span>
             <span>{text(language, 'closeScreen')}</span>
           </button>
         </header>
-        <div className="water-environment-picker__options" role="radiogroup" aria-labelledby={titleId}>
+        <div className="water-environment-picker__options" role="radiogroup" aria-labelledby={titleId} aria-describedby={scopeId}>
           {options.map((option) => <label
             key={option.value}
             className="water-environment-picker__option"
@@ -74,7 +81,7 @@ export function WaterEnvironmentPicker({ language, value, onChange, onClose }: P
                 if (value === option.value) choose(option.value);
               }}
             />
-            <span>{text(language, option.label)}</span>
+            <span>{text(language, option.label)} <span className="water-environment-picker__count" data-environment-count={option.value}>({counts[option.value]})</span></span>
           </label>)}
         </div>
       </section>

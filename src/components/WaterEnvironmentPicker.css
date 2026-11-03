@@ -33,7 +33,11 @@
   border: 1px solid #a0cbbd;
   border-radius: 18px;
   padding: 0;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #7b9c8c #f1faf6;
   color: #153c35;
   background: #fff;
   box-shadow: 0 14px 44px rgb(21 60 53 / 20%);
@@ -46,7 +50,7 @@
 .water-environment-picker__header {
   display: flex;
   flex: 0 0 auto;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
   border-bottom: 1px solid #c9e1d7;
@@ -54,14 +58,26 @@
   background: #effaf5;
 }
 
-.water-environment-picker__header h2 {
+.water-environment-picker__heading {
   flex: 1 1 auto;
   min-width: 0;
+}
+
+.water-environment-picker__header h2 {
   margin: 0;
   color: #153c35;
   font-size: 1.125em;
   font-weight: 800;
   line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.water-environment-picker__scope {
+  margin: 4px 0 0;
+  color: #365b50;
+  font-size: .875em;
+  font-weight: 400;
+  line-height: 1.45;
   overflow-wrap: anywhere;
 }
 
@@ -91,16 +107,12 @@
 
 .water-environment-picker__options {
   display: flex;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   flex-direction: column;
   gap: 10px;
   min-width: 0;
   min-height: 0;
   padding: 16px;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: #7b9c8c #f1faf6;
 }
 
 .water-environment-picker__option {
@@ -138,6 +150,11 @@
 .water-environment-picker__option > span {
   min-width: 0;
   overflow-wrap: anywhere;
+}
+
+.water-environment-picker__count {
+  color: #365b50;
+  font-variant-numeric: tabular-nums;
 }
 
 .water-environment-picker__close:focus-visible,

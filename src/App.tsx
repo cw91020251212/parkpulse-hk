@@ -2,7 +2,7 @@ import { readMapReturn, saveMapReturn, returnViewport, captureLiveMap, OPEN_3D_E
 import { MapExtraTools } from './components/MapExtraTools';
 import { Official3DLink } from './components/Official3DLink';
 import type { Restore3DView } from './components/Official3DMapControl';
-import { matchesWaterEnvironment, type WaterEnvironment } from './domain/drinkingWater';
+import { countWaterEnvironments, matchesWaterEnvironment, type WaterEnvironment } from './domain/drinkingWater';
 import { ScreenOverlay } from './components/ScreenOverlay';
 import { DetailCloseBar } from './components/DetailCloseBar';
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent } from 'react';
@@ -369,6 +369,11 @@ export default function App() {
     }))
     .filter((facility) => isWithinSearchScope({ lat: facility.facility.latitude, lng: facility.facility.longitude }, facility.distanceKm, searchScope, mapViewport, NEARBY_RADIUS_KM))
     .sort((left, right) => left.distanceKm - right.distanceKm)), [facilityMode, mapViewport, nearbyFacilityData, openFacilityDetail, rangeOrigin, searchScope, waterEnvironment]);
+  const waterEnvironmentCounts = useMemo(() => countWaterEnvironments(nearbyFacilityData.filter((facility) => {
+    if (facility.kind !== 'drinkingWater') return false;
+    const coordinates = { lat: facility.latitude, lng: facility.longitude };
+    return isWithinSearchScope(coordinates, distanceInKm(rangeOrigin, coordinates), searchScope, mapViewport, NEARBY_RADIUS_KM);
+  })), [nearbyFacilityData, rangeOrigin, searchScope, mapViewport]);
   const atmBankCounts = useMemo(() => countAtmBanks(nearbyFacilityCandidates), [nearbyFacilityCandidates]);
   const { items: nearbyFacilities, total: nearbyFacilityTotal } = useMemo(() => facilityMode === 'atm'
     ? selectAtmBankResults(nearbyFacilityCandidates, atmSelectedBanks)
@@ -597,7 +602,7 @@ export default function App() {
       </div>
     </div>
     {facilityMode === 'atm' && atmPickerOpen && <AtmBankFilter language={language} banks={atmBanks} selectedBanks={atmSelectedBanks} bankCounts={atmBankCounts} scopedTotal={nearbyFacilityCandidates.length} scopeLabel={rangeDescription} onChange={setAtmSelectedBanks} onClose={() => navigation.close('atm-banks')} onComplete={completeAtmPicker} />}
-    {facilityMode === 'drinkingWater' && waterPickerOpen && <WaterEnvironmentPicker language={language} value={waterEnvironment} onChange={setWaterEnvironment} onClose={() => navigation.close('water-options')} />}
+    {facilityMode === 'drinkingWater' && waterPickerOpen && <WaterEnvironmentPicker language={language} value={waterEnvironment} counts={waterEnvironmentCounts} scopeLabel={rangeDescription} onChange={setWaterEnvironment} onClose={() => navigation.close('water-options')} />}
     {mapExpanded && <div className="map-screen-tools"><button type="button" onClick={() => navigation.close('map')}>← {text(language, 'exitFullscreen')}</button>{facilityMode === 'atm' && <button type="button" onClick={openAtmPicker}>{text(language, 'chooseBanks')}{atmSelectedBanks.length > 0 ? ` (${atmSelectedBanks.length})` : ''}</button>}<button type="button" onClick={showResults}>{text(language, 'viewList')}</button><MapExtraTools point={mapViewport?.center ?? position} language={language} onEditWater={facilityMode === 'drinkingWater' ? openWaterPicker : undefined} /></div>}
   </main>;
 }
