@@ -3,7 +3,7 @@ import { ScreenHistory } from '../domain/screenHistory';
 
 const NavigationContext = createContext<ScreenHistory | null>(null);
 const regions: Partial<Record<NonNullable<ScreenHistory['topName']>, string>> = {
-  'atm-banks': '.atm-bank-picker', detail: '.detail-panel', help: '#help-title',
+  'atm-banks': '.atm-bank-picker', 'water-options': '.water-environment-picker', detail: '.detail-panel', help: '#help-title',
   disclaimer: '#disclaimer-title', settings: '.settings-popover', 'map-tools': '.map-extra-tools-panel', district: '.area-search', legend: '.map-marker-legend',
 };
 function activeRegion(navigation: ScreenHistory): HTMLElement | null {
@@ -13,7 +13,13 @@ function activeRegion(navigation: ScreenHistory): HTMLElement | null {
   return region?.closest<HTMLElement>('.help-dialog') ?? region;
 }
 function focusable(region: HTMLElement): HTMLElement[] {
-  return [...region.querySelectorAll<HTMLElement>('button:not(:disabled), a[href], input:not(:disabled), select, textarea, summary, [tabindex="0"]')].filter((element) => element.getClientRects().length > 0);
+  const items = [...region.querySelectorAll<HTMLElement>('button:not(:disabled), a[href], input:not(:disabled), select, textarea, summary, [tabindex="0"]')].filter((element) => element.getClientRects().length > 0);
+  return items.filter((element) => {
+    if (!(element instanceof HTMLInputElement) || element.type !== 'radio' || !element.name) return true;
+    // A native radio group has one Tab stop, not one for every unchecked option.
+    const group = items.filter((item): item is HTMLInputElement => item instanceof HTMLInputElement && item.type === 'radio' && item.name === element.name && item.form === element.form);
+    return element === (group.find((item) => item.checked) ?? group[0]);
+  });
 }
 export function ScreenNavigationProvider({ children }: { children: ReactNode }) {
   const [navigation] = useState(() => new ScreenHistory(window.history, `${Date.now()}-${Math.random()}`));

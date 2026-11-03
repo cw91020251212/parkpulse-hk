@@ -1,0 +1,166 @@
+.water-environment-picker-backdrop {
+  position: fixed;
+  z-index: 1800;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  height: 100vh;
+  height: 100dvh;
+  min-width: 0;
+  min-height: 0;
+  padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  overflow: hidden;
+  overscroll-behavior: contain;
+  background: rgb(203 232 222 / 70%);
+}
+
+.water-environment-picker,
+.water-environment-picker *,
+.water-environment-picker *::before,
+.water-environment-picker *::after {
+  box-sizing: border-box;
+}
+
+.water-environment-picker {
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 24rem);
+  max-height: 100%;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  border: 1px solid #a0cbbd;
+  border-radius: 18px;
+  padding: 0;
+  overflow: hidden;
+  color: #153c35;
+  background: #fff;
+  box-shadow: 0 14px 44px rgb(21 60 53 / 20%);
+  font-size: 1rem;
+  line-height: 1.5;
+  text-align: start;
+  color-scheme: light;
+}
+
+.water-environment-picker__header {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid #c9e1d7;
+  padding: 12px 16px;
+  background: #effaf5;
+}
+
+.water-environment-picker__header h2 {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  color: #153c35;
+  font-size: 1.125em;
+  font-weight: 800;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.water-environment-picker__close {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid #7da997;
+  border-radius: 10px;
+  padding: 8px 10px;
+  color: #173f35;
+  background: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.water-environment-picker__close > [aria-hidden="true"] {
+  font-size: 1.5em;
+  line-height: 1;
+}
+
+.water-environment-picker__options {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  min-height: 0;
+  padding: 16px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #7b9c8c #f1faf6;
+}
+
+.water-environment-picker__option {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  min-height: 48px;
+  border: 1px solid #9bbcac;
+  border-radius: 12px;
+  padding: 12px;
+  color: #173f35;
+  background: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.water-environment-picker__option[data-selected="true"] {
+  border-color: #237b60;
+  background: #e2f7ed;
+}
+
+.water-environment-picker__option input {
+  flex: 0 0 auto;
+  width: 1.25em;
+  height: 1.25em;
+  margin: 0;
+  accent-color: #176b50;
+  font: inherit;
+  cursor: pointer;
+}
+
+.water-environment-picker__option > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.water-environment-picker__close:focus-visible,
+.water-environment-picker__option:focus-within {
+  outline: 3px solid #a65300;
+  outline-offset: 2px;
+}
+
+@media (hover: hover) {
+  .water-environment-picker__close:hover,
+  .water-environment-picker__option:hover {
+    border-color: #176b50;
+    background: #effaf5;
+  }
+}
+
+@media (max-height: 420px) {
+  .water-environment-picker__header {
+    padding-block: 8px;
+  }
+
+  .water-environment-picker__options {
+    gap: 8px;
+    padding-block: 12px;
+  }
+}

@@ -39,7 +39,7 @@ assert.ok(nav.isTop('popup'), 'detail Back retains the Leaflet popup');
 nav.close(); port.finish(nav);
 assert.ok(nav.isTop('map'), 'second Back closes only popup');
 nav.close(); port.finish(nav);
-for (const name of ['settings','help','disclaimer','district','legend','results','detail','atm-banks','map','popup']) {
+for (const name of ['settings','help','disclaimer','district','legend','results','detail','atm-banks','water-options','map','popup']) {
   assert.ok(open(name)); nav.close(); port.finish(nav); assert.equal(nav.depth, 0, `${name} has a working Back exit`);
 }
 open('map'); open('popup'); open('detail');
@@ -61,7 +61,10 @@ const [app, css, filter, main, map] = await Promise.all([
 ].map((path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8')));
 assert.match(main, /ScreenNavigationProvider/);
 assert.match(app, /onComplete=\{completeAtmPicker\}/);
-assert.match(app, /className="atm-bank-summary"/);
+assert.doesNotMatch(app, /className="atm-bank-summary"/);
+assert.match(app, /onEditFacility=\{editFacility\}/);
+assert.match(app, /navigation\.open\('water-options'/);
+assert.match(app, /navigation\.replace\('map-tools', 'water-options'/);
 assert.match(app, /map-screen-tools/);
 assert.match(app, /onClose=\{closeFacilityDetail\}/);
 assert.match(css, /\.app-shell\.map-focus \.desktop-controls \{ display: none !important;/);

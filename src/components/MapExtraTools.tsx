@@ -4,7 +4,7 @@ import { text, type Language } from '../i18n';
 import type { Coordinates } from '../types';
 import { Official3DLink } from './Official3DLink';
 
-export function MapExtraTools({ point, language }: { point: Coordinates; language: Language }) {
+export function MapExtraTools({ point, language, onEditWater }: { point: Coordinates; language: Language; onEditWater?: () => void }) {
   const navigation = useScreenNavigation();
   const ref = useRef<HTMLDetailsElement>(null);
   useEffect(() => {
@@ -29,6 +29,7 @@ export function MapExtraTools({ point, language }: { point: Coordinates; languag
     <summary aria-label={text(language, 'mapExtraTools')} title={text(language, 'mapExtraTools')}>⋯</summary>
     <div className="map-extra-tools-panel">
       <button type="button" onClick={() => navigation.close('map-tools')}>{text(language, 'closeScreen')} ×</button>
+      {onEditWater && <button type="button" onClick={onEditWater}>{text(language, 'editFacilityOptions', { label: text(language, 'drinkingWater') })}</button>}
       <Official3DLink point={point} language={language} compact onLaunch={() => navigation.close('map-tools')} />
     </div>
   </details>;

@@ -1,7 +1,4 @@
 /* All temporary screens have a reachable way out, independent of scroll position. */
-.atm-bank-summary { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 10px; min-height: 44px; margin-block: 6px; border: 1px solid #427c8b; border-radius: 10px; padding: 9px 12px; color: #e1f9f6; background: #0b3548; font: inherit; font-size: 14px; text-align: left; }
-.atm-bank-summary span { min-width: 0; }
-.atm-bank-summary strong { flex-shrink: 0; color: #a1f5e6; }
 .screen-section-heading { display: flex !important; align-items: center; justify-content: space-between; gap: 12px; width: 100%; }
 .screen-section-heading button, .results-map-toolbar button, .map-screen-tools button { min-height: 44px; padding: 8px 12px; border: 1px solid #64cfc6; border-radius: 9px; font: inherit; font-size: 14px; font-weight: 800; color: #eafffb; background: #124959; cursor: pointer; }
 .screen-section-heading button { flex-shrink: 0; }
@@ -14,7 +11,7 @@
 .detail-close-bar .close-detail { position: static; display: inline-flex; align-items: center; gap: 6px; width: auto; height: auto; min-width: 44px; min-height: 44px; padding: 8px 12px; border: 1px solid #74cfc8; border-radius: 9px; color: #f1fffd; background: #174158; font: inherit; font-size: 14px; font-weight: 800; }
 .help-dialog-heading { position: sticky; z-index: 50; top: -22px; padding-block: 12px; background: #092239; }
 .help-dialog-heading .close-help { width: 48px; height: 48px; min-width: 48px; min-height: 48px; }
-.screen-section-heading button:focus-visible, .detail-close-bar button:focus-visible, .map-screen-tools button:focus-visible, .atm-bank-summary:focus-visible { outline: 3px solid #ffe17a; outline-offset: 2px; }
+.screen-section-heading button:focus-visible, .detail-close-bar button:focus-visible, .map-screen-tools button:focus-visible { outline: 3px solid #ffe17a; outline-offset: 2px; }
 
 /* Map-only really means map-only, at every breakpoint and text scale. */
 .app-shell.map-focus { position: fixed; z-index: 900; inset: 0; width: 100%; height: 100vh; height: 100dvh; min-height: 0; margin: 0; padding: 0; overflow: hidden; zoom: 1; }

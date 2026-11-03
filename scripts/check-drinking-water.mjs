@@ -31,7 +31,10 @@ for (const value of ['indoor', 'outdoor', 'unknown']) {
 assert.equal(matchesWaterEnvironment('indoor'), false);
 const app = await read('src/App.tsx');
 assert.match(app, /matchesWaterEnvironment\(waterEnvironment, facility.drinkingWater\)/);
-assert.match(app, /value="indoor"/); assert.match(app, /value="outdoor"/);
+const waterPicker = await read('src/components/WaterEnvironmentPicker.tsx');
+assert.match(waterPicker, /indoor/); assert.match(waterPicker, /outdoor/);
+assert.match(app, /<WaterEnvironmentPicker/);
+assert.doesNotMatch(app, /className="water-filter"/);
 assert.match(app, /facilityMode !== 'drinkingWater'/);
 assert.match(app, /legend-drinking-water/);
 assert.match(await read('src/hooks/useNearbyFacilities.ts'), /mode !== 'drinkingWater'/);

@@ -9,6 +9,8 @@ import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, 
 import { FilterModeSwitch, Filters, type FilterSection } from './components/Filters';
 import { DisclaimerDialog } from './components/DisclaimerDialog';
 import { AtmBankFilter } from './components/AtmBankFilter';
+import { WaterEnvironmentPicker } from './components/WaterEnvironmentPicker';
+import type { EditableFacilityMode } from './components/FacilityModeButton';
 import { HelpDialog } from './components/HelpDialog';
 import { MapView } from './components/MapView';
 import { MedicalCategoryFilters, MedicalLocationCard, MedicalLocationDetail } from './components/MedicalLocationCard';
@@ -150,6 +152,7 @@ export default function App() {
   const [viewedMarkerId, setViewedMarkerId] = useState<string | null>(null);
   const [mapExpanded, setMapExpanded] = useState(false);
   const [atmPickerOpen, setAtmPickerOpen] = useState(false);
+  const [waterPickerOpen, setWaterPickerOpen] = useState(false);
   const [resultsExpanded, setResultsExpanded] = useState(false);
   const [mapLegendOpen, setMapLegendOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
@@ -483,6 +486,22 @@ export default function App() {
   };
   const toggleMap = () => { if (mapExpanded) navigation.close('map'); else enterMap(); };
   const openAtmPicker = () => { if (navigation.open('atm-banks', () => setAtmPickerOpen(false))) setAtmPickerOpen(true); };
+  const openWaterPicker = () => {
+    const dismiss = () => setWaterPickerOpen(false);
+    const opened = navigation.isTop('map-tools')
+      ? navigation.replace('map-tools', 'water-options', dismiss)
+      : navigation.open('water-options', dismiss);
+    if (opened) setWaterPickerOpen(true);
+  };
+  const editFacility = (mode: EditableFacilityMode) => {
+    if (mode !== facilityMode) return;
+    if (mode === 'atm') openAtmPicker();
+    else openWaterPicker();
+  };
+  useEffect(() => {
+    if (facilityMode !== 'atm') navigation.retire('atm-banks');
+    if (facilityMode !== 'drinkingWater') navigation.retire('water-options');
+  }, [facilityMode, navigation]);
   const completeAtmPicker = () => {
     if (navigation.has('map')) navigation.close('atm-banks');
     else if (navigation.replace('atm-banks', 'map', () => setMapExpanded(false))) setMapExpanded(true);
@@ -562,9 +581,7 @@ export default function App() {
         <FilterModeSwitch language={language} section={filterSection} onSectionChange={changeFilterSection} />
       </div>
     </header>
-    <Filters language={language} section={filterSection} vehicleType={vehicleType} filters={filters} evLoading={evLoading} facilityMode={facilityMode} facilityLoading={facilityLoading} searchScope={searchScope} onSearchScopeChange={changeSearchScope} onVehicleChange={updateVehicleType} onFiltersChange={setFilters} onFacilityModeChange={updateFacilityMode} />
-    {facilityMode === 'drinkingWater' && <label className="water-filter"><span>{text(language, 'waterEnvironment')}</span><select value={waterEnvironment} onChange={(event) => setWaterEnvironment(event.target.value as WaterEnvironment)}><option value="all">{text(language, 'waterAll')}</option><option value="indoor">{text(language, 'waterIndoor')}</option><option value="outdoor">{text(language, 'waterOutdoor')}</option></select></label>}
-    {facilityMode === 'atm' && <button className="atm-bank-summary" type="button" onClick={openAtmPicker} aria-haspopup="dialog" aria-expanded={atmPickerOpen}><span>{text(language, 'atmBank')} · {atmSelectedBanks.length ? text(language, 'atmBanksSelected', { count: atmSelectedBanks.length }) : text(language, 'allBanks')}</span><strong>{text(language, 'chooseBanks')} ›</strong></button>}
+    <Filters language={language} section={filterSection} vehicleType={vehicleType} filters={filters} evLoading={evLoading} facilityMode={facilityMode} facilityLoading={facilityLoading} searchScope={searchScope} onSearchScopeChange={changeSearchScope} onVehicleChange={updateVehicleType} onFiltersChange={setFilters} onFacilityModeChange={updateFacilityMode} editingFacility={atmPickerOpen ? 'atm' : waterPickerOpen ? 'drinkingWater' : null} onEditFacility={editFacility} />
     {visibleError && <div className="error-banner" role="alert"><span>{text(language, 'dataConnection')}{visibleError}</span><button type="button" onClick={retry}>{text(language, 'retry')}</button></div>}
 
       </section>
@@ -580,6 +597,7 @@ export default function App() {
       </div>
     </div>
     {facilityMode === 'atm' && atmPickerOpen && <AtmBankFilter language={language} banks={atmBanks} selectedBanks={atmSelectedBanks} bankCounts={atmBankCounts} scopedTotal={nearbyFacilityCandidates.length} scopeLabel={rangeDescription} onChange={setAtmSelectedBanks} onClose={() => navigation.close('atm-banks')} onComplete={completeAtmPicker} />}
-    {mapExpanded && <div className="map-screen-tools"><button type="button" onClick={() => navigation.close('map')}>← {text(language, 'exitFullscreen')}</button>{facilityMode === 'atm' && <button type="button" onClick={openAtmPicker}>{text(language, 'chooseBanks')}{atmSelectedBanks.length > 0 ? ` (${atmSelectedBanks.length})` : ''}</button>}<button type="button" onClick={showResults}>{text(language, 'viewList')}</button><MapExtraTools point={mapViewport?.center ?? position} language={language} /></div>}
+    {facilityMode === 'drinkingWater' && waterPickerOpen && <WaterEnvironmentPicker language={language} value={waterEnvironment} onChange={setWaterEnvironment} onClose={() => navigation.close('water-options')} />}
+    {mapExpanded && <div className="map-screen-tools"><button type="button" onClick={() => navigation.close('map')}>← {text(language, 'exitFullscreen')}</button>{facilityMode === 'atm' && <button type="button" onClick={openAtmPicker}>{text(language, 'chooseBanks')}{atmSelectedBanks.length > 0 ? ` (${atmSelectedBanks.length})` : ''}</button>}<button type="button" onClick={showResults}>{text(language, 'viewList')}</button><MapExtraTools point={mapViewport?.center ?? position} language={language} onEditWater={facilityMode === 'drinkingWater' ? openWaterPicker : undefined} /></div>}
   </main>;
 }

@@ -1,0 +1,6 @@
+.filter-scroll-track .facility-mode-choice { display: inline-flex; align-items: stretch; flex: 0 0 auto; min-width: 0; gap: 0; white-space: nowrap; }
+.filter-scroll-track .facility-mode-choice > .chip { white-space: nowrap; }
+.facility-mode-choice.has-edit > .chip:first-child { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.facility-mode-choice .facility-edit-button { display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-width: 52px; margin-left: -1px; padding-inline: 8px; border-color: #16a89a; border-top-left-radius: 0; border-bottom-left-radius: 0; color: #d8fff5; background: #155b5d; touch-action: manipulation; }
+.facility-edit-button svg { flex: 0 0 13px; width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.facility-mode-choice button:focus-visible { position: relative; z-index: 1; outline: 2px solid #ffe17a; outline-offset: -3px; }

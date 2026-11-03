@@ -20,8 +20,6 @@
 .water-detail-info .detail-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
 .water-detail-info dd { overflow-wrap: anywhere; }
 .water-detail-info .water-location-description { font-size: 16px; color: #e3f7ff; line-height: 1.6; }
-.water-filter { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
-.water-filter select { border-radius: 18px; border: 1px solid #5d8899; background: #0c3346; color: #dff9ff; padding: 8px 12px; min-height: 44px; font: inherit; font-size: 13px; }
 .legend-drinking-water { background: linear-gradient(to top right, #087fa6, #93e2f3); border: 1px solid #a5ecff; }
 
 .leaflet-marker-icon .toilet-marker.is-drinking-water { background: linear-gradient(to top right, #087fa6, #93e2f3); color: #fff; }

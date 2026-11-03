@@ -1,5 +1,6 @@
 import { VEHICLE_TYPES, type NearbyMode, type ParkFilters, type SearchScope, type VehicleType } from '../types';
 import { text, vehicleLabel, type Language } from '../i18n';
+import { FacilityModeButton, type EditableFacilityMode } from './FacilityModeButton';
 
 export type FilterSection = 'parking' | 'facilities';
 
@@ -18,6 +19,8 @@ type Props = {
   onFacilityModeChange: (mode: NearbyMode | null) => void;
   onVehicleChange: (vehicle: VehicleType | null) => void;
   onFiltersChange: (filters: ParkFilters) => void;
+  editingFacility: EditableFacilityMode | null;
+  onEditFacility: (mode: EditableFacilityMode) => void;
 };
 
 type FilterModeSwitchProps = {
@@ -35,7 +38,7 @@ export function FilterModeSwitch({ language, section, onSectionChange }: FilterM
   );
 }
 
-export function Filters({ language, section, vehicleType, filters, evLoading, facilityMode, facilityLoading, searchScope, onSearchScopeChange, onVehicleChange, onFiltersChange, onFacilityModeChange }: Props) {
+export function Filters({ language, section, vehicleType, filters, evLoading, facilityMode, facilityLoading, searchScope, onSearchScopeChange, onVehicleChange, onFiltersChange, onFacilityModeChange, editingFacility, onEditFacility }: Props) {
   const update = (patch: Partial<ParkFilters>) => onFiltersChange({ ...filters, ...patch });
   const isMotorcycle = vehicleType === 'motorCycle';
   const isMotorcycleRoadside = isMotorcycle && facilityMode === 'onStreet';
@@ -91,7 +94,7 @@ export function Filters({ language, section, vehicleType, filters, evLoading, fa
           <div className="filter-scroll-row" role="group" aria-label={text(language, 'nearbyFacilitiesMode')}>
             <div className="filter-scroll-track">
               {scopeControl}
-              {FACILITY_MODES.map((mode) => <button key={mode} className={facilityMode === mode ? 'chip is-on' : 'chip'} type="button" aria-pressed={facilityMode === mode} onClick={() => onFacilityModeChange(facilityMode === mode ? null : mode)}>{facilityLoading && facilityMode === mode ? text(language, 'dataLoading') : facilityText(mode)}</button>)}
+              {FACILITY_MODES.map((mode) => <FacilityModeButton key={mode} language={language} mode={mode} label={facilityText(mode)} active={facilityMode === mode} loading={facilityLoading} editing={editingFacility === mode} onToggle={() => onFacilityModeChange(facilityMode === mode ? null : mode)} onEdit={onEditFacility} />)}
             </div>
           </div>
         </>
