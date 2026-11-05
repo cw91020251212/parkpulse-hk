@@ -50,6 +50,7 @@ export async function attachLandsDScene(C: SDK, viewer: Viewer, config: LandsD3D
   const models: Cesium3DTileset[] = [];
   const cleanup: Array<() => void> = [];
   const timers = new Set<number>();
+  const retryDelays = new Map<number, (value: boolean) => void>();
   // 0=no mesh, 1=quick preview, 2=intermediate, 3=fine, 4=settled.
   const state = new Map<Cesium3DTileset, { stage: number; pending: number; appliedFrame: number }>();
   let active = true;
@@ -79,6 +80,8 @@ export async function attachLandsDScene(C: SDK, viewer: Viewer, config: LandsD3D
     signal.removeEventListener('abort', dispose);
     for (const timer of timers) window.clearTimeout(timer);
     timers.clear();
+    for (const [timer, resolve] of retryDelays) { window.clearTimeout(timer); resolve(false); }
+    retryDelays.clear();
     cleanup.forEach(remove => remove());
     for (const model of models) {
       if (model.isDestroyed()) continue;
@@ -88,6 +91,11 @@ export async function attachLandsDScene(C: SDK, viewer: Viewer, config: LandsD3D
   };
   if (signal.aborted) return dispose;
   signal.addEventListener('abort', dispose, { once: true });
+  for (const key of new Set(config.urls.map(url => { const target = new URL(url); return `${target.hostname}:${target.port || '443'}`; }))) {
+    const previous = C.RequestScheduler.requestsByServer[key];
+    C.RequestScheduler.requestsByServer[key] = Math.min(typeof previous === 'number' ? previous : 6, 6);
+    cleanup.push(() => { if (previous === undefined) delete C.RequestScheduler.requestsByServer[key]; else C.RequestScheduler.requestsByServer[key] = previous; });
+  }
   emit({ phase: 'loading', pending: 0 });
   // Metadata may succeed while indispensable child meshes/decoders fail.
   watchdog = window.setTimeout(() => {
@@ -95,7 +103,7 @@ export async function attachLandsDScene(C: SDK, viewer: Viewer, config: LandsD3D
     // Isolated detail failures after a usable preview never trigger this fallback.
     emit({ phase: 'error', pending: 0 });
     dispose();
-  }, 45_000);
+  }, 120_000);
   timers.add(watchdog);
   // Deferred/throttled requests need real frame numbers, not only idle checks.
   // A rate-limited warmup stops as soon as the visible scene has settled.
@@ -124,7 +132,17 @@ export async function attachLandsDScene(C: SDK, viewer: Viewer, config: LandsD3D
   try {
     await Promise.all(config.urls.map(async url => {
       // Resource derivation preserves this owner's optional query key for child tiles.
-      const resource = new C.Resource({ url, queryParameters: config.apiKey ? { key: config.apiKey } : undefined });
+      const resource = new C.Resource({
+        url, queryParameters: config.apiKey ? { key: config.apiKey } : undefined,
+        retryAttempts: 2,
+        retryCallback: (_resource, error) => {
+          if (!alive() || [400, 401, 403, 404, 405, 410].includes(error?.statusCode ?? 0)) return false;
+          return new Promise<boolean>(resolve => {
+            const timer = window.setTimeout(() => { retryDelays.delete(timer); resolve(alive()); }, 750);
+            retryDelays.set(timer, resolve);
+          });
+        },
+      });
       const model = await C.Cesium3DTileset.fromUrl(resource, {
         maximumScreenSpaceError: quality.previewError,
         cacheBytes: quality.cacheBytes, maximumCacheOverflowBytes: quality.cacheBytes,

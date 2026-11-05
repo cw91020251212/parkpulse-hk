@@ -35,11 +35,14 @@ Object.defineProperty(globalThis, 'navigator', { value: { deviceMemory: 8, hardw
 const held = new Set(); const requests = []; let renderRequests = 0;
 const viewer = { isDestroyed: () => false, scene: { postUpdate: new Event(), postRender: new Event(), requestRender() { renderRequests++; }, primitives: { add(m) { held.add(m); }, contains: m => held.has(m), remove(m) { held.delete(m); m.destroy(); } } } };
 const model = new Model();
-const SDK = { Resource: class { constructor(options) { requests.push(options); } }, Cesium3DTileset: { fromUrl: async () => model } };
+const SDK = { RequestScheduler: { requestsByServer: {} }, Resource: class { constructor(options) { requests.push(options); } }, Cesium3DTileset: { fromUrl: async () => model } };
 const states = []; const controller = new AbortController();
 const dispose = await attachLandsDScene(SDK, viewer, ownerConfig, state => states.push(state), controller.signal);
 assert.ok(held.has(model)); assert.equal(states.at(-1).phase, 'loading');
 assert.deepEqual(requests[0].queryParameters, { key: 'fixture-owner-key' });
+assert.equal(requests[0].retryAttempts, 2);
+assert.ok(Object.values(SDK.RequestScheduler.requestsByServer).every(value => value === 6));
+assert.equal(await requests[0].retryCallback(undefined, { statusCode: 403 }), false);
 model.tileVisible.fire({ content: { geometryByteLength: 100, trianglesLength: 8, pointsLength: 0 } });
 assert.equal(states.at(-1).phase, 'preview');
 const [intermediateId, intermediate] = [...timers][0];
@@ -49,7 +52,6 @@ model.tilesLoaded = false;
 for (const [id, fn] of [...timers]) { timers.delete(id); fn(); }
 assert.equal(model.maximumScreenSpaceError, 4, 'Fine centre requests must not wait for distant intermediate tiles');
 model.tilesLoaded = true;
-// No allTilesLoaded/download event: detail was already in memory.
 viewer.scene.postRender.fire(); assert.equal(model.maximumScreenSpaceError, 4);
 viewer.scene.postRender.fire(); assert.equal(states.at(-1).phase, 'ready');
 const count = states.length;
@@ -59,7 +61,13 @@ model.loadProgress.fire(2, 1); assert.equal(states.at(-1).pending, 3); assert.eq
 model.loadProgress.fire(0, 0); assert.equal(states.at(-1).phase, 'ready');
 model.tileFailed.fire({}); assert.equal(states.at(-1).phase, 'ready', 'One missing fine tile must not discard a usable preview');
 assert.ok(renderRequests >= 3);
+const networkRetry = requests[0].retryCallback(undefined, { statusCode: 0 });
+for (const [id, fn] of [...timers]) { timers.delete(id); fn(); }
+assert.equal(await networkRetry, true);
+const cancelledRetry = requests[0].retryCallback(undefined, { statusCode: 503 });
 dispose(); assert.ok(model.destroyed); assert.equal(held.size, 0); assert.equal(model.tileVisible.listeners.size, 0); assert.equal(viewer.scene.postRender.listeners.size, 0);
+assert.equal(await cancelledRetry, false);
+assert.deepEqual(SDK.RequestScheduler.requestsByServer, {});
 const aborted = new AbortController(); let release;
 const lateModel = new Model(); const lateStates = [];
 const late = attachLandsDScene({ ...SDK, Cesium3DTileset: { fromUrl: () => new Promise(resolve => release = resolve) } }, viewer, getLandsD3DConfig({}), s => lateStates.push(s), aborted.signal);
@@ -89,4 +97,4 @@ assert.doesNotMatch(link, /href=|target="_blank"/);
 for (const file of ['Cesium.js', 'Widgets/widgets.css', 'Workers', 'ThirdParty', 'Assets']) {
   assert.ok(existsSync(`public/vendor/cesium/${CESIUM_VERSION}/${file}`), `Standalone SDK missing ${file}`);
 }
-console.log('Photoreal 3D OK: default 2D + same 3D button, Leaflet scale, cached staged LOD without download events, bounded cache, no idle render loop, optional owner key, abort/root/content failure and standalone SDK.');
+console.log('Photoreal 3D OK: default 2D, shared controls, cached staged LOD, bounded cache/rendering, 6 concurrent downloads, two cancellable retries without retrying 403, abort/root/content failure and standalone SDK.');
