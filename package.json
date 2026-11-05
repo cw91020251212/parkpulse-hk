@@ -64,6 +64,7 @@
     "test:screen-navigation": "node --experimental-strip-types scripts/check-screen-navigation.mjs",
     "test:drinking-water": "node scripts/check-lcsd-drinking-water.mjs && node scripts/check-afcd-drinking-water.mjs && node scripts/check-mtr-drinking-water.mjs && node --experimental-strip-types scripts/check-drinking-water.mjs && node --experimental-strip-types scripts/check-water-environment-counts.mjs",
     "test:official-3d": "node --experimental-strip-types scripts/check-official-3d.mjs",
+    "test:official-building-data": "node --experimental-strip-types scripts/check-official-building-data.mjs",
     "test:mtr-drinking-water": "node scripts/check-mtr-drinking-water.mjs",
     "test:pin-location": "node scripts/check-pin-location.mjs",
     "test:named-places": "node scripts/check-named-place-download.mjs && node --experimental-strip-types scripts/check-named-places.mjs",

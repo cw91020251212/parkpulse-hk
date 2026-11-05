@@ -7,6 +7,7 @@ import { findNamedPlaces, type NamedPlaceSnapshot } from '../domain/namedPlaces'
 import { CAPTURE_3D_EVENT, type LiveMapCapture } from '../domain/official3d';
 import { text, type Language } from '../i18n';
 import type { Coordinates, MapViewport, SearchScope } from '../types';
+import { OFFICIAL_BUILDING_LAYER, OFFICIAL_BUILDING_SOURCE, useOfficial3DBuildings } from './useOfficial3DBuildings';
 import { useScreenNavigation } from '../hooks/ScreenNavigation';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './PositionInfo.css';
@@ -47,10 +48,10 @@ type Props = {
   onError: () => void;
 };
 
-// Based on the official example, using OpenStreetMap-derived heights, not LandsD models:
-// https://www.maplibre.org/maplibre-gl-js/docs/examples/display-buildings-in-3d/
+// OpenFreeMap remains the navigation basemap; building heights now come from
+// the official keyless LandsD Building FSDT dataset, not OSM fallback heights.
 const STYLE_URL = 'https://tiles.openfreemap.org/styles/bright';
-const BUILDINGS_ID = 'parkpulse-3d-buildings';
+const BUILDINGS_ID = OFFICIAL_BUILDING_LAYER;
 const RADIUS_ID = 'parkpulse-search-radius';
 const RADIUS_FILL_ID = `${RADIUS_ID}-fill`;
 const RADIUS_LINE_ID = `${RADIUS_ID}-line`;
@@ -132,17 +133,21 @@ function localizeLabels(map: LibreMap, language: Language) {
 function installLayers(map: LibreMap, props: Props) {
   const layers = map.getStyle().layers ?? [];
   const labels = layers.find(layer => layer.type === 'symbol' && layer.layout?.['text-field'])?.id;
-  // Reuse the vector source already loaded by Bright instead of requesting it twice.
-  if (!map.getSource('openmaptiles')) throw new Error('OpenFreeMap vector source is unavailable');
+  // Do not let a future basemap style add a duplicate guessed-height 3D layer.
+  for (const layer of layers) if (layer.type === 'fill-extrusion' && layer.id !== BUILDINGS_ID) map.setLayoutProperty(layer.id, 'visibility', 'none');
+  if (!map.getSource(OFFICIAL_BUILDING_SOURCE)) map.addSource(OFFICIAL_BUILDING_SOURCE, {
+    type: 'geojson', data: { type: 'FeatureCollection', features: [] },
+    attribution: 'Buildings: &copy; HKSAR Government, Lands Department — <a href="https://data.gov.hk/en-data/dataset/hk-landsd-openmap-landsd-building" target="_blank" rel="noreferrer">CSDI</a>',
+  });
   if (!map.getLayer(BUILDINGS_ID)) {
     map.addLayer({
-      id: BUILDINGS_ID, type: 'fill-extrusion', source: 'openmaptiles', 'source-layer': 'building', minzoom: 14.5,
-      filter: ['!=', ['get', 'hide_3d'], true],
+      id: BUILDINGS_ID, type: 'fill-extrusion', source: OFFICIAL_BUILDING_SOURCE, minzoom: 14,
+      filter: ['==', ['get', 'heightKnown'], true],
       paint: {
-        'fill-extrusion-color': ['interpolate', ['linear'], ['coalesce', ['get', 'render_height'], 0], 0, '#cdd7db', 200, '#7ca2b3', 400, '#a7c4d0'],
-        'fill-extrusion-height': ['interpolate', ['linear'], ['zoom'], 14.5, 0, 15.5, ['coalesce', ['get', 'render_height'], 0]],
-        'fill-extrusion-base': ['interpolate', ['linear'], ['zoom'], 14.5, 0, 15.5, ['coalesce', ['get', 'render_min_height'], 0]],
-        'fill-extrusion-opacity': 0.88,
+        'fill-extrusion-color': ['interpolate', ['linear'], ['get', 'height'], 0, '#cdd7db', 200, '#7ca2b3', 400, '#a7c4d0'],
+        'fill-extrusion-height': ['get', 'height'],
+        'fill-extrusion-base': 0,
+        'fill-extrusion-opacity': 0.94,
       },
     }, labels);
   }
@@ -320,6 +325,7 @@ export default function MapLibreView(props: Props): ReactNode {
   const [map, setMap] = useState<LibreMap | null>(null);
   const [styleReady, setStyleReady] = useState(false);
   const [failed, setFailed] = useState(false);
+  const buildings = useOfficial3DBuildings(map, styleReady && !failed);
   const mountedCamera = useRef({ recenterRequest: props.recenterRequest, initialRequest: props.initialView?.request, selected: props.selectedPoint });
 
   const renderPositionPopup = () => {
@@ -624,6 +630,15 @@ export default function MapLibreView(props: Props): ReactNode {
       <span>{props.startupLocating ? text(props.language, 'startupLocationLoading') : props.language === 'en' ? 'Loading 3D map…' : '正在載入 3D 地圖…'}</span>
     </div>}
     {failed && <div className="maplibre-loading-state" role="status">{props.language === 'en' ? '3D is unavailable. Returning to 2D…' : '暫未能載入 3D，正在返回 2D 地圖…'}</div>}
-    <small className="maplibre-reference-note">{props.language === 'en' ? '3D buildings are for reference only' : '3D 建築資料只供參考'}</small>
+    <small className="maplibre-reference-note" role="status" aria-live="polite">
+      {buildings.status === 'zoom' ? (props.language === 'en' ? 'Zoom in for official building heights' : '放近查看官方建築樓高')
+        : buildings.status === 'loading' ? (props.language === 'en' ? 'Loading official building heights…' : '正在讀取官方建築樓高…')
+        : buildings.status === 'error' ? (props.language === 'en' ? 'Official heights unavailable — not guessed' : '官方樓高暫未能載入，唔會估高')
+        : buildings.status === 'partial' ? (props.language === 'en' ? 'Official buildings: partial view; zoom in' : '官方建築：畫面資料未齊，請放近')
+        : (props.language === 'en' ? 'Official footprints / approximate heights; reference only' : '官方輪廓／近似樓高，只供參考')}
+      {buildings.status === 'ready' && buildings.missingHeightCount > 0 && <span>{props.language === 'en' ? ` · ${buildings.missingHeightCount} without heights` : ` · ${buildings.missingHeightCount} 棟未有樓高`}</span>}
+      {buildings.pilot === 'ready' && <span>{props.language === 'en' ? ' · Police HQ: detailed model' : ' · 警察總部：精細模型'}</span>}
+      {(buildings.status === 'error' || buildings.pilot === 'error') && <button type="button" onClick={buildings.retry}>{text(props.language, 'retry')}</button>}
+    </small>
   </div>;
 }

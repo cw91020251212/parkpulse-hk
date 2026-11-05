@@ -121,6 +121,18 @@
   pointer-events: none;
 }
 
+.maplibre-reference-note button {
+  margin-left: 6px;
+  padding: 2px 5px;
+  border: 1px solid #83a8ad;
+  border-radius: 4px;
+  background: #f4fffe;
+  color: #174854;
+  font: inherit;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
 .maplibre-wrap .maplibre-position-popup {
   z-index: 11000;
   font-family: inherit;
