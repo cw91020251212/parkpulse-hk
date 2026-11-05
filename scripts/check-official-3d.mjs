@@ -1,29 +1,60 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { official3dUrl, readMapReturn, saveMapReturn, returnViewport, MAP_RETURN_KEY } from '../src/domain/official3d.ts';
-const point={lat:22.299,lng:114.171};
-for(const [p,lang,expected] of [[point,'zh-Hant','zh-HK'],[{lat:22.45,lng:114.17},'en','en-US']]){
- const u=new URL(official3dUrl(p,lang));assert.equal(u.origin,'https://3d.map.gov.hk');assert.equal(u.searchParams.get('l'),expected);assert.equal(u.searchParams.get('i'),'false');assert.equal(u.searchParams.get('lookat'),`${p.lat.toFixed(6)},${p.lng.toFixed(6)},500c`);
+import { readMapReturn, saveMapReturn, returnViewport, MAP_RETURN_KEY } from '../src/domain/official3d.ts';
+
+const read = path => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
+const app = await read('src/App.tsx');
+const link = await read('src/components/Official3DLink.tsx');
+const map = await read('src/components/MapView.tsx');
+const libre = await read('src/components/MapLibreView.tsx');
+const tools = await read('src/components/MapExtraTools.tsx');
+assert.match(link, /return <button/);
+assert.doesNotMatch(link, /official3dUrl|target="_blank"|href=/, '3D entries must not open the removed official site');
+assert.match(link, /if \(compact\) toggle\(\)/);
+assert.match(link, /else show3d\(point\)/);
+assert.match(app, /MapModeProvider/);
+assert.match(app, /captureLiveMap\(mapViewport\)/);
+assert.match(app, /zoom: live\?\.zoom \?\? 14/);
+assert.match(app, /mapMode=\{mapMode\}/);
+assert.doesNotMatch(app, /canReturn3d|settings-restore-map|OPEN_3D_EVENT/);
+assert.match(map, /lazy\(/);
+assert.match(map, /<MapLibreView/);
+assert.match(map, /<MapContainer/);
+assert.match(map, /onSelect\(park\.info\.park_Id\)/);
+assert.match(map, /onSelectOnStreet\(onStreet\.id\)/);
+assert.match(map, /onSelectToilet\(item\.toilet\.id\)/);
+assert.match(map, /mapMode === '2d' && <a className="landsd-credit"/);
+assert.match(libre, /fill-extrusion/);
+assert.match(libre, /render_height/);
+assert.match(libre, /tiles\.openfreemap\.org/);
+assert.match(libre, /CAPTURE_3D_EVENT/);
+assert.match(libre, /onViewportChange\(viewportOf/);
+assert.match(libre, /searchScope === 'radius'/);
+assert.match(libre, /live\.current\.onError\(\)/);
+assert.match(libre, /currentMap\.remove\(\)/);
+assert.match(tools, /<Official3DLink/);
+assert.match(tools, /navigation\.close\('map-tools'\)/);
+assert.match(tools, /pointerdown/);
+assert.match(tools, /closeScreen/);
+const css = await read('src/components/Official3D.css');
+assert.match(css, /min-width:\s*44px/);
+assert.match(css, /min-height:\s*44px/);
+
+// Existing local-only bookmarks remain readable during migration from the old external flow.
+const now = Date.now();
+const store = new Map();
+const storage = { getItem: k => store.get(k) ?? null, setItem: (k, v) => store.set(k, v) };
+const state = { savedAt: now, position: { lat: 22.3193, lng: 114.1694 }, view: { center: { lat: 22.30, lng: 114.17 }, zoom: 16 }, searchScope: 'radius', hasGpsPosition: false, hasManualMapMarker: true, areaName: 'Test', waterEnvironment: 'all' };
+assert.equal(saveMapReturn(state, storage), true);
+assert.deepEqual(readMapReturn(storage, now), state);
+assert.equal(readMapReturn(storage, now + 3 * 60 * 60 * 1000), null);
+assert.equal(readMapReturn(storage, now - 1), null);
+for (const bad of [{ ...state, view: { center: state.position, zoom: 100 } }, { ...state, searchScope: 'wrong' }, { ...state, waterEnvironment: 'wrong' }, { ...state, position: { lat: 0, lng: 0 } }]) {
+  store.set(MAP_RETURN_KEY, JSON.stringify(bad));
+  assert.equal(readMapReturn(storage, now), null);
 }
-for(const p of [{lat:NaN,lng:114},{lat:22,lng:Infinity},{lat:0,lng:0}])assert.throws(()=>official3dUrl(p,'en'));
-const now=Date.now();const state={savedAt:now,position:point,view:{center:{lat:22.325,lng:114.182},zoom:17},searchScope:'viewport',hasGpsPosition:false,hasManualMapMarker:true,areaName:'test area',waterEnvironment:'indoor'};
-let saved;const storage={setItem:(k,v)=>{assert.equal(k,MAP_RETURN_KEY);saved=v},getItem:k=>saved};
-assert.equal(saveMapReturn(state,storage),true);assert.deepEqual(readMapReturn(storage,now),state);
-assert.equal(readMapReturn(storage,now+3*60*60*1000),null);assert.equal(readMapReturn(storage,now-1),null);
-for(const bad of [{...state,view:{center:point,zoom:100}},{...state,searchScope:'wrong'},{...state,waterEnvironment:'wrong'},{...state,position:{lat:0,lng:0}}]){saved=JSON.stringify(bad);assert.equal(readMapReturn(storage,now),null)}
-assert.equal(readMapReturn({getItem:()=>'{broken'},now),null);assert.equal(saveMapReturn(state,{setItem:()=>{throw Error('Storage blocked')}}),false);
-assert.deepEqual(returnViewport(null,point),{center:point,zoom:14});
-assert.deepEqual(returnViewport({north:23,south:22,east:115,west:113,center:point,zoom:16},point),{center:point,zoom:16});
-const read=p=>readFile(new URL('../'+p,import.meta.url),'utf8');
-const link=await read('src/components/Official3DLink.tsx');assert.match(link,/target="_blank"/);assert.match(link,/noopener noreferrer/);assert.match(link,/dispatchEvent/);assert.doesNotMatch(link,/iframe|location\.href\s*=/);assert.match(link,/if \(!isHkPoint\(point\)\)/);assert.match(link,/onClickCapture/);assert.match(link,/onLaunch\s*\?\s*:\s*\(\)\s*=>\s*void/);
-const clickHandler=link.match(/onClickCapture\s*=\s*\{([\s\S]*?)\}/);assert.ok(clickHandler,'Official 3D click must capture the current map view');assert.ok(clickHandler[1].includes('dispatchEvent'),'Official 3D click must synchronously dispatch the capture event');assert.ok(clickHandler[1].includes('onLaunch?.()'),'Official 3D click must invoke onLaunch after capture');assert.ok(clickHandler[1].indexOf('dispatchEvent')<clickHandler[1].indexOf('onLaunch?.()'),'capture must happen before onLaunch');
-const app=await read('src/App.tsx');assert.match(app,/saveMapReturn\(state\)/);assert.match(app,/captureLiveMap\(mapViewport\)/);assert.match(app,/if \(initial3dReturn\)/);assert.match(app,/setRestore3dView/);assert.match(app,/setRecenterRequest\(0\)/);assert.match(app,/current\.zoom === next\.zoom/);
-assert.match(app,/<Official3DLink\b(?=[^>]*\bpoint=\{mapViewport\?\.center\s*\?\?\s*position\})(?=[^>]*\blanguage=\{language\})(?=[^>]*\bcompact\b)[^>]*\/>/s,'bottom toolbar row must provide a compact Official 3D entry at the live viewport center');
-const bottomRow=app.match(/<div\b(?=[^>]*className="[^"]*area-tools-row[^"]*")[^>]*>([\s\S]*?)<\/div>/);assert.ok(bottomRow,'App must retain the area tools row');assert.match(bottomRow[1],/<Official3DLink\b(?=[^>]*\bpoint=\{mapViewport\?\.center\s*\?\?\s*position\})(?=[^>]*\blanguage=\{language\})(?=[^>]*\bcompact\b)[^>]*\/>/s,'compact Official 3D entry must be in the bottom area-tools row');
-assert.match(app,/<div\b(?=[^>]*className="[^"]*map-screen-tools[^"]*")[^>]*>[\s\S]*?<MapExtraTools\b(?=[^>]*\bpoint=\{mapViewport\?\.center\s*\?\?\s*position\})(?=[^>]*\blanguage=\{language\})[^>]*\/>[\s\S]*?<\/div>/s,'full-screen map tools must contain MapExtraTools using the live viewport center');
-const map=await read('src/components/MapView.tsx');assert.match(map,/zoom: map\.getZoom\(\)/);assert.match(map,/<Restore3DMapView/);assert.match(map,/<Capture3DMapView\s*\/>/);assert.doesNotMatch(map,/<Official3DMapControl\b|<Official3DLink\b/,'map canvas must not render the Official 3D link');
-const ctrl=await read('src/components/Official3DMapControl.tsx');assert.match(ctrl,/map\.stop\(\)\.setView/);assert.match(ctrl,/animate: false/);assert.match(ctrl,/export\s+(?:function|const)\s+Capture3DMapView\b/);assert.match(ctrl,/useMap\s*\(/);assert.match(ctrl,/useEffect\s*\(/);assert.match(ctrl,/CAPTURE_3D_EVENT/);assert.match(ctrl,/return\s+null\s*;?/);assert.doesNotMatch(ctrl,/Official3DLink|DomEvent|<div\b/,'capture component must not render a link, use Leaflet DomEvent, or return a div');assert.doesNotMatch(ctrl,/official-3d-map-note|official-3d-return|official3dFirstVisit|official3dReturn|\bcanReturn\b|\bonReturn\b/);
-const settingsStart=app.indexOf('<div className="settings-popover">');assert.notEqual(settingsStart,-1,'existing settings popover must remain the restore entry point');const settingsEnd=app.indexOf('</details>',settingsStart);assert.notEqual(settingsEnd,-1,'settings popover must remain inside its details menu');const settingsPopover=app.slice(settingsStart,settingsEnd);assert.match(settingsPopover,/\{\s*canReturn3d\s*&&\s*<button\b(?=[^>]*data-action="restore-3d-view")(?=[^>]*onClick=\{\(\)\s*=>\s*\{)[^>]*onClick=\{\(\)\s*=>\s*\{[^}]*navigation\.close\('settings'\);?[^}]*returnFrom3d\(\);?[^}]*\}\}/s);
-const extraTools=await read('src/components/MapExtraTools.tsx');assert.match(extraTools,/navigation\.open\('map-tools'\s*(?:,|\))/);assert.match(extraTools,/navigation\.close\('map-tools'\)/);assert.match(extraTools,/pointerdown/i,'map tools menu must close on external pointerdown');assert.match(extraTools,/onLaunch\s*=\s*\{\s*\(\)\s*=>\s*navigation\.close\('map-tools'\)\s*\}/,'launching Official 3D from the menu must close the menu');assert.match(extraTools,/closeScreen/,'map tools menu must keep an explicit screen-close control');assert.match(extraTools,/<button\b(?=[^>]*onClick=\{[^}]*navigation\.close\('map-tools'\)[^}]*\})[^>]*>[\s\S]*?closeScreen/s,'explicit localized closeScreen action must be a button');
-const official3dCss=await read('src/components/Official3D.css');assert.doesNotMatch(official3dCss,/\.official-3d-map-control\b/,'old Official 3D map-control CSS must be removed');const compactLinkRule=official3dCss.match(/([^{}]*\.map-bottom-tools\s+\.official-3d-link\.is-compact\b[^{}]*)\{([^{}]*)\}/s);assert.ok(compactLinkRule,'bottom compact Official 3D link needs a dedicated CSS rule');for(const property of ['min-width','min-height'])assert.match(compactLinkRule[2],new RegExp(`(?:^|;)\\s*${property}\\s*:\\s*44px\\s*(?:;|$)`),`compact bottom Official 3D link must declare ${property}: 44px`);assert.match(compactLinkRule[2],/(?:^|;)\s*background\s*:\s*transparent\s*(?:;|$)/,'compact bottom link must have a transparent background');assert.match(compactLinkRule[2],/(?:^|;)\s*box-shadow\s*:\s*none\s*(?:;|$)/,'compact bottom link must not have a box shadow');
-console.log('Official 3D OK: exact target links, new tab, local-only original center+zoom, stale/corrupt storage rejection, GPS-preserving restore, canvas-free capture, bottom-row entry and menu exit.');
+assert.equal(readMapReturn({ getItem: () => '{broken' }, now), null);
+assert.equal(saveMapReturn(state, { setItem: () => { throw Error('Storage blocked'); } }), false);
+assert.deepEqual(returnViewport(null, state.position), { center: state.position, zoom: 14 });
+assert.deepEqual(returnViewport({ north: 23, south: 22, east: 115, west: 113, center: state.position, zoom: 16 }, state.position), { center: state.position, zoom: 16 });
+console.log('In-page 3D OK: single MapLibre toggle, no external official entry, shared data callbacks, viewport preservation, renderer cleanup and legacy bookmark migration.');

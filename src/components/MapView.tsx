@@ -1,5 +1,9 @@
 import { DRINKING_WATER_SYMBOL_URL } from './DrinkingWaterSymbol';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef } from 'react';
+import type { MapMode } from './MapModeContext';
+import type { MapLibreMarker } from './MapLibreView';
+const MapLibreView = lazy(() => import('./MapLibreView').catch(() => ({ default: MapLibreLoadFailure })));
+function MapLibreLoadFailure({ onError }: { onError: () => void }) { useEffect(() => onError(), [onError]); return <></>; }
 import L from 'leaflet';
 import { Circle, MapContainer, Marker, Popup, TileLayer, Tooltip, useMap } from 'react-leaflet';
 import { publicAsset } from '../api/site';
@@ -18,6 +22,7 @@ import { washroomSymbolMarkup } from './WashroomSymbol';
 import { PositionInfo } from './PositionInfo';
 import { Capture3DMapView, Restore3DMapView, type Restore3DView } from './Official3DMapControl';
 type Props = {
+  mapMode: MapMode; on3dError: () => void; map3dError: boolean; onDismiss3dError: () => void;
   return3d?: Restore3DView;
   language: Language; position: Coordinates; positionLabel: string; parks: ParkViewModel[];
   showCurrentLocation: boolean;
@@ -266,14 +271,42 @@ function groupMedicalLocations(items: MedicalLocationViewModel[]) { const groups
 
 function MapFocusIcon({ expanded }: { expanded: boolean }) { return expanded ? <svg className="map-focus-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 3 3 3 3-3M9 21l3-3 3 3M3 9l3 3-3 3M21 9l-3 3 3 3" /></svg> : <svg className="map-focus-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3H3v6m0-6 7 7M15 3h6v6m0-6-7 7M9 21H3v-6m0 6 7-7m5 7h6v-6m0 6-7-7" /></svg>; }
 
-export function MapView({ language, position, positionLabel, showCurrentLocation, showManualCenter, parks, nearbyItems, medicalItems, selectedId, viewedMarkerId, onSelect, onSelectOnStreet, onSelectToilet, onViewPopup, onBeginManualPositionEdit, onManualPositionChange, onCompleteManualPositionEdit, onCancelManualPositionEdit, manualPositionEditorId, onLocationSelect, recenterRequest, startupLocating, startupRecenter, expanded, searchScope, onViewportChange, onToggleExpanded, onShowResults, resultsLabel, return3d }: Props) {
+export function MapView({ mapMode, on3dError, map3dError, onDismiss3dError, language, position, positionLabel, showCurrentLocation, showManualCenter, parks, nearbyItems, medicalItems, selectedId, viewedMarkerId, onSelect, onSelectOnStreet, onSelectToilet, onViewPopup, onBeginManualPositionEdit, onManualPositionChange, onCompleteManualPositionEdit, onCancelManualPositionEdit, manualPositionEditorId, onLocationSelect, recenterRequest, startupLocating, startupRecenter, expanded, searchScope, onViewportChange, onToggleExpanded, onShowResults, resultsLabel, return3d }: Props) {
   const selected = parks.find((park) => park.info.park_Id === selectedId); const medicalGroups = useMemo(() => groupMedicalLocations(medicalItems), [medicalItems]); const trafficCameraItems = useMemo(() => nearbyItems.filter((item): item is NearbyFacilityViewModel => 'facility' in item && item.facility.kind === 'trafficCamera'), [nearbyItems]); const standardNearbyItems = useMemo(() => nearbyItems.filter((item) => !('facility' in item && item.facility.kind === 'trafficCamera')), [nearbyItems]); const visibleResultCount = parks.length + nearbyItems.length + medicalItems.length;
   const showPositionMarker = searchScope === 'radius' || showCurrentLocation || showManualCenter;
   const positionMarkerIcon = showCurrentLocation ? currentLocationIcon : selectedCenterIcon;
   const label = (kind?: PublicToilet['kind'] | NearbyFacility['kind'] | OnStreetParkingGroup['kind']) => kind === 'hadCommunityToilet' ? text(language, 'hadCommunityWashroom') : kind === 'afcdLongValleyTemporaryToilets' ? text(language, 'afcdLongValleyTemporaryWashrooms') : kind === 'afcdNatureCentreToilet' ? text(language, 'afcdNatureCentreWashroom') : kind === 'lcsdVenue' ? text(language, 'venueWashroom') : kind === 'lcsdParkToilet' ? text(language, 'lcsdParkWashroom') : kind === 'afcdCountryParkToilet' ? text(language, 'afcdCountryParkWashroom') : kind === 'landsdMapToilet' ? text(language, 'landsdMapToilet') : kind === 'fuel' ? (language === 'en' ? 'Consumer Council fuel station' : '消委會油站') : kind === 'atm' ? (language === 'en' ? 'HKMA ATM' : '金管局 ATM') : kind === 'aed' ? text(language, 'aed') : kind === 'emergency' ? text(language, 'emergencyDepartment') : kind === 'border' ? text(language, 'borderControlPoints') : kind === 'hkjc' ? text(language, 'hkjcOutlets') : kind === 'drinkingWater' ? text(language, 'drinkingWater') : kind === 'trafficCamera' ? text(language, 'trafficCameras') : kind === 'metered' ? text(language, 'meteredParking') : kind === 'nonMetered' ? text(language, 'nonMeteredTrial') : kind === 'motorcycle' ? text(language, 'motorcycleOnStreet') : text(language, 'publicToilet');
 
-  return <div className={expanded ? 'map-wrap is-expanded' : 'map-wrap'} aria-label={text(language, 'mapLabel')}>
-    <MapContainer center={return3d ? [return3d.center.lat, return3d.center.lng] : [position.lat, position.lng]} zoom={return3d?.zoom ?? (startupLocating ? 10 : 14)} minZoom={8} maxZoom={MAP_MAX_ZOOM} scrollWheelZoom inertia={false} className="landsd-map">
+  const markers3d: MapLibreMarker[] = mapMode === '3d' ? [
+    ...parks.map((park) => {
+      const viewed = viewedMarkerId === `park:${park.info.park_Id}`;
+      const icon = markerIcon(park, language, viewed);
+      return { key: `park:${park.info.park_Id}`, point: { lat: park.info.latitude, lng: park.info.longitude }, html: String(icon.options.html ?? ''), className: 'parking-marker-shell', width: 38, height: 38, title: `${park.info.name} · ${vacancyLabel(language, park.status)}`, viewed, onSelect: () => onSelect(park.info.park_Id) };
+    }),
+    ...nearbyItems.map((item) => {
+      const onStreet = 'onStreet' in item ? item.onStreet : undefined;
+      const place = 'toilet' in item ? item.toilet : 'facility' in item ? item.facility : onStreet!;
+      const key = 'toilet' in item ? `toilet:${place.id}` : onStreet ? `onstreet:${place.id}` : `facility:${place.id}`;
+      const viewed = viewedMarkerId === key;
+      const venue = 'toilet' in item && (item.toilet.locationPrecision === 'venue' || item.toilet.locationPrecision === 'venue-uncertain' || item.toilet.kind === 'lcsdVenue');
+      const unconfirmed = ('toilet' in item && item.toilet.locationPrecision === 'venue-uncertain') || ('facility' in item && item.facility.locationPrecision === 'building');
+      const icon = place.kind === 'trafficCamera'
+        ? L.divIcon({ html: '<span class="toilet-marker is-traffic-camera"><span aria-hidden="true">📷</span></span>' })
+        : nearbyIcon(place.kind, onStreet?.occupancy, onStreet?.vacant, 'brand' in place ? place.brand : undefined, viewed, onStreet?.static, onStreet?.total, venue, unconfirmed, false, undefined, place.kind === 'hkjc' ? place.hkjcFirstPrizeRank : undefined, place.kind === 'hkjc' ? place.hkjcFirstPrizeTicketCount : undefined);
+      return { key, point: { lat: place.latitude, lng: place.longitude }, html: String(icon.options.html ?? ''), className: 'toilet-marker-shell', width: 34, height: 34, title: place.name, viewed, onSelect: () => { if (onStreet) onSelectOnStreet(onStreet.id); else if ('toilet' in item) onSelectToilet(item.toilet.id); else if ('facility' in item) { onViewPopup(key); item.onSelect?.(); } } };
+    }),
+    ...medicalGroups.map((group) => {
+      const key = `medical-site:${group.key}`;
+      const viewed = viewedMarkerId === key || group.items.some((item) => viewedMarkerId === `medical:${item.location.id}`);
+      const icon = medicalMarkerIcon(group.category, group.items.length, viewed);
+      return { key, point: { lat: group.items[0].location.latitude, lng: group.items[0].location.longitude }, html: String(icon.options.html ?? ''), className: 'medical-marker-shell', width: 40, height: 40, title: group.items.map((item) => item.location.name_tc).join(' / '), viewed, onSelect: () => onViewPopup(key), popup: <div className="medical-map-popup">{group.items.map((item) => <button key={item.location.id} type="button" onClick={() => item.onSelect?.()}><strong>{language === 'en' && item.location.name_en ? item.location.name_en : item.location.name_tc}</strong><small>{text(language, MEDICAL_CATEGORY_LABEL_KEYS[item.location.category])} · {formatDistance(item.distanceKm)}</small></button>)}</div> };
+    }),
+  ] : [];
+
+  return <div className={`${expanded ? 'map-wrap is-expanded' : 'map-wrap'}${mapMode === '3d' ? ' is-3d' : ''}`} aria-label={text(language, 'mapLabel')}>
+    {mapMode === '3d' ? <Suspense fallback={<div className="map-startup-location-state" role="status"><span className="loader" /><span>{language === 'en' ? 'Loading 3D map…' : '正在載入 3D 地圖…'}</span></div>}>
+      <MapLibreView language={language} position={position} initialView={return3d} markers={markers3d} searchScope={searchScope} showPositionMarker={showPositionMarker} positionHtml={String(positionMarkerIcon.options.html ?? '')} positionIsGps={showCurrentLocation} positionLabel={positionLabel} startupLocating={startupLocating} recenterRequest={recenterRequest} selectedPoint={selected ? { lat: selected.info.latitude, lng: selected.info.longitude } : undefined} expanded={expanded} onViewportChange={onViewportChange} onLocationSelect={onLocationSelect} onError={on3dError} />
+    </Suspense> : <MapContainer center={return3d ? [return3d.center.lat, return3d.center.lng] : [position.lat, position.lng]} zoom={return3d?.zoom ?? (startupLocating ? 10 : 14)} minZoom={8} maxZoom={MAP_MAX_ZOOM} zoomSnap={0} zoomDelta={1} scrollWheelZoom inertia={false} className="landsd-map">
       <PopupHistory />
       <ReportViewport onChange={onViewportChange} />
       <Capture3DMapView />
@@ -330,10 +363,11 @@ export function MapView({ language, position, positionLabel, showCurrentLocation
           <Popup><div className="medical-map-popup">{group.items.length > 1 && <small className="medical-map-group-count">{text(language, 'medicalCoLocatedCount', { count: group.items.length })}</small>}{group.items.map((item) => { const location = item.location; const name = language === 'en' && location.name_en ? location.name_en : location.name_tc; return <button key={location.id} type="button" onClick={() => item.onSelect?.()}><strong>{name}</strong><small>{text(language, MEDICAL_CATEGORY_LABEL_KEYS[location.category])} · {formatDistance(item.distanceKm)}</small>{location.category === 'ha-specialist-outpatient-clinic' && (location.specialty_codes?.length ? <small className="medical-map-popup-specialties">{location.specialty_codes.map((code) => medicalSpecialtyLabel(code, language)).join(' · ')}</small> : <small className="medical-map-popup-specialties is-unlisted">{text(language, 'medicalSpecialtyUnlisted')}</small>)}</button>; })}</div></Popup>
         </Marker>;
       })}
-    </MapContainer>
-    {startupLocating && <div className="map-startup-location-state" role="status" aria-live="polite"><span className="loader" /><span>{text(language, 'startupLocationLoading')}</span></div>}
+    </MapContainer>}
+    {mapMode === '2d' && startupLocating && <div className="map-startup-location-state" role="status" aria-live="polite"><span className="loader" /><span>{text(language, 'startupLocationLoading')}</span></div>}
     <button className="map-focus-toggle" type="button" onClick={onToggleExpanded} aria-pressed={expanded} aria-label={expanded ? text(language, 'mapCollapse') : text(language, 'mapExpand')} title={expanded ? text(language, 'mapCollapse') : text(language, 'mapExpand')}><MapFocusIcon expanded={expanded} /></button>
     {!expanded && visibleResultCount > 0 && <button className="map-results-link" type="button" onClick={onShowResults}>{text(language, 'showResults', { count: resultsLabel })}</button>}
-    <a className="landsd-credit" href="https://www.map.gov.hk/gm/" target="_blank" rel="noreferrer"><span>{text(language, 'landsdCredit')}</span><img src={LANDSD_LOGO_URL} alt={text(language, 'landsdLogo')} /></a>
+    {mapMode === '2d' && <a className="landsd-credit" href="https://www.map.gov.hk/gm/" target="_blank" rel="noreferrer"><span>{text(language, 'landsdCredit')}</span><img src={LANDSD_LOGO_URL} alt={text(language, 'landsdLogo')} /></a>}
+    {map3dError && <div className="map-3d-error" role="status"><span>{language === 'en' ? '3D is unavailable. The 2D map is still usable.' : '暫時未能顯示 3D，已返回可用嘅 2D 地圖。'}</span><button type="button" onClick={onDismiss3dError} aria-label={text(language, 'closeScreen')}>×</button></div>}
   </div>;
 }

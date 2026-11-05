@@ -81,3 +81,10 @@
   text-shadow: 0 1px 2px #003041;
   cursor: pointer;
 }
+
+/* The old external link is now one in-page MapLibre mode button. */
+button.official-3d-link { font: inherit; cursor: pointer; }
+.official-3d-link.is-active { color: #ffe17a; }
+.map-3d-error { position: absolute; z-index: 1003; left: 12px; right: 12px; top: 58px; display: flex; align-items: center; gap: 10px; padding: 9px 12px; border: 1px solid #ddb264; border-radius: 10px; background: #fff6dc; color: #493300; font-size: 13px; box-shadow: 0 2px 8px #00304022; }
+.map-3d-error span { flex: 1; }
+.map-3d-error button { min-width: 36px; min-height: 36px; border: 0; border-radius: 8px; color: inherit; background: transparent; cursor: pointer; }

@@ -19,7 +19,7 @@ export function Capture3DMapView() {
     const capture = (event: Event) => {
       map.stop();
       const current = map.getCenter();
-      map.setView([current.lat, current.lng], Math.round(map.getZoom()), { animate: false });
+      map.setView([current.lat, current.lng], map.getZoom(), { animate: false });
       const center = map.getCenter();
       const bounds = map.getBounds();
       (event as CustomEvent<LiveMapCapture>).detail.viewport = {
