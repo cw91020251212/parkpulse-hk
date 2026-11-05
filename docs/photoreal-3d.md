@@ -35,3 +35,7 @@ GitHub Actions可選`LANDSD_3D_URL` repository variable與`LANDSD_3D_API_KEY` re
 佐敦實測已從原泊車圖標開啟「九龍公園」詳情並關閉；圖標顯示1個空位，資料與原網站共用。真實長按完成手動中心選擇。1280px桌面及390×844px手機全畫面均顯示實景模型和11個泊車標記；桌面細節目標SSE4，模型記憶體57,520,540 bytes。受控WebGL失效返回可用Leaflet 2D；JavaScript例外0。
 
 型別、實景載入、模式切換、地圖範圍、設施標記、屏幕返回、車種選擇、啟動定位、Pages及PWA標準回歸已通過。模型採可見範圍串流，載入新範圍期間仍會繼續精細化。
+
+## 正式網站驗收完成
+
+2026-11-06 05:15 HKT，程式版本`c660f16ccbaffc9d809596e25d13dcee0c223326`經[GitHub Pages部署42109680645](https://github.com/cw91020251212/parkpulse-hk/actions/runs/42109680645)成功上線。[正式網站](https://cw91020251212.github.io/parkpulse-hk/)已在390×844px手機視野實測：預設2D不載入SDK；按原3D掣後有官方實景幾何和11個泊車圖標；細節目標SSE4，仍自動細化；從全畫面選單成功返回2D。SDK、實際官方b3dm模型及Basis貼圖解碼WASM均HTTP200。傳送修正、模式及Pages/PWA回歸全部通過。
