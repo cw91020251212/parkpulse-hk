@@ -5,13 +5,14 @@
   "type": "module",
   "packageManager": "pnpm@11.25.0",
   "scripts": {
-    "dev": "node server.mjs",
-    "build": "tsc --noEmit && vite build",
-    "build:pages": "node scripts/build-pages-data.mjs && tsc --noEmit && vite build --mode pages",
+    "dev": "node scripts/prepare-cesium.mjs && node server.mjs",
+    "build": "node scripts/prepare-cesium.mjs && tsc --noEmit && vite build",
+    "build:pages": "node scripts/prepare-cesium.mjs && node scripts/build-pages-data.mjs && tsc --noEmit && vite build --mode pages",
     "preview:pages": "vite preview --mode pages --host 0.0.0.0",
     "refresh:hkjc-betting-outlets": "node scripts/refresh-hkjc-betting-outlets.mjs",
     "test:hkjc-betting-outlets": "node scripts/check-hkjc-betting-outlets.mjs",
     "check": "tsc --noEmit",
+    "test:photoreal-3d": "node scripts/prepare-cesium.mjs && node --experimental-strip-types scripts/check-photoreal-3d.mjs",
     "test:domain": "node --experimental-strip-types scripts/check-vacancy.mjs",
     "test:charging": "node --experimental-strip-types scripts/check-ev-charging.mjs",
     "test:photos": "node scripts/check-photo-proxy.mjs",
@@ -71,6 +72,7 @@
     "test:result-readability": "node scripts/check-result-card-flow.mjs && node scripts/check-park-card-flow.mjs && node scripts/check-overlay-text-scale.mjs"
   },
   "dependencies": {
+    "cesium": "1.147.0",
     "express": "^5.2.1",
     "leaflet": "^1.9.4",
     "maplibre-gl": "6.16.0",

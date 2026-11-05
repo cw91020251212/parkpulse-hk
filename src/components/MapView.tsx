@@ -2,8 +2,8 @@ import { DRINKING_WATER_SYMBOL_URL } from './DrinkingWaterSymbol';
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef } from 'react';
 import type { MapMode } from './MapModeContext';
 import type { MapLibreMarker } from './MapLibreView';
-const MapLibreView = lazy(() => import('./MapLibreView').catch(() => ({ default: MapLibreLoadFailure })));
-function MapLibreLoadFailure({ onError }: { onError: () => void }) { useEffect(() => onError(), [onError]); return <></>; }
+const CesiumView = lazy(() => import('./CesiumView').catch(() => ({ default: CesiumLoadFailure })));
+function CesiumLoadFailure({ onError }: { onError: () => void }) { useEffect(() => onError(), [onError]); return <></>; }
 import L from 'leaflet';
 import { Circle, MapContainer, Marker, Popup, TileLayer, Tooltip, useMap } from 'react-leaflet';
 import { publicAsset } from '../api/site';
@@ -305,7 +305,7 @@ export function MapView({ mapMode, on3dError, map3dError, onDismiss3dError, lang
 
   return <div className={`${expanded ? 'map-wrap is-expanded' : 'map-wrap'}${mapMode === '3d' ? ' is-3d' : ''}`} aria-label={text(language, 'mapLabel')}>
     {mapMode === '3d' ? <Suspense fallback={<div className="map-startup-location-state" role="status"><span className="loader" /><span>{language === 'en' ? 'Loading 3D map…' : '正在載入 3D 地圖…'}</span></div>}>
-      <MapLibreView language={language} position={position} initialView={return3d} markers={markers3d} searchScope={searchScope} showPositionMarker={showPositionMarker} positionHtml={String(positionMarkerIcon.options.html ?? '')} positionIsGps={showCurrentLocation} positionLabel={positionLabel} startupLocating={startupLocating} recenterRequest={recenterRequest} selectedPoint={selected ? { lat: selected.info.latitude, lng: selected.info.longitude } : undefined} expanded={expanded} onViewportChange={onViewportChange} onLocationSelect={onLocationSelect} onError={on3dError} />
+      <CesiumView language={language} position={position} initialView={return3d} markers={markers3d} searchScope={searchScope} showPositionMarker={showPositionMarker} positionHtml={String(positionMarkerIcon.options.html ?? '')} positionIsGps={showCurrentLocation} positionLabel={positionLabel} startupLocating={startupLocating} recenterRequest={recenterRequest} selectedPoint={selected ? { lat: selected.info.latitude, lng: selected.info.longitude } : undefined} expanded={expanded} onViewportChange={onViewportChange} onLocationSelect={onLocationSelect} onError={on3dError} />
     </Suspense> : <MapContainer center={return3d ? [return3d.center.lat, return3d.center.lng] : [position.lat, position.lng]} zoom={return3d?.zoom ?? (startupLocating ? 10 : 14)} minZoom={8} maxZoom={MAP_MAX_ZOOM} zoomSnap={0} zoomDelta={1} scrollWheelZoom inertia={false} className="landsd-map">
       <PopupHistory />
       <ReportViewport onChange={onViewportChange} />

@@ -30,6 +30,10 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build:pages
+        env:
+          VITE_LANDSD_3D_API_KEY: ${{ secrets.LANDSD_3D_API_KEY }}
+          VITE_LANDSD_3D_URL: ${{ vars.LANDSD_3D_URL }}
+      - run: pnpm test:photoreal-3d && pnpm test:official-3d && pnpm test:pages && pnpm test:pwa
       - uses: actions/configure-pages@v5
         with:
           enablement: true
