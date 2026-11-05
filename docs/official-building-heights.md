@@ -34,3 +34,7 @@
 Chromium正式網頁環境實測：警總官方欄位11／93mPD，相對82米；画面內825個官方擠出輪廓及單獨精細模型，模型成功後對OBJECTID216947精確排除重複簡化擠出。17.3小數zoom與中心往返2D保留；海富marker成功開啟海富停車場詳情；390×844手機全畫面模型可見且canvas寬390px；頁面仍只有1個切換掣、舊地政3D外連0。受控官方API503保留底圖及重試提示、未改用OSM5米；受控WebGLcontextlost回退2D。頁面JavaScript例外0；開發模式另有既有manifest解析提示，Pages建置manifest及PWA檢查通過。
 
 型別、官方資料數值／缺漏／分頁／截斷／錯誤／取消／15秒timeout檢查、3D、視野、marker、screen navigation、位置資訊、Pages/PWA與Git diff檢查均通過。獨立只讀程式審查未發現具體缺陷。當前僅標示預覽實測成功；正式上線待GitHub Actions確認後追加記錄，不把預覽當發布。
+
+## 正式發布與線上核對
+
+2026-11-06功能版本`6f4eebfd00fb67ef80369e92c3e202eb7714f292`由[GitHub Pages workflow 42076015716](https://github.com/cw91020251212/parkpulse-hk/actions/runs/42076015716)成功建立與部署。隨後直接於[正式網站](https://cw91020251212.github.io/parkpulse-hk/)390px手機畫面核對：精細模型資產HTTP200，官方source為`parkpulse-official-buildings`，樓高公式為`get(height)`，警總欄位11／93mPD及相對82米、精細custom model均存在；1個切換掣、0舊3D外連、頁面JS例外0。缺樓高如實提示，不聲稱全港精細實景模型。
