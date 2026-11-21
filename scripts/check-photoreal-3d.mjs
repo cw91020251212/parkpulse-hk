@@ -89,12 +89,12 @@ const scene = readFileSync('src/components/CesiumView.tsx', 'utf8');
 const capture = scene.slice(scene.indexOf('const viewport ='), scene.indexOf('const focus ='));
 assert.match(capture, /camera\.pickEllipsoid/);
 assert.doesNotMatch(capture, /globe\.pick/);
-assert.match(app, /useState<MapMode>\('2d'\)/);
-assert.match(map, /<CesiumView/); assert.match(map, /<MapContainer/);
+assert.match(app, /useState<MapMode>\('3d'\)/);
+assert.match(map, /<MapLibreView/); assert.match(map, /<MapContainer/);
 assert.match(map, /markers=\{markers3d\}/); assert.match(map, /onError=\{on3dError\}/);
 assert.match(link, /backTo2d \? '2D' : '3D'/);
 assert.doesNotMatch(link, /href=|target="_blank"/);
 for (const file of ['Cesium.js', 'Widgets/widgets.css', 'Workers', 'ThirdParty', 'Assets']) {
   assert.ok(existsSync(`public/vendor/cesium/${CESIUM_VERSION}/${file}`), `Standalone SDK missing ${file}`);
 }
-console.log('Photoreal 3D OK: default 2D, shared controls, cached staged LOD, bounded cache/rendering, 6 concurrent downloads, two cancellable retries without retrying 403, abort/root/content failure and standalone SDK.');
+console.log('3D pipelines OK: OpenFreeMap is the default 3D map; legacy Cesium loader and SDK checks remain isolated, bounded and cancellable.');

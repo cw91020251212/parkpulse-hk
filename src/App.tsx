@@ -112,7 +112,7 @@ export default function App() {
   const navigation = useScreenNavigation();
   const [initial3dReturn] = useState(() => readMapReturn());
   const [restore3dView, setRestore3dView] = useState<Restore3DView | undefined>(() => initial3dReturn ? { ...initial3dReturn.view, request: 0 } : undefined);
-  const [mapMode, setMapMode] = useState<MapMode>('2d');
+  const [mapMode, setMapMode] = useState<MapMode>('3d');
   const [map3dError, setMap3dError] = useState(false);
   const { infos, vacancyById, loading, vacancyLoading, refreshing, error, refresh, retry } = useCarparks();
   const { chargers, loading: evLoading, error: evError } = useEvChargers();
