@@ -634,11 +634,11 @@ export default function MapLibreView(props: Props): ReactNode {
       {buildings.status === 'zoom' ? (props.language === 'en' ? 'Zoom in for official building heights' : '放近查看官方建築樓高')
         : buildings.status === 'loading' ? (props.language === 'en' ? 'Loading official building heights…' : '正在讀取官方建築樓高…')
         : buildings.status === 'error' ? (props.language === 'en' ? 'Official heights unavailable — not guessed' : '官方樓高暫未能載入，唔會估高')
-        : buildings.status === 'partial' ? (props.language === 'en' ? 'Official buildings: partial view; zoom in' : '官方建築：畫面資料未齊，請放近')
+        : buildings.status === 'partial' ? (props.language === 'en' ? 'Official buildings: partial view; zoom in or retry' : '官方建築：資料未齊，請放近或重試')
         : (props.language === 'en' ? 'Official footprints / approximate heights; reference only' : '官方輪廓／近似樓高，只供參考')}
       {buildings.status === 'ready' && buildings.missingHeightCount > 0 && <span>{props.language === 'en' ? ` · ${buildings.missingHeightCount} without heights` : ` · ${buildings.missingHeightCount} 棟未有樓高`}</span>}
       {buildings.pilot === 'ready' && <span>{props.language === 'en' ? ' · Police HQ: detailed model' : ' · 警察總部：精細模型'}</span>}
-      {(buildings.status === 'error' || buildings.pilot === 'error') && <button type="button" onClick={buildings.retry}>{text(props.language, 'retry')}</button>}
+      {(buildings.status === 'error' || buildings.status === 'partial' || buildings.pilot === 'error') && <button type="button" onClick={buildings.retry}>{text(props.language, 'retry')}</button>}
     </small>
   </div>;
 }

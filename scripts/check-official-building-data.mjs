@@ -72,11 +72,15 @@ try {
     const offset = Number(requested.searchParams.get('resultOffset'));
     return ok(collection(pageFeatures(offset, offset < 3000 ? 1000 : 7)));
   });
-  let result = await loadOfficialBuildings(bounds);
+  const snapshots = [];
+  let result = await loadOfficialBuildings(bounds, { onProgress: partial => snapshots.push(partial) });
   assert.deepEqual(calls.map(call => Number(call.url.searchParams.get('resultOffset'))), [0, 1000, 2000, 3000]);
   assert.equal(result.sourceCount, 3007);
   assert.equal(result.data.features.length, 3007);
   assert.equal(result.complete, true);
+  assert.deepEqual(snapshots.map(value => value.sourceCount), [1000, 2000, 3000, 3007]);
+  assert.ok(snapshots.every(value => !value.complete));
+  assert.equal(snapshots[0].data.features.length, 1000, 'Earlier progress snapshots must not mutate');
 
   // A server returning its 3000 cap instead of requested 1000 must advance by actual size.
   mock(requested => {
@@ -125,10 +129,19 @@ try {
   assert.equal(result.rejectedCount, 1);
   assert.equal(result.complete, false);
 
-  for (const response of [{ ok: false, status: 503 }, ok({ error: { code: 500 } }), ok({ type: 'FeatureCollection' }), ok({})]) {
+  mock(() => calls.length === 1 ? { ok: false, status: 503 } : ok(collection([hq])));
+  assert.equal((await loadOfficialBuildings(bounds)).sourceCount, 1);
+  assert.equal(calls.length, 2, 'A transient HTTP error gets one bounded retry');
+  const retained = [];
+  mock(requested => Number(requested.searchParams.get('resultOffset')) === 0
+    ? ok(collection(pageFeatures(0, 1000))) : { ok: false, status: 503 });
+  await assert.rejects(loadOfficialBuildings(bounds, { onProgress: value => retained.push(value) }));
+  assert.deepEqual(calls.map(call => Number(call.url.searchParams.get('resultOffset'))), [0, 1000, 1000]);
+  assert.equal(retained[0].data.features.length, 1000, 'Verified earlier page remains available after a later failure');
+  for (const response of [{ ok: false, status: 404 }, ok({ error: { code: 500 } }), ok({ type: 'FeatureCollection' }), ok({})]) {
     mock(() => response);
     await assert.rejects(loadOfficialBuildings(bounds));
-    assert.equal(calls.length, 1, 'Never blindly retry failed/error/malformed responses');
+    assert.equal(calls.length, 1, 'Do not retry permanent or malformed responses');
   }
   mock(() => ok(collection([hq])));
   const early = new AbortController();
@@ -148,9 +161,21 @@ try {
   await assert.rejects(pending, { name: 'AbortError' });
   assert.equal(calls.length, 1);
 
+  // A viewport change while waiting to retry must prevent another request.
+  const backoff = new AbortController();
+  mock(() => ({ ok: false, status: 503 }));
+  const retryPending = loadOfficialBuildings(bounds, { signal: backoff.signal });
+  await new Promise(resolve => originalSetTimeout(resolve, 20));
+  backoff.abort();
+  await assert.rejects(retryPending, { name: 'AbortError' });
+  assert.equal(calls.length, 1, 'Aborting during retry backoff prevents a second request');
+
   // Advance only the module's 15s timeout: no real 15-second delay and no actual network.
+  mock((_url, init) => new Promise((_resolve, reject) => init.signal.addEventListener('abort', () => reject(init.signal.reason), { once: true })));
   globalThis.setTimeout = (callback, ms, ...args) => originalSetTimeout(callback, ms === 15000 ? 0 : ms, ...args);
+  calls = [];
   await assert.rejects(loadOfficialBuildings(bounds), { name: 'TimeoutError' });
+  assert.equal(calls.length, 2, 'A timeout receives at most one retry');
   globalThis.setTimeout = originalSetTimeout;
   await assert.rejects(loadOfficialBuildings(bounds, { maxFeatures: '3000' }), /maxFeatures/);
   await assert.rejects(loadOfficialBuildings(bounds, { maxFeatures: null }), /maxFeatures/);
@@ -163,4 +188,4 @@ try {
   globalThis.fetch = originalFetch;
   globalThis.setTimeout = originalSetTimeout;
 }
-console.log('Official building data OK: HQ 82m relative mPD height, strict null/string validation, WGS84 footprints, podium/tower metadata, keyless paginated envelopes, 3000/server and 10000/client caps, unknown heights, errors, empty results, aborts and 15s timeout.');
+console.log('Official building data OK: verified heights, paginated progress snapshots, retained partial pages, bounded retries, error and abort handling, and 15s per-attempt timeout.');

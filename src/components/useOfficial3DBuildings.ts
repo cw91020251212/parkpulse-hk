@@ -90,6 +90,7 @@ export function useOfficial3DBuildings(map: LibreMap | null, ready: boolean) {
         setReport(previous => ({ ...previous, status: 'ready', missingHeightCount: 0, sourceCount: 0 }));
         return;
       }
+      let received: OfficialBuildingsResult | undefined;
       try {
         // Snap outward, never inward: each cached response covers every viewport
         // sharing its key. No localStorage or precise GPS position is persisted.
@@ -98,7 +99,12 @@ export function useOfficial3DBuildings(map: LibreMap | null, ready: boolean) {
         const cacheKey = Object.values(queryBounds).map(value => value.toFixed(3)).join(',');
         const cached = viewportCache.get(cacheKey);
         const result = cached && Date.now() - cached.savedAt < CACHE_TTL
-          ? cached.result : await loadOfficialBuildings(queryBounds, { signal });
+          ? cached.result : await loadOfficialBuildings(queryBounds, { signal, onProgress: partial => {
+            if (!current()) return;
+            received = partial;
+            (map.getSource(OFFICIAL_BUILDING_SOURCE) as GeoJSONSource | undefined)?.setData(partial.data);
+            pilotFilter(map, Boolean(map.getLayer(PILOT_LAYER)));
+          } });
         if (!current()) return;
         if (result.complete) {
           viewportCache.delete(cacheKey);
@@ -112,9 +118,14 @@ export function useOfficial3DBuildings(map: LibreMap | null, ready: boolean) {
         setReport(previous => ({ ...previous, status: result.complete ? 'ready' : 'partial', missingHeightCount: result.missingHeightCount, sourceCount: result.sourceCount }));
       } catch {
         if (!current()) return;
-        // Never substitute an invented one-storey or uniform 5m 3D layer.
-        (map.getSource(OFFICIAL_BUILDING_SOURCE) as GeoJSONSource | undefined)?.setData(EMPTY);
-        setReport(previous => ({ ...previous, status: 'error', sourceCount: 0, missingHeightCount: 0 }));
+        // Keep verified pages from this viewport; never invent heights or present them as complete.
+        if (received?.sourceCount) {
+          const partial = received;
+          setReport(previous => ({ ...previous, status: 'partial', sourceCount: partial.sourceCount, missingHeightCount: partial.missingHeightCount }));
+        } else {
+          (map.getSource(OFFICIAL_BUILDING_SOURCE) as GeoJSONSource | undefined)?.setData(EMPTY);
+          setReport(previous => ({ ...previous, status: 'error', sourceCount: 0, missingHeightCount: 0 }));
+        }
       }
     };
     const schedule = () => {

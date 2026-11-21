@@ -7,6 +7,8 @@ export const OFFICIAL_BUILDINGS_PAGE_SIZE = 1000;
 export const OFFICIAL_BUILDINGS_MAX_FEATURES = 10_000;
 const QUERY_TIMEOUT_MS = 15_000;
 const MAX_QUERIES = 32;
+const MAX_PAGE_ATTEMPTS = 2;
+const RETRY_DELAY_MS = 1_000;
 
 export type OfficialBuildingsResult = {
   data: OfficialBuildingCollection;
@@ -22,7 +24,12 @@ export type OfficialBuildingsResult = {
   attribution: string;
   bounds: OfficialBuildingBounds;
 };
-export type LoadOfficialBuildingsOptions = { signal?: AbortSignal; maxFeatures?: number };
+export type LoadOfficialBuildingsOptions = {
+  signal?: AbortSignal;
+  maxFeatures?: number;
+  /** Each callback is an immutable, incomplete snapshot of successfully read pages. */
+  onProgress?: (result: OfficialBuildingsResult) => void;
+};
 
 function validateBounds(bounds: OfficialBuildingBounds): void {
   if (!bounds || ![bounds.west, bounds.south, bounds.east, bounds.north]
@@ -53,6 +60,13 @@ export function buildOfficialBuildingsUrl(bounds: OfficialBuildingBounds, result
 function throwIfAborted(signal?: AbortSignal): void {
   if (signal?.aborted) throw signal.reason ?? new DOMException('Official buildings request aborted', 'AbortError');
 }
+class BuildingHttpError extends Error {
+  readonly status: number;
+  constructor(status: number) {
+    super(`Official buildings returned HTTP ${status}`);
+    this.status = status;
+  }
+}
 async function queryPage(url: string, signal?: AbortSignal): Promise<unknown> {
   throwIfAborted(signal);
   const controller = new AbortController();
@@ -62,7 +76,7 @@ async function queryPage(url: string, signal?: AbortSignal): Promise<unknown> {
   try {
     const response = await fetch(url, { mode: 'cors', credentials: 'omit', referrerPolicy: 'no-referrer', signal: controller.signal });
     throwIfAborted(controller.signal);
-    if (!response.ok) throw new Error(`Official buildings returned HTTP ${response.status}`);
+    if (!response.ok) throw new BuildingHttpError(response.status);
     const body: unknown = await response.json();
     throwIfAborted(controller.signal);
     if (typeof body === 'object' && body !== null && 'error' in body) throw new Error('Official buildings service returned an ArcGIS error');
@@ -73,7 +87,30 @@ async function queryPage(url: string, signal?: AbortSignal): Promise<unknown> {
   }
 }
 
-/** No backend, API key, invented-height fallback, automatic retry or shared abortable promise. */
+function retryablePageError(error: unknown): boolean {
+  return error instanceof BuildingHttpError
+    ? error.status === 408 || error.status === 429 || error.status >= 500
+    : error instanceof TypeError || (error instanceof DOMException && error.name === 'TimeoutError');
+}
+
+async function queryPageWithRetry(url: string, signal?: AbortSignal): Promise<unknown> {
+  for (let attempt = 0; ; attempt++) {
+    throwIfAborted(signal);
+    try { return await queryPage(url, signal); }
+    catch (error) {
+      throwIfAborted(signal);
+      if (attempt + 1 >= MAX_PAGE_ATTEMPTS || !retryablePageError(error)) throw error;
+      await new Promise<void>((resolve, reject) => {
+        const abort = () => { clearTimeout(timer); reject(signal?.reason ?? new DOMException('Official buildings request aborted', 'AbortError')); };
+        const timer = setTimeout(() => { signal?.removeEventListener('abort', abort); resolve(); }, RETRY_DELAY_MS);
+        signal?.addEventListener('abort', abort, { once: true });
+        if (signal?.aborted) abort();
+      });
+    }
+  }
+}
+
+/** No backend, API key, invented-height fallback or shared abortable promise. */
 export async function loadOfficialBuildings(bounds: OfficialBuildingBounds, options: LoadOfficialBuildingsOptions = {}): Promise<OfficialBuildingsResult> {
   validateBounds(bounds);
   const maxFeatures = options.maxFeatures === undefined ? OFFICIAL_BUILDINGS_MAX_FEATURES : options.maxFeatures;
@@ -89,10 +126,17 @@ export async function loadOfficialBuildings(bounds: OfficialBuildingBounds, opti
   let rejectedCount = 0;
   let complete = false;
   let queryCount = 0;
+  const snapshot = (isComplete: boolean): OfficialBuildingsResult => ({
+    data: { type: 'FeatureCollection', features: data.features.slice() },
+    complete: isComplete && rejectedCount === 0, missingHeightCount,
+    sourceCount: data.features.length, queriedCount: sourceCount, rejectedCount,
+    generatedAt: new Date().toISOString(), sourceUrl: OFFICIAL_BUILDINGS_SOURCE_URL,
+    attribution: OFFICIAL_BUILDINGS_ATTRIBUTION, bounds: requestedBounds,
+  });
   while (sourceCount < maxFeatures && queryCount < MAX_QUERIES) {
     throwIfAborted(options.signal);
     const requestedCount = Math.min(OFFICIAL_BUILDINGS_PAGE_SIZE, maxFeatures - sourceCount);
-    const body = await queryPage(buildOfficialBuildingsUrl(requestedBounds, sourceCount, requestedCount), options.signal);
+    const body = await queryPageWithRetry(buildOfficialBuildingsUrl(requestedBounds, sourceCount, requestedCount), options.signal);
     queryCount++;
     const page = normalizeOfficialBuildings(body);
     const transferLimited = (body as { exceededTransferLimit?: unknown; properties?: { exceededTransferLimit?: unknown } }).exceededTransferLimit === true
@@ -111,6 +155,7 @@ export async function loadOfficialBuildings(bounds: OfficialBuildingBounds, opti
     sourceCount += page.sourceCount;
     missingHeightCount += accepted.missingHeightCount;
     rejectedCount += accepted.rejectedCount;
+    if (accepted.data.features.length) options.onProgress?.(snapshot(false));
     if (page.sourceCount === 0) {
       // An empty page that still advertises truncation cannot establish completeness.
       complete = !transferLimited;
@@ -121,10 +166,5 @@ export async function loadOfficialBuildings(bounds: OfficialBuildingBounds, opti
     // Hitting the bounded cap leaves complete=false rather than silently omitting records.
   }
   throwIfAborted(options.signal);
-  return {
-    data, complete: complete && rejectedCount === 0, missingHeightCount,
-    sourceCount: data.features.length, queriedCount: sourceCount, rejectedCount,
-    generatedAt: new Date().toISOString(), sourceUrl: OFFICIAL_BUILDINGS_SOURCE_URL,
-    attribution: OFFICIAL_BUILDINGS_ATTRIBUTION, bounds: requestedBounds,
-  };
+  return snapshot(complete);
 }
