@@ -1,0 +1,27 @@
+.offline-backdrop { z-index: 1600; }
+.offline-dialog { width: min(620px, 100%); }
+.offline-datasets { display: grid; gap: 8px; margin: 18px 0 12px; }
+.offline-category { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 11px 12px; border: 1px solid #27546a; border-radius: 12px; background: #0d2c45; cursor: pointer; }
+.offline-category:has(input:checked) { border-color: #2a948e; background: #10364d; }
+.offline-category input { width: 18px; height: 18px; margin: 0; accent-color: #16baa8; }
+.offline-category-copy { display: grid; gap: 4px; min-width: 0; }
+.offline-category-copy strong { color: #eaf6f6; font-size: 13px; }
+.offline-category-copy small { color: #a9c6cf; font-size: 11px; line-height: 1.4; }
+.offline-category-state { color: #91aab6; font-size: 10px; text-align: right; white-space: nowrap; }
+.offline-category-state.is-saved { color: #6de0cc; }
+.offline-note { margin: 12px 0; padding: 10px 11px; border: 1px solid #6e5c35; border-radius: 10px; color: #f0dba9; background: #3b321f; font-size: 11px; line-height: 1.55; }
+.offline-progress, .offline-success, .offline-error { margin: 9px 0; font-size: 12px; line-height: 1.5; }
+.offline-progress { color: #b9d8d9; }
+.offline-success { color: #77e1cf; }
+.offline-error { color: #ffae91; }
+.offline-actions { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 9px; align-items: center; margin-top: 16px; }
+.offline-actions .help-done { min-height: 44px; }
+.offline-actions button:disabled { opacity: .58; cursor: wait; }
+.offline-close-action { min-height: 42px; padding: 0 15px; border: 1px solid #355d72; border-radius: 10px; color: #d6e8ec; background: #12344b; font-weight: 800; }
+.offline-close-action:hover { border-color: #46d4c5; }
+@media (max-width: 560px) {
+  .offline-category { grid-template-columns: 20px minmax(0, 1fr); gap: 8px; }
+  .offline-category-state { grid-column: 2; text-align: left; }
+  .offline-actions { grid-template-columns: 1fr; }
+  .offline-close-action { width: 100%; }
+}

@@ -16,6 +16,7 @@
     "test:domain": "node --experimental-strip-types scripts/check-vacancy.mjs",
     "test:charging": "node --experimental-strip-types scripts/check-ev-charging.mjs",
     "test:photos": "node scripts/check-photo-proxy.mjs",
+    "test:offline-data": "node --experimental-strip-types scripts/check-offline-data.mjs",
     "test:startup": "node scripts/check-fast-start.mjs",
     "test:startup-location": "node scripts/check-startup-location.mjs",
     "test:map-markers": "node scripts/check-map-facility-markers.mjs",

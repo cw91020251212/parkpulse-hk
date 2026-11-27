@@ -14,6 +14,7 @@ import { AtmBankFilter } from './components/AtmBankFilter';
 import { WaterEnvironmentPicker } from './components/WaterEnvironmentPicker';
 import type { EditableFacilityMode } from './components/FacilityModeButton';
 import { HelpDialog } from './components/HelpDialog';
+import { OfflineDataDialog } from './components/OfflineDataDialog';
 import { MapView } from './components/MapView';
 import { MedicalCategoryFilters, MedicalLocationCard, MedicalLocationDetail } from './components/MedicalLocationCard';
 import { NearbyFacilityCard } from './components/NearbyFacilityCard';
@@ -112,7 +113,7 @@ export default function App() {
   const navigation = useScreenNavigation();
   const [initial3dReturn] = useState(() => readMapReturn());
   const [restore3dView, setRestore3dView] = useState<Restore3DView | undefined>(() => initial3dReturn ? { ...initial3dReturn.view, request: 0 } : undefined);
-  const [mapMode, setMapMode] = useState<MapMode>('3d');
+  const [mapMode, setMapMode] = useState<MapMode>(initial3dReturn ? '3d' : '2d');
   const [map3dError, setMap3dError] = useState(false);
   const { infos, vacancyById, loading, vacancyLoading, refreshing, error, refresh, retry } = useCarparks();
   const { chargers, loading: evLoading, error: evError } = useEvChargers();
@@ -159,6 +160,7 @@ export default function App() {
   const [resultsExpanded, setResultsExpanded] = useState(false);
   const [mapLegendOpen, setMapLegendOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [offlineDataOpen, setOfflineDataOpen] = useState(false);
   const [disclaimerOpen, setDisclaimerOpen] = useState(false);
   const settingsMenuRef = useRef<HTMLDetailsElement>(null);
 
@@ -536,6 +538,7 @@ export default function App() {
     else if (navigation.open('legend', () => setMapLegendOpen(false))) setMapLegendOpen(true);
   };
   const openHelp = () => { if (navigation.open('help', () => setHelpOpen(false))) setHelpOpen(true); };
+  const openOfflineData = () => { if (navigation.open('offline-data', () => setOfflineDataOpen(false))) setOfflineDataOpen(true); };
   const openDisclaimer = () => { if (navigation.open('disclaimer', () => setDisclaimerOpen(false))) setDisclaimerOpen(true); };
 
   const switchMapMode = (nextMode: MapMode, point?: Coordinates) => {
@@ -578,6 +581,8 @@ export default function App() {
                 <div className="language-switcher" role="group" aria-label={text(language, 'language')}><button type="button" className={language === 'zh-Hant' ? 'is-active' : ''} aria-pressed={language === 'zh-Hant'} onClick={() => setLanguage('zh-Hant')}>繁</button><button type="button" className={language === 'en' ? 'is-active' : ''} aria-pressed={language === 'en'} onClick={() => setLanguage('en')}>EN</button></div>
               </div>
               <button className="help-button" type="button" onClick={openHelp} aria-haspopup="dialog" aria-label={text(language, 'help')} title={text(language, 'help')}><span aria-hidden="true">?</span><span>{text(language, 'help')}</span></button>
+              <button className="help-button" type="button" onClick={openOfflineData} aria-haspopup="dialog" aria-label={text(language, 'offlineData')} title={text(language, 'offlineData')}><span aria-hidden="true">↓</span><span>{text(language, 'offlineData')}</span></button>
+              {offlineDataOpen && <OfflineDataDialog language={language} onClose={() => navigation.close('offline-data')} />}
             </div>
           </details>
           <button className={refreshBusy ? 'refresh-button is-refreshing' : 'refresh-button'} type="button" onClick={refreshActiveData} disabled={refreshBusy} aria-label={refreshBusy ? text(language, 'refreshing') : text(language, 'refresh')} title={refreshBusy ? text(language, 'refreshing') : text(language, 'refresh')}><RefreshIcon /></button>

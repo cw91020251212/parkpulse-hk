@@ -18,6 +18,8 @@ for (const size of [192, 512]) {
 
 const worker = await readFile(path.join(root, 'public/sw.js'), 'utf8');
 assert.match(worker, /self\.addEventListener\('install'/);
+assert.match(worker, /parkpulse-hk-offline-data-v1/);
+assert.match(worker, /key !== OFFLINE_DATA_CACHE_NAME/, 'service worker updates should preserve explicitly saved offline data');
 assert.match(worker, /url\.origin !== self\.location\.origin/);
 assert.match(worker, /pages-data/);
 const html = await readFile(path.join(root, 'dist/index.html'), 'utf8');
