@@ -14,7 +14,7 @@ assert.doesNotMatch(link, /official3dUrl|target="_blank"|href=/, '3D entries mus
 assert.match(link, /if \(compact\) toggle\(\)/);
 assert.match(link, /else show3d\(point\)/);
 assert.match(app, /MapModeProvider/);
-assert.match(app, /useState<MapMode>\('3d'\)/);
+assert.match(app, /useState<MapMode>\(initial3dReturn \? '3d' : '2d'\)/);
 assert.match(app, /captureLiveMap\(mapViewport\)/);
 assert.match(app, /zoom: live\?\.zoom \?\? 14/);
 assert.match(app, /mapMode=\{mapMode\}/);
@@ -63,4 +63,4 @@ assert.equal(readMapReturn({ getItem: () => '{broken' }, now), null);
 assert.equal(saveMapReturn(state, { setItem: () => { throw Error('Storage blocked'); } }), false);
 assert.deepEqual(returnViewport(null, state.position), { center: state.position, zoom: 14 });
 assert.deepEqual(returnViewport({ north: 23, south: 22, east: 115, west: 113, center: state.position, zoom: 16 }, state.position), { center: state.position, zoom: 16 });
-console.log('OpenFreeMap 3D OK: default 3D, flat-map toggle, OpenFreeMap vector style, official building heights, shared callbacks, viewport preservation, renderer cleanup and legacy bookmarks.');
+console.log('OpenFreeMap 3D OK: 2D startup, 3D toggle, OpenFreeMap vector style, official building heights, shared callbacks, viewport preservation, renderer cleanup and legacy bookmarks.');

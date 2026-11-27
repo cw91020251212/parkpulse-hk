@@ -89,7 +89,7 @@ const scene = readFileSync('src/components/CesiumView.tsx', 'utf8');
 const capture = scene.slice(scene.indexOf('const viewport ='), scene.indexOf('const focus ='));
 assert.match(capture, /camera\.pickEllipsoid/);
 assert.doesNotMatch(capture, /globe\.pick/);
-assert.match(app, /useState<MapMode>\('3d'\)/);
+assert.match(app, /useState<MapMode>\(initial3dReturn \? '3d' : '2d'\)/);
 assert.match(map, /<MapLibreView/); assert.match(map, /<MapContainer/);
 assert.match(map, /markers=\{markers3d\}/); assert.match(map, /onError=\{on3dError\}/);
 assert.match(link, /backTo2d \? '2D' : '3D'/);
@@ -97,4 +97,4 @@ assert.doesNotMatch(link, /href=|target="_blank"/);
 for (const file of ['Cesium.js', 'Widgets/widgets.css', 'Workers', 'ThirdParty', 'Assets']) {
   assert.ok(existsSync(`public/vendor/cesium/${CESIUM_VERSION}/${file}`), `Standalone SDK missing ${file}`);
 }
-console.log('3D pipelines OK: OpenFreeMap is the default 3D map; legacy Cesium loader and SDK checks remain isolated, bounded and cancellable.');
+console.log('3D pipelines OK: 2D startup, optional OpenFreeMap 3D, and isolated, bounded and cancellable legacy Cesium checks.');
